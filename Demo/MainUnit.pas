@@ -75,6 +75,7 @@ begin
   mMap.OnGetTile := MapGetTile;
   mMap.OnZoomChanged := mMapZoomChanged;
   mMap.SetZoom(1);
+  mMap.MaxZoom := 10;
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);

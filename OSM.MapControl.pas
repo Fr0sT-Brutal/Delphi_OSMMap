@@ -56,7 +56,7 @@ type
   TOnDrawTile = procedure (Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal;
     const TopLeft: TPoint; DestBmp: TBitMap) of object;
 
-  // Virtual control that doesn't hold any data and must be painted by callbacks
+  // Control displaying a map or its visible part.
   TMapControl = class(TScrollBox)
   strict private
     FMapSize: TSize;         // current map dims in pixels
@@ -67,6 +67,8 @@ type
     FCacheImageRect: TRect;  // position of cache image on map in map coords
     FMapOptions: TMapOptions;
     FDragPos: TPoint;
+    FMaxZoom, FMinZoom: TMapZoomLevel; // zoom constraints
+
     FOnGetTile: TOnGetTile;
     FOnDrawTile: TOnDrawTile;
     FOnDrawTileLoading: TOnDrawTile;
@@ -90,15 +92,16 @@ type
     function FindNextMapMark(const Pt: TPoint; PrevIndex: Integer = -1): Integer;
     procedure DrawTileLoading(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; DestBmp: TBitMap);
     procedure DoDrawTile(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; DestBmp: TBitMap);
-    // helpers
-    function ViewAreaRect: TRect;
-
+    // getters/setters
     procedure SetNWPoint(const MapPt: TPoint); overload;
     function GetCenterPoint: TPointF;
     procedure SetCenterPoint(const Coords: TPointF);
     function GetNWPoint: TPointF;
     procedure SetNWPoint(const GeoCoords: TPointF); overload;
+    procedure SetZoomConstraint(Index: Integer; ZoomConstraint: TMapZoomLevel);
 
+    // helpers
+    function ViewAreaRect: TRect;
     class procedure DrawCopyright(const Text: string; DestBmp: TBitmap);
     class procedure DrawScale(Zoom: TMapZoomLevel; DestBmp: TBitmap);
   public
@@ -122,10 +125,14 @@ type
      add/remove map marks
      MouseBox
     }
+    // properties
     property Zoom: Integer read FZoom;
     property MapOptions: TMapOptions read FMapOptions write FMapOptions;
     property CenterPoint: TPointF read GetCenterPoint write SetCenterPoint;
     property NWPoint: TPointF read GetNWPoint write SetNWPoint;
+    property MinZoom: TMapZoomLevel index 0 read FMinZoom write SetZoomConstraint;
+    property MaxZoom: TMapZoomLevel index 1 read FMaxZoom write SetZoomConstraint;
+    // events/callbacks
     property OnGetTile: TOnGetTile read FOnGetTile write FOnGetTile;
     property OnDrawTile: TOnDrawTile read FOnDrawTile write FOnDrawTile;
     property OnDrawTileLoading: TOnDrawTile read FOnDrawTileLoading write FOnDrawTileLoading;
@@ -203,7 +210,11 @@ begin
   inherited;
   FCacheImage := TBitmap.Create;
 
-  FZoom := Pred(Integer(Low(TMapZoomLevel)));
+  FMinZoom := Low(TMapZoomLevel);
+  FMaxZoom := High(TMapZoomLevel);
+
+  // Assign outbound value to ensure the zoom will be changed
+  FZoom := -1;
   SetZoom(Low(TMapZoomLevel));
 end;
 
@@ -355,7 +366,8 @@ var
   CurrBindPt, NewViewNW: TPoint;
   BindCoords: TPointF;
 begin
-  if not (Value in [Low(TMapZoomLevel)..High(TMapZoomLevel)]) then Exit;
+  // New value violates contraints - reject it
+  if not (Value in [FMinZoom..FMaxZoom]) then Exit;
   if Value = FZoom then Exit;
 
   // save bind point if zoom is valid (zoom value is used to calc geo coords)
@@ -696,6 +708,20 @@ end;
 procedure TMapControl.SetNWPoint(const GeoCoords: TPointF);
 begin
   SetNWPoint(GeoCoordsToMap(GeoCoords));
+end;
+
+// Set zoom restriction and change current zoom if it is beyond this border
+procedure TMapControl.SetZoomConstraint(Index: Integer; ZoomConstraint: TMapZoomLevel);
+begin
+  case Index of
+    0: FMinZoom := ZoomConstraint;
+    1: FMaxZoom := ZoomConstraint;
+  end;
+  if FZoom < FMinZoom then
+    SetZoom(FMinZoom)
+  else
+  if FZoom > FMaxZoom then
+    SetZoom(FMaxZoom);
 end;
 
 // Find the next map mark that has specified coordinates.
