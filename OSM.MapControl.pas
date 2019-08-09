@@ -119,6 +119,7 @@ type
     procedure ScrollMapTo(Horz, Vert: Integer);
     procedure SetZoom(Value: Integer; const ViewBindPoint: TPoint); overload;
     procedure SetZoom(Value: Integer); overload;
+    procedure ZoomToFit;
 
     {}
     {
@@ -722,6 +723,27 @@ begin
   else
   if FZoom > FMaxZoom then
     SetZoom(FMaxZoom);
+end;
+
+// Adjust zoom to the **minimal** value that will fit into current size at both dimensions
+procedure TMapControl.ZoomToFit;
+var
+  MinDim, MapDim: Cardinal;
+  NewZoom: TMapZoomLevel;
+begin
+  // Determine minimal dimension and loop thru zoom levels to find minimal value
+  // ! Here we use the fact that map is square
+  MinDim := Min(Height, Width);
+  NewZoom := MinZoom;
+  for NewZoom := MinZoom to MaxZoom do
+  begin
+    MapDim := TileCount(NewZoom)*TILE_IMAGE_WIDTH;
+    if MapDim > MinDim then
+    begin
+      SetZoom(NewZoom - 1);
+      Exit;
+    end;
+  end;
 end;
 
 // Find the next map mark that has specified coordinates.
