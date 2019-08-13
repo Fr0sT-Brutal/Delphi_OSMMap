@@ -72,6 +72,8 @@ var // configurable
   MapURLPrefix: string = 'http://tile.openstreetmap.org/';
   MapURLPostfix: string = '';
 
+function RectFromPoints(const TopLeft, BottomRight: TPoint): TRect; inline;
+
 function TileCount(Zoom: TMapZoomLevel): Integer; inline;
 function TileValid(const Tile: TTile): Boolean; inline;
 function TileToStr(const Tile: TTile): string;
@@ -79,14 +81,18 @@ function TilesEqual(const Tile1, Tile2: TTile): Boolean; inline;
 
 function MapWidth(Zoom: TMapZoomLevel): Integer; inline;
 function MapHeight(Zoom: TMapZoomLevel): Integer; inline;
-function InMap(Zoom: TMapZoomLevel; const Pt: TPoint): Boolean;
-function EnsureInMap(Zoom: TMapZoomLevel; const Pt: TPoint): TPoint;
-function LongitudeToMapCoord(Longitude: Double; Zoom: TMapZoomLevel): Integer;
-function LatitudeToMapCoord(Latitude: Double; Zoom: TMapZoomLevel): Integer;
-function MapCoordToLongitude(X: Integer; Zoom: TMapZoomLevel): Double;
-function MapCoordToLatitude(Y: Integer; Zoom: TMapZoomLevel): Double;
-function MapToGeoCoords(const MapPt: TPoint; Zoom: TMapZoomLevel): TGeoPoint;
-function GeoCoordsToMap(const GeoCoords: TGeoPoint; Zoom: TMapZoomLevel): TPoint;
+function InMap(Zoom: TMapZoomLevel; const Pt: TPoint): Boolean; overload; inline;
+function InMap(Zoom: TMapZoomLevel; const Rc: TRect): Boolean; overload; inline;
+function EnsureInMap(Zoom: TMapZoomLevel; const Pt: TPoint): TPoint; overload; inline;
+function EnsureInMap(Zoom: TMapZoomLevel; const Rc: TRect): TRect; overload; inline;
+function LongitudeToMapCoord(Zoom: TMapZoomLevel; Longitude: Double): Integer;
+function LatitudeToMapCoord(Zoom: TMapZoomLevel; Latitude: Double): Integer;
+function MapCoordToLongitude(Zoom: TMapZoomLevel; X: Integer): Double;
+function MapCoordToLatitude(Zoom: TMapZoomLevel; Y: Integer): Double;
+function MapToGeoCoords(Zoom: TMapZoomLevel; const MapPt: TPoint): TGeoPoint; overload; inline;
+function MapToGeoCoords(Zoom: TMapZoomLevel; const MapRect: TRect): TGeoRect; overload; inline;
+function GeoCoordsToMap(Zoom: TMapZoomLevel; const GeoCoords: TGeoPoint): TPoint; overload; inline;
+function GeoCoordsToMap(Zoom: TMapZoomLevel; const GeoRect: TGeoRect): TRect; overload; inline;
 
 function CalcLinDistanceInMeter(const Coord1, Coord2: TGeoPoint): Double;
 procedure GetScaleBarParams(Zoom: TMapZoomLevel;
@@ -98,6 +104,12 @@ function TileToSlippyMapFileSubPath(const Tile: TTile): string;
 function TileToFullSlippyMapFileURL(const Tile: TTile): string;
 
 implementation
+
+function RectFromPoints(const TopLeft, BottomRight: TPoint): TRect;
+begin
+  Result.TopLeft := TopLeft;
+  Result.BottomRight := BottomRight;
+end;
 
 // Tile utils
 
@@ -149,12 +161,27 @@ begin
   Result := Rect(0, 0, MapWidth(Zoom), MapHeight(Zoom)).Contains(Pt);
 end;
 
+// Check if rect Rc is inside a map of given zoom level
+function InMap(Zoom: TMapZoomLevel; const Rc: TRect): Boolean;
+begin
+  Result := Rect(0, 0, MapWidth(Zoom), MapHeight(Zoom)).Contains(Rc);
+end;
+
 // Ensure point Pt is inside a map of given zoom level, move it if necessary
 function EnsureInMap(Zoom: TMapZoomLevel; const Pt: TPoint): TPoint;
 begin
   Result := Point(
     Min(Pt.X, MapWidth(Zoom)),
     Min(Pt.Y, MapHeight(Zoom))
+  );
+end;
+
+// Ensure rect Rc is inside a map of given zoom level, resize it if necessary
+function EnsureInMap(Zoom: TMapZoomLevel; const Rc: TRect): TRect;
+begin
+  Result := RectFromPoints(
+    EnsureInMap(Zoom, Rc.TopLeft),
+    EnsureInMap(Zoom, Rc.BottomRight)
   );
 end;
 
@@ -207,7 +234,7 @@ end;
 
 // Degrees to pixels
 
-function LongitudeToMapCoord(Longitude: Double; Zoom: TMapZoomLevel): Integer;
+function LongitudeToMapCoord(Zoom: TMapZoomLevel; Longitude: Double): Integer;
 begin
   CheckValidLong(Longitude);
 
@@ -216,7 +243,7 @@ begin
   CheckValidMapX(Zoom, Result);
 end;
 
-function LatitudeToMapCoord(Latitude: Double; Zoom: TMapZoomLevel): Integer;
+function LatitudeToMapCoord(Zoom: TMapZoomLevel; Latitude: Double): Integer;
 var
   SavePi: Extended;
   LatInRad: Extended;
@@ -230,24 +257,32 @@ begin
   CheckValidMapY(Zoom, Result);
 end;
 
-function GeoCoordsToMap(const GeoCoords: TGeoPoint; Zoom: TMapZoomLevel): TPoint;
+function GeoCoordsToMap(Zoom: TMapZoomLevel; const GeoCoords: TGeoPoint): TPoint;
 begin
   Result := Point(
-    LongitudeToMapCoord(GeoCoords.Long, Zoom),
-    LatitudeToMapCoord(GeoCoords.Lat, Zoom)
+    LongitudeToMapCoord(Zoom, GeoCoords.Long),
+    LatitudeToMapCoord(Zoom, GeoCoords.Lat)
+  );
+end;
+
+function GeoCoordsToMap(Zoom: TMapZoomLevel; const GeoRect: TGeoRect): TRect;
+begin
+  Result := RectFromPoints(
+    GeoCoordsToMap(Zoom, GeoRect.TopLeft),
+    GeoCoordsToMap(Zoom, GeoRect.BottomRight)
   );
 end;
 
 // Pixels to degrees
 
-function MapCoordToLongitude(X: Integer; Zoom: TMapZoomLevel): Double;
+function MapCoordToLongitude(Zoom: TMapZoomLevel; X: Integer): Double;
 begin
   CheckValidMapX(Zoom, X);
 
   Result := X / MapWidth(Zoom) * 360.0 - 180.0;
 end;
 
-function MapCoordToLatitude(Y: Integer; Zoom: TMapZoomLevel): Double;
+function MapCoordToLatitude(Zoom: TMapZoomLevel; Y: Integer): Double;
 var
   n: Extended;
   SavePi: Extended;
@@ -260,11 +295,19 @@ begin
   Result := 180.0 / SavePi * ArcTan(0.5 * (Exp(n) - Exp(-n)));
 end;
 
-function MapToGeoCoords(const MapPt: TPoint; Zoom: TMapZoomLevel): TGeoPoint;
+function MapToGeoCoords(Zoom: TMapZoomLevel; const MapPt: TPoint): TGeoPoint;
 begin
   Result := TGeoPoint.Create(
-    MapCoordToLongitude(MapPt.X, Zoom),
-    MapCoordToLatitude(MapPt.Y, Zoom)
+    MapCoordToLongitude(Zoom, MapPt.X),
+    MapCoordToLatitude(Zoom, MapPt.Y)
+  );
+end;
+
+function MapToGeoCoords(Zoom: TMapZoomLevel; const MapRect: TRect): TGeoRect;
+begin
+  Result := TGeoRect.Create(
+    MapToGeoCoords(Zoom, MapRect.TopLeft),
+    MapToGeoCoords(Zoom, MapRect.BottomRight)
   );
 end;
 
