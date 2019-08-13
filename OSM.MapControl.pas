@@ -8,7 +8,8 @@ unit OSM.MapControl;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Math, Types,
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, ExtCtrls, Forms,
+  Math, Types,
   OSM.SlippyMapUtils;
 
 const
@@ -27,19 +28,84 @@ const
   LabelMargin = 2;
 
 type
-  TMapOption = (
-    moDontDrawCopyright,
-    moDontDrawScale
-  );
+  TMapMarkGlyphShape = (gshCircle, gshSquare, gshTriangle);
 
-  TMapOptions = set of TMapOption;
-
-  TMapMark = record
-    {}// TODO
+  // Visual properties of mapmark's glyph
+  TMapMarkGlyphStyle = record
+    Shape: TMapMarkGlyphShape;
+    Size: Cardinal;
+    BorderColor: TColor;
+    BgColor: TColor;
   end;
-  PMapMark = ^TMapMark;
+  PMapMarkGlyphStyle = ^TMapMarkGlyphStyle;
+
+  // Visual properties of mapmark's caption
+  TMapMarkCaptionStyle = record
+    Color: TColor;
+    BgColor: TColor;
+    DX, DY: Integer;
+    Transparent: Boolean;
+    {}//TODO: text position, alignment
+  end;
+  PMapMarkCaptionStyle = ^TMapMarkCaptionStyle;
+
+  // Flags to indicate which properties must be taken from MapMark object when drawing.
+  // By default props will use owner's values
+  TMapMarkCustomProp = (propGlyphStyle, propCaptionStyle, propFont);
+  TMapMarkCustomProps = set of TMapMarkCustomProp;
+
+  // Class representing a single mapmark
+  // It is recommended to be created by TMapMarkList.NewItem
+  TMapMark = class
+  public
+    // Mapmark data
+    Coord: TGeoPoint;
+    Caption: string;
+    Data: Pointer;
+    // Visual style
+    CustomProps: TMapMarkCustomProps;
+    GlyphStyle: TMapMarkGlyphStyle;
+    CaptionStyle: TMapMarkCaptionStyle;
+    CaptionFont: TFont;
+
+    destructor Destroy; override;
+  end;
 
   TMapControl = class;
+
+  TOnItemNotify = procedure (Sender: TObject; Item: TMapMark; Action: TListNotification) of object;
+
+  // List of mapmarks
+  TMapMarkList = class
+  strict private
+    FMap: TMapControl;
+    FList: TList;
+    FUpdateCount: Integer;
+
+    FOnItemNotify: TOnItemNotify;
+  public
+    constructor Create(Map: TMapControl);
+    destructor Destroy; override;
+    procedure BeginUpdate;
+    procedure EndUpdate;
+    function Get(Index: Integer): TMapMark;
+    function Find(const GeoCoords: TGeoPoint; ConsiderMapMarkSize: Boolean = True; StartIndex: Integer = -1): Integer; overload;
+    function Find(const GeoRect: TGeoRect; ConsiderMapMarkSize: Boolean = True; StartIndex: Integer = -1): Integer; overload;
+    function NewItem: TMapMark;
+    function Add(const GeoCoords: TGeoPoint; const Caption: string): TMapMark; overload;
+    function Add(MapMark: TMapMark): TMapMark; overload;
+    procedure Delete(MapMark: TMapMark);
+    function Count: Integer;
+    procedure Clear;
+
+    property OnItemNotify: TOnItemNotify read FOnItemNotify write FOnItemNotify;
+  end;
+
+  TMapOption = (moDontDrawCopyright, moDontDrawScale);
+  TMapOptions = set of TMapOption;
+
+  // Mode of handling of plain left mouse button press
+  TMapMouseMode = (mmDrag, mmSelect);
 
   // Callback to get bitmap of a single tile having number (TileHorzNum;TileVertNum)
   // If TileBmp is returned nil, DrawTileLoading method is called for this tile
@@ -56,6 +122,15 @@ type
   TOnDrawTile = procedure (Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal;
     const TopLeft: TPoint; DestBmp: TBitMap) of object;
 
+  // Callback to custom draw a mapmark. It is called before default drawing.
+  // User could draw a mapmark fully or just change some props and let default
+  // drawing do it job
+  TOnDrawMapMark = procedure (Sender: TMapControl; Canvas: TCanvas; const Point: TPoint;
+    MapMark: TMapMark; var Handled: Boolean) of object;
+
+  // Selection was made
+  TOnSelectionBox = procedure (Sender: TMapControl; const GeoRect: TGeoRect) of object;
+
   // Control displaying a map or its visible part.
   TMapControl = class(TScrollBox)
   strict private
@@ -68,16 +143,23 @@ type
     FMapOptions: TMapOptions;
     FDragPos: TPoint;
     FMaxZoom, FMinZoom: TMapZoomLevel; // zoom constraints
+    FMapMarkList: TMapMarkList;
+    FSelectionBox: TShape;   // much simpler than drawing on canvas, tracking bounds etc.
+    FMouseMode: TMapMouseMode;
 
     FOnGetTile: TOnGetTile;
     FOnDrawTile: TOnDrawTile;
     FOnDrawTileLoading: TOnDrawTile;
     FOnZoomChanged: TNotifyEvent;
+    FOnDrawMapMark: TOnDrawMapMark;
+    FOnSelectionBox: TOnSelectionBox;
   protected
     // overrides
     procedure PaintWindow(DC: HDC); override;
     procedure Resize; override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
+    procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
+    procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     function MouseActivate(Button: TMouseButton; Shift: TShiftState; X, Y: Integer; HitTest: Integer): TMouseActivate; override;
     function DoMouseWheel(Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint): Boolean; override;
     procedure DragOver(Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean); override;
@@ -89,15 +171,15 @@ type
     procedure UpdateCache;
     procedure MoveCache;
     function SetCacheDimensions: Boolean;
-    function FindNextMapMark(const Pt: TPoint; PrevIndex: Integer = -1): Integer;
     procedure DrawTileLoading(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; DestBmp: TBitMap);
-    procedure DoDrawTile(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; DestBmp: TBitMap);
+    procedure DrawTile(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; DestBmp: TBitMap);
+    procedure DrawMapMark(Canvas: TCanvas; MapMark: TMapMark);
     // getters/setters
     procedure SetNWPoint(const MapPt: TPoint); overload;
-    function GetCenterPoint: TPointF;
-    procedure SetCenterPoint(const Coords: TPointF);
-    function GetNWPoint: TPointF;
-    procedure SetNWPoint(const GeoCoords: TPointF); overload;
+    function GetCenterPoint: TGeoPoint;
+    procedure SetCenterPoint(const GeoCoords: TGeoPoint);
+    function GetNWPoint: TGeoPoint;
+    procedure SetNWPoint(const GeoCoords: TGeoPoint); overload;
     procedure SetZoomConstraint(Index: Integer; ZoomConstraint: TMapZoomLevel);
 
     // helpers
@@ -105,13 +187,17 @@ type
     class procedure DrawCopyright(const Text: string; DestBmp: TBitmap);
     class procedure DrawScale(Zoom: TMapZoomLevel; DestBmp: TBitmap);
   public
+    MapMarkGlyphStyle: TMapMarkGlyphStyle;
+    MapMarkCaptionStyle: TMapMarkCaptionStyle;
+    MapMarkCaptionFont: TFont;
+
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
     procedure RefreshTile(TileHorzNum, TileVertNum: Cardinal);
 
-    function MapToGeoCoords(const MapPt: TPoint): TPointF;
-    function GeoCoordsToMap(const GeoCoords: TPointF): TPoint;
+    function MapToGeoCoords(const MapPt: TPoint): TGeoPoint;
+    function GeoCoordsToMap(const GeoCoords: TGeoPoint): TPoint;
     function ViewToMap(const ViewPt: TPoint): TPoint;
     function MapToView(const MapPt: TPoint): TPoint;
 
@@ -121,29 +207,42 @@ type
     procedure SetZoom(Value: Integer); overload;
     procedure ZoomToFit;
 
-    {}
-    {
-     add/remove map marks
-     MouseBox
-    }
     // properties
     property Zoom: Integer read FZoom;
     property MapOptions: TMapOptions read FMapOptions write FMapOptions;
-    property CenterPoint: TPointF read GetCenterPoint write SetCenterPoint;
-    property NWPoint: TPointF read GetNWPoint write SetNWPoint;
+    property CenterPoint: TGeoPoint read GetCenterPoint write SetCenterPoint;
+    property NWPoint: TGeoPoint read GetNWPoint write SetNWPoint;
     property MinZoom: TMapZoomLevel index 0 read FMinZoom write SetZoomConstraint;
     property MaxZoom: TMapZoomLevel index 1 read FMaxZoom write SetZoomConstraint;
+    property MapMarks: TMapMarkList read FMapMarkList;
+    property MouseMode: TMapMouseMode read FMouseMode write FMouseMode;
     // events/callbacks
     property OnGetTile: TOnGetTile read FOnGetTile write FOnGetTile;
     property OnDrawTile: TOnDrawTile read FOnDrawTile write FOnDrawTile;
     property OnDrawTileLoading: TOnDrawTile read FOnDrawTileLoading write FOnDrawTileLoading;
     property OnZoomChanged: TNotifyEvent read FOnZoomChanged write FOnZoomChanged;
+    property OnDrawMapMark: TOnDrawMapMark read FOnDrawMapMark write FOnDrawMapMark;
+    property OnSelectionBox: TOnSelectionBox read FOnSelectionBox write FOnSelectionBox;
   end;
 
 function ToInnerCoords(const StartPt, Pt: TPoint): TPoint; overload; inline;
 function ToOuterCoords(const StartPt, Pt: TPoint): TPoint; overload; inline;
 function ToInnerCoords(const StartPt: TPoint; const Rect: TRect): TRect; overload; inline;
 function ToOuterCoords(const StartPt: TPoint; const Rect: TRect): TRect; overload; inline;
+
+const
+  DefaultMapMarkGlyphStyle: TMapMarkGlyphStyle = (
+    Shape: gshCircle;
+    Size: 20;
+    BorderColor: clWindowFrame;
+    BgColor: clSkyBlue;
+  );
+  DefaultMapMarkCaptionStyle: TMapMarkCaptionStyle = (
+    Color: clMenuText;
+    BgColor: clWindow;
+    DX: 3;
+    Transparent: True
+  );
 
 const
   SLbl_Loading = 'Loading [%d : %d]...';
@@ -204,15 +303,203 @@ begin
     Inc(Result, TILE_IMAGE_HEIGHT);
 end;
 
+{ TMapMark }
+
+destructor TMapMark.Destroy;
+begin
+  if CaptionFont <> nil then
+    FreeAndNil(CaptionFont);
+end;
+
+{ TMapMarkList }
+
+constructor TMapMarkList.Create(Map: TMapControl);
+begin
+  FMap := Map;
+  FList := TList.Create;
+end;
+
+destructor TMapMarkList.Destroy;
+begin
+  Clear;
+  FreeAndNil(FList);
+  inherited;
+end;
+
+procedure TMapMarkList.BeginUpdate;
+begin
+  Inc(FUpdateCount);
+end;
+
+procedure TMapMarkList.EndUpdate;
+begin
+  if FUpdateCount > 0 then
+    Dec(FUpdateCount);
+  if FUpdateCount = 0 then // redraw map view if update is not held back
+    FMap.Invalidate;
+end;
+
+function TMapMarkList.Count: Integer;
+begin
+  Result := FList.Count;
+end;
+
+// Remove all mapmarks
+procedure TMapMarkList.Clear;
+var i: Integer;
+begin
+  for i := 0 to FList.Count - 1 do
+  begin
+    if Assigned(FOnItemNotify) then
+      FOnItemNotify(Self, FList[i], lnDeleted);
+    TMapMark(FList[i]).Free;
+  end;
+  FList.Clear;
+
+  if FUpdateCount = 0 then // redraw map view if update is not held back
+    FMap.Invalidate;
+end;
+
+// Get mapmark at the specified index
+function TMapMarkList.Get(Index: Integer): TMapMark;
+begin
+  Result := FList[Index];
+end;
+
+// Find the next map mark that is near specified coordinates.
+//   ConsiderMapMarkSize - widen an area to search by mapmark size.
+//   PrevIndex - index of previous found map mark in the list. -1 (default) to
+//     start from the 1st element.
+// Returns:
+//   index of map mark in the list, -1 if not found.
+//
+// Samples:
+//   1) Check if there's any map marks at this point
+//     if Find(Point) <> -1 then ...
+//   2) Select all map marks at this point
+//     idx := -1;
+//     repeat
+//       idx := MapMarks.Find(Point, idx);
+//       if idx = -1 then Break;
+//       ... do something with MapMarks[idx] ...
+//     until False;
+function TMapMarkList.Find(const GeoCoords: TGeoPoint; ConsiderMapMarkSize: Boolean; StartIndex: Integer): Integer;
+var
+  i: Integer;
+  MapMark: TMapMark;
+begin
+  if StartIndex = -1 then
+    StartIndex := 0;
+
+  for i := StartIndex to Count - 1 do
+  begin
+    MapMark := Get(i);
+    {}// TODO ConsiderMapMarkSize
+    if SameValue(GeoCoords.Long, MapMark.Coord.Long) and SameValue(GeoCoords.Lat, MapMark.Coord.Lat) then
+      Exit(i);
+  end;
+
+  Result := -1;
+end;
+
+// The same as above but searches within specified rectangle
+function TMapMarkList.Find(const GeoRect: TGeoRect; ConsiderMapMarkSize: Boolean; StartIndex: Integer): Integer;
+var
+  i: Integer;
+  MapMark: TMapMark;
+begin
+  if StartIndex = -1 then
+    StartIndex := 0
+  else
+    Inc(StartIndex);
+
+  for i := StartIndex to Count - 1 do
+  begin
+    MapMark := Get(i);
+    {}// TODO ConsiderMapMarkSize
+    if GeoRect.Contains(MapMark.Coord) then
+      Exit(i);
+  end;
+
+  Result := -1;
+end;
+
+// Create MapMark object and initially assign values from owner's fields
+function TMapMarkList.NewItem: TMapMark;
+begin
+  Result := TMapMark.Create;
+  Result.GlyphStyle := FMap.MapMarkGlyphStyle;
+  Result.CaptionStyle := FMap.MapMarkCaptionStyle;
+end;
+
+// Add mapmark with specified coords and caption.
+function TMapMarkList.Add(const GeoCoords: TGeoPoint; const Caption: string): TMapMark;
+var MapMark: TMapMark;
+begin
+  MapMark := NewItem;
+  MapMark.Coord := GeoCoords;
+  MapMark.Caption := Caption;
+  Result := Add(MapMark);
+end;
+
+function TMapMarkList.Add(MapMark: TMapMark): TMapMark;
+begin
+  Result := MapMark;
+  FList.Add(Result);
+
+  if Assigned(FOnItemNotify) then
+    FOnItemNotify(Self, Result, lnAdded);
+
+  if FUpdateCount = 0 then // redraw map view if update is not held back
+    FMap.Invalidate;
+end;
+
+procedure TMapMarkList.Delete(MapMark: TMapMark);
+var i: Integer;
+begin
+  i := FList.IndexOf(MapMark);
+  if i <> -1 then
+  begin
+    if Assigned(FOnItemNotify) then
+      FOnItemNotify(Self, MapMark, lnDeleted);
+    TMapMark(FList[i]).Free;
+    FList.Delete(i);
+  end;
+
+  if FUpdateCount = 0 then // redraw map view if update is not held back
+    FMap.Invalidate;
+end;
+
 { TMapControl }
 
 constructor TMapControl.Create(AOwner: TComponent);
 begin
   inherited;
+
+  // Setup Scrollbox's properties
+  Self.HorzScrollBar.Tracking := True;
+  Self.VertScrollBar.Tracking := True;
+  Self.DragCursor := crSizeAll;
+  Self.AutoScroll := True;
+
   FCacheImage := TBitmap.Create;
+
+  FSelectionBox := TShape.Create(Self);
+  FSelectionBox.Visible := False;
+  FSelectionBox.Parent := Self;
+  FSelectionBox.Brush.Style := bsClear;
+  FSelectionBox.Pen.Mode := pmNot;
+  FSelectionBox.Pen.Style := psDashDot;
+
+  FMapMarkList := TMapMarkList.Create(Self);
 
   FMinZoom := Low(TMapZoomLevel);
   FMaxZoom := High(TMapZoomLevel);
+
+  MapMarkGlyphStyle := DefaultMapMarkGlyphStyle;
+  MapMarkCaptionStyle := DefaultMapMarkCaptionStyle;
+  MapMarkCaptionFont := TFont.Create;
+  MapMarkCaptionFont.Assign(Self.Font);
 
   // Assign outbound value to ensure the zoom will be changed
   FZoom := -1;
@@ -224,15 +511,21 @@ begin
   FreeAndNil(FCacheImage);
   FreeAndNil(FCopyright);
   FreeAndNil(FScaleLine);
+  FreeAndNil(FMapMarkList);
+  FreeAndNil(MapMarkCaptionFont);
   inherited;
 end;
 
 // *** overrides - events ***
 
 // Main drawing routine
+// DC here has dimensions of current display resolution and top-left at viewport's top-left
 procedure TMapControl.PaintWindow(DC: HDC);
 var
-  ViewRect: TRect;
+  ViewRect, MapViewRect: TRect;
+  Canvas: TCanvas;
+  MapViewGeoRect: TGeoRect;
+  Idx: Integer;
 begin
   ViewRect := ViewAreaRect;
   // if view area lays within cached image, no update required
@@ -282,6 +575,31 @@ begin
       FScaleLine.Canvas.Handle,
       0, 0, SRCCOPY);
   end;
+
+  // Draw mapmarks
+  if FMapMarkList.Count > 0 then
+  begin
+    Canvas := TCanvas.Create;
+    try
+      Canvas.Handle := DC;
+      idx := -1;
+      // Determine rect of map in view (map could be smaller than view!)
+      ViewRect := ViewAreaRect;
+      MapViewRect.TopLeft := ViewRect.TopLeft;
+      MapViewRect.Height := Min(ViewRect.Height, MapHeight(FZoom));
+      MapViewRect.Width := Min(ViewRect.Width, MapWidth(FZoom));
+      MapViewGeoRect.TopLeft := MapToGeoCoords(MapViewRect.TopLeft);
+      MapViewGeoRect.BottomRight := MapToGeoCoords(MapViewRect.BottomRight);
+      // Draw marks within rect
+      repeat
+        idx := FMapMarkList.Find(MapViewGeoRect, True, idx);
+        if idx = -1 then Break;
+        DrawMapMark(Canvas, FMapMarkList.Get(idx));
+      until False;
+    finally
+      FreeAndNil(Canvas);
+    end;
+  end;
 end;
 
 // NB: painting on TWinControl is pretty tricky, doing it ordinary way leads
@@ -317,11 +635,62 @@ begin
   inherited;
 end;
 
-// Start dragging on mouse press
+// Start dragging or selecting on mouse press
 procedure TMapControl.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var MousePos: TPoint;
 begin
-  if FindNextMapMark(ViewToMap(Point(X, Y))) = -1 then
-    BeginDrag(False, -1);  // < 0 - use the DragThreshold property of the global Mouse variable (c) help
+  // Left button and no shifts only
+  if (Button = mbLeft) and (Shift = [ssLeft]) then
+    case MouseMode of
+      mmDrag:
+        begin
+          MousePos := ViewToMap(Point(X, Y));
+          // Position is inside map and no mapmark below
+          if InMap(Zoom, MousePos) or (FMapMarkList.Find(MapToGeoCoords(MousePos), True) = -1) then
+            BeginDrag(False, -1);  // < 0 - use the DragThreshold property of the global Mouse variable (c) help
+          inherited;
+        end;
+      mmSelect:
+        begin
+          MousePos := ViewToMap(Point(X, Y));
+          // Position is inside map - start selection
+          if InMap(Zoom, MousePos) then
+          begin
+            FSelectionBox.SetBounds(X, Y, 0, 0);
+            FSelectionBox.Visible := True;
+          end;
+          inherited;
+        end;
+    end; // case
+end;
+
+// Resize selection box if active
+procedure TMapControl.MouseMove(Shift: TShiftState; X, Y: Integer);
+var
+  BoxRect: TRect;
+begin
+  if FSelectionBox.Visible then
+  begin
+    BoxRect := FSelectionBox.BoundsRect;
+    BoxRect.BottomRight := MapToView(EnsureInMap(Zoom, ViewToMap(Point(X, Y))));
+    FSelectionBox.BoundsRect := BoxRect;
+  end;
+  inherited;
+end;
+
+procedure TMapControl.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var GeoRect: TGeoRect;
+begin
+  if FSelectionBox.Visible then
+  begin
+    FSelectionBox.Visible := False;
+    GeoRect := TGeoRect.Create(
+      MapToGeoCoords(ViewToMap(FSelectionBox.BoundsRect.TopLeft)),
+      MapToGeoCoords(ViewToMap(FSelectionBox.BoundsRect.BottomRight))
+    );
+    if Assigned(FOnSelectionBox) then
+      FOnSelectionBox(Self, GeoRect);
+  end;
   inherited;
 end;
 
@@ -336,7 +705,8 @@ end;
 function TMapControl.DoMouseWheel(Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint): Boolean;
 begin
   inherited;
-  SetZoom(Zoom + Sign(WheelDelta), ScreenToClient(MousePos));
+  MousePos := EnsureInMap(Zoom, ScreenToClient(MousePos));
+  SetZoom(Zoom + Sign(WheelDelta), MousePos);
   Result := True;
 end;
 
@@ -365,7 +735,7 @@ end;
 procedure TMapControl.SetZoom(Value: Integer; const ViewBindPoint: TPoint);
 var
   CurrBindPt, NewViewNW: TPoint;
-  BindCoords: TPointF;
+  BindCoords: TGeoPoint;
 begin
   // New value violates contraints - reject it
   if not (Value in [FMinZoom..FMaxZoom]) then Exit;
@@ -377,8 +747,7 @@ begin
     else BindCoords := OSM.SlippyMapUtils.MapToGeoCoords(Point(0, 0), 0);
 
   FZoom := Value;
-  FMapSize.cx := TileCount(FZoom)*TILE_IMAGE_WIDTH;
-  FMapSize.cy := TileCount(FZoom)*TILE_IMAGE_HEIGHT;
+  FMapSize := TSize.Create(MapWidth(FZoom), MapHeight(FZoom));
 
   HorzScrollBar.Range := FMapSize.cx;
   VertScrollBar.Range := FMapSize.cy;
@@ -482,7 +851,7 @@ begin
   // Draw cache tiles
   for horz := 0 to CacheHorzCount - 1 do
     for vert := 0 to CacheVertCount - 1 do
-      DoDrawTile(CacheHorzNum + horz, CacheVertNum + vert, Point(horz*TILE_IMAGE_WIDTH, vert*TILE_IMAGE_HEIGHT), FCacheImage);
+      DrawTile(CacheHorzNum + horz, CacheVertNum + vert, Point(horz*TILE_IMAGE_WIDTH, vert*TILE_IMAGE_HEIGHT), FCacheImage);
 end;
 
 // Calc new cache coords to cover current view area
@@ -525,13 +894,13 @@ begin
   // convert tile to cache image coords
   TileTopLeft.SetLocation(ToInnerCoords(FCacheImageRect.TopLeft, TileTopLeft));
   // draw to cache
-  DoDrawTile(TileHorzNum, TileVertNum, TileTopLeft, FCacheImage);
+  DrawTile(TileHorzNum, TileVertNum, TileTopLeft, FCacheImage);
   // redraw the view
   Refresh;
 end;
 
 // Draw single tile (TileHorzNum;TileVertNum) to bitmap DestBmp at point TopLeft
-procedure TMapControl.DoDrawTile(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; DestBmp: TBitMap);
+procedure TMapControl.DrawTile(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; DestBmp: TBitMap);
 var
   TileBmp: TBitmap;
 begin
@@ -646,13 +1015,13 @@ begin
 end;
 
 // Pixels => degrees
-function TMapControl.MapToGeoCoords(const MapPt: TPoint): TPointF;
+function TMapControl.MapToGeoCoords(const MapPt: TPoint): TGeoPoint;
 begin
   Result := OSM.SlippyMapUtils.MapToGeoCoords(MapPt, FZoom);
 end;
 
 // Degrees => pixels
-function TMapControl.GeoCoordsToMap(const GeoCoords: TPointF): TPoint;
+function TMapControl.GeoCoordsToMap(const GeoCoords: TGeoPoint): TPoint;
 begin
   Result := OSM.SlippyMapUtils.GeoCoordsToMap(GeoCoords, FZoom);
 end;
@@ -680,18 +1049,18 @@ begin
 end;
 
 {}//?
-function TMapControl.GetCenterPoint: TPointF;
+function TMapControl.GetCenterPoint: TGeoPoint;
 begin
   Result := MapToGeoCoords(ViewAreaRect.CenterPoint);
 end;
 
-procedure TMapControl.SetCenterPoint(const Coords: TPointF);
+procedure TMapControl.SetCenterPoint(const GeoCoords: TGeoPoint);
 var
   ViewRect: TRect;
   Pt: TPoint;
 begin
   // new center point in map coords
-  Pt := GeoCoordsToMap(Coords);
+  Pt := GeoCoordsToMap(GeoCoords);
   // new NW point
   ViewRect := ViewAreaRect;
   Pt.Offset(-ViewRect.Width div 2, -ViewRect.Height div 2);
@@ -700,13 +1069,13 @@ begin
 end;
 
 // Get top-left point of the view area
-function TMapControl.GetNWPoint: TPointF;
+function TMapControl.GetNWPoint: TGeoPoint;
 begin
   Result := MapToGeoCoords(ViewAreaRect.TopLeft);
 end;
 
 // Move the view area to new top-left point
-procedure TMapControl.SetNWPoint(const GeoCoords: TPointF);
+procedure TMapControl.SetNWPoint(const GeoCoords: TGeoPoint);
 begin
   SetNWPoint(GeoCoordsToMap(GeoCoords));
 end;
@@ -734,10 +1103,9 @@ begin
   // Determine minimal dimension and loop thru zoom levels to find minimal value
   // ! Here we use the fact that map is square
   MinDim := Min(Height, Width);
-  NewZoom := MinZoom;
   for NewZoom := MinZoom to MaxZoom do
   begin
-    MapDim := TileCount(NewZoom)*TILE_IMAGE_WIDTH;
+    MapDim := MapWidth(NewZoom);
     if MapDim > MinDim then
     begin
       SetZoom(NewZoom - 1);
@@ -746,32 +1114,83 @@ begin
   end;
 end;
 
-// Find the next map mark that has specified coordinates.
-//   PrevIndex - index of previous found map mark in the list. -1 (default) to
-//     start from the 1st element.
-// Returns:
-//   index of map mark in the list, -1 if not found.
-//
-// Samples:
-//   1) Check if there's any map marks at this point
-//     if FindNextMapMark(Point) <> -1 then ...
-//   2) Select all map marks at this point
-//     idx := -1;
-//     repeat
-//       idx := FindNextMapMark(Point, idx);
-//       if idx = -1 then Break;
-//       ... do something with MapMarks[idx] ...
-//     until False;
-function TMapControl.FindNextMapMark(const Pt: TPoint; PrevIndex: Integer): Integer;
+procedure Triangle(Canvas: TCanvas; const Rect: TRect);
 begin
-  {
-    if index = -1 - start searching
-    if no marks - return -1
-    if index > -1 - continue from index
+  Canvas.Polygon([
+    Point(Rect.Left, Rect.Bottom),
+    Point(Rect.Left + Rect.Width div 2, Rect.Top),
+    Rect.BottomRight]);
+end;
 
-  }
+// Base method to draw mapmark. Calls callback to do custom actions
+procedure TMapControl.DrawMapMark(Canvas: TCanvas; MapMark: TMapMark);
+var
+  Handled: Boolean;
+  MMPt: TPoint;
+  MapMarkRect: TRect;
+  pEffGlStyle: PMapMarkGlyphStyle;
+  pEffCapStyle: PMapMarkCaptionStyle;
+  CapFont: TFont;
+begin
+  Handled := False;
+  MMPt := ToInnerCoords(ViewAreaRect.TopLeft, GeoCoordsToMap(MapMark.Coord));
 
-  {} Result := -1;
+  if Assigned(FOnDrawMapMark) then
+    FOnDrawMapMark(Self, Canvas, MMPt, MapMark, Handled);
+  if Handled then Exit;
+
+  // Draw glyph
+
+  // Determine effective glyph style
+  if propGlyphStyle in MapMark.CustomProps
+    then pEffGlStyle := @MapMark.GlyphStyle
+    else pEffGlStyle := @MapMarkGlyphStyle;
+
+  // Determine size
+  MapMarkRect.TopLeft := MMPt;
+  MapMarkRect.Offset(-pEffGlStyle.Size div 2, -pEffGlStyle.Size div 2);
+  MapMarkRect.Size := TSize.Create(pEffGlStyle.Size, pEffGlStyle.Size);
+
+  Canvas.Brush.Color := pEffGlStyle.BgColor;
+  Canvas.Pen.Color := pEffGlStyle.BorderColor;
+
+  case pEffGlStyle.Shape of
+    gshCircle:
+      Canvas.Ellipse(MapMarkRect);
+    gshSquare:
+      Canvas.Rectangle(MapMarkRect);
+    gshTriangle:
+      Triangle(Canvas, MapMarkRect);
+  end;
+
+  // Draw caption
+  if MapMark.Caption <> '' then
+  begin
+    // Determine effective caption style
+    if propCaptionStyle in MapMark.CustomProps
+      then pEffCapStyle := @MapMark.CaptionStyle
+      else pEffCapStyle := @MapMarkCaptionStyle;
+    // Determine effective caption font
+    if propFont in MapMark.CustomProps
+      then CapFont := MapMark.CaptionFont
+      else CapFont := MapMarkCaptionFont;
+
+    Canvas.Font := CapFont;
+    Canvas.Font.Color := pEffCapStyle.Color;
+
+    {}// TODO: text position, alignment, ...
+    MMPt := Point(MapMarkRect.Right + pEffCapStyle.DX, MapMarkRect.Top + pEffCapStyle.DY);
+
+    if pEffCapStyle.Transparent then
+      Canvas.Brush.Style := bsClear
+    else
+    begin
+      Canvas.Brush.Style := bsSolid;
+      Canvas.Brush.Color := pEffCapStyle.BgColor;
+    end;
+
+    Canvas.TextOut(MMPt.X, MMPt.Y, MapMark.Caption);
+  end;
 end;
 
 end.

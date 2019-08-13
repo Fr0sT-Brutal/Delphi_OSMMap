@@ -35,6 +35,11 @@ type
     Label1: TLabel;
     Label2: TLabel;
     lblZoom: TLabel;
+    Button2: TButton;
+    Button3: TButton;
+    btnMouseModePan: TSpeedButton;
+    btnMouseModeSel: TSpeedButton;
+    Label3: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
@@ -43,10 +48,14 @@ type
     procedure Button1Click(Sender: TObject);
     procedure mMapMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 
-    procedure MapGetTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal; out TileBmp: TBitmap);
+    procedure mMapGetTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal; out TileBmp: TBitmap);
     procedure MsgGotTile(var Message: TMessage); message MSG_GOTTILE;
     procedure NetReqGotTile(const Tile: TTile; Ms: TMemoryStream; const Error: string);
     procedure mMapZoomChanged(Sender: TObject);
+    procedure mMapSelectionBox(Sender: TMapControl; const GeoRect: TGeoRect);
+    procedure Button2Click(Sender: TObject);
+    procedure btnMouseModePanClick(Sender: TObject);
+    procedure btnMouseModeSelClick(Sender: TObject);
   private
     NetworkRequest: TNetworkRequestQueue;
     TileStorage: TTileStorage;
@@ -72,10 +81,12 @@ begin
   // You won't need it if you have another source (f.e. database)
   NetworkRequest := TNetworkRequestQueue.Create(4, 3, {}{SynapseRequest.}WinInetRequest.NetworkRequest, NetReqGotTile);
 
-  mMap.OnGetTile := MapGetTile;
+  mMap.OnGetTile := mMapGetTile;
   mMap.OnZoomChanged := mMapZoomChanged;
+  mMap.OnSelectionBox := mMapSelectionBox;
   mMap.SetZoom(1);
   mMap.MaxZoom := 10;
+  mMap.MapMarkCaptionFont.Style := [fsItalic, fsBold];
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -96,7 +107,7 @@ begin
 end;
 
 // Callback from map control to receive a tile image
-procedure TMainForm.MapGetTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal; out TileBmp: TBitmap);
+procedure TMainForm.mMapGetTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal; out TileBmp: TBitmap);
 var
   Tile: TTile;
 begin
@@ -113,6 +124,30 @@ begin
     NetworkRequest.RequestTile(Tile);
     Log(Format('Queued request from inet %s', [TileToStr(Tile)]));
   end;
+end;
+
+procedure TMainForm.mMapMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+var
+  MapPt: TPoint;
+  GeoPt: TGeoPoint;
+begin
+  MapPt := mMap.ViewToMap(Point(X, Y));
+  MapPt.X := EnsureRange(MapPt.X, 0, MapWidth(mMap.Zoom));
+  MapPt.Y := EnsureRange(MapPt.Y, 0, MapHeight(mMap.Zoom));
+  GeoPt := mMap.MapToGeoCoords(MapPt);
+  Label1.Caption := Format('Pixels: %d : %d', [MapPt.X, MapPt.Y]);
+  Label2.Caption := Format('Geo coords: %.3f : %.3f', [GeoPt.Long, GeoPt.Lat]);
+end;
+
+procedure TMainForm.mMapZoomChanged(Sender: TObject);
+begin
+  lblZoom.Caption := Format('%d / %d', [TMapControl(Sender).Zoom, High(TMapZoomLevel)]);
+end;
+
+procedure TMainForm.mMapSelectionBox(Sender: TMapControl; const GeoRect: TGeoRect);
+begin
+  Log(Format('Selected region: (%.3f : %.3f; %.3f : %.3f)',
+    [GeoRect.TopLeft.Long, GeoRect.TopLeft.Lat, GeoRect.BottomRight.Long, GeoRect.BottomRight.Lat]));
 end;
 
 // Callback from a thread of network requester that request has been done
@@ -203,20 +238,35 @@ begin
   end;
 end;
 
-procedure TMainForm.mMapMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+procedure TMainForm.Button2Click(Sender: TObject);
+const
+  Colors: array[0..6] of TColor = (clRed, clYellow, clGreen, clBlue, clBlack, clLime, clPurple);
 var
-  MapPt: TPoint;
-  GeoPt: TPointF;
+  i: Integer;
 begin
-  MapPt := mMap.ViewToMap(Point(X, Y));
-  GeoPt := mMap.MapToGeoCoords(MapPt);
-  Label1.Caption := Format('%d : %d', [MapPt.X, MapPt.Y]);
-  Label2.Caption := Format('%.3f : %.3f', [GeoPt.X, GeoPt.Y]);
+  Randomize;
+  for i := 1 to 100 do
+  begin
+    with mMap.MapMarks.Add(TGeoPoint.Create(RandomRange(-180, 180), RandomRange(-85, 85)), 'Mapmark #' + IntToStr(i)) do
+    begin
+      CustomProps := [propGlyphStyle, propCaptionStyle];
+      GlyphStyle.Shape := TMapMarkGlyphShape(Random(Ord(High(TMapMarkGlyphShape)) + 1));
+      CaptionStyle.Color := Colors[Random(High(Colors) + 1)];
+    end;
+  end;
+
+  mMap.Invalidate;
 end;
 
-procedure TMainForm.mMapZoomChanged(Sender: TObject);
+procedure TMainForm.btnMouseModePanClick(Sender: TObject);
 begin
-  lblZoom.Caption := Format('%d / %d', [TMapControl(Sender).Zoom, High(TMapZoomLevel)]);
+  mMap.MouseMode := mmDrag;
+end;
+
+procedure TMainForm.btnMouseModeSelClick(Sender: TObject);
+begin
+  mMap.MouseMode := mmSelect;
 end;
 
 end.
+
