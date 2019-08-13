@@ -182,7 +182,6 @@ type
     function GetNWPoint: TGeoPoint;
     procedure SetNWPoint(const GeoCoords: TGeoPoint); overload;
     procedure SetZoomConstraint(Index: Integer; ZoomConstraint: TMapZoomLevel);
-
     // helpers
     function ViewAreaRect: TRect;
     class procedure DrawCopyright(const Text: string; DestBmp: TBitmap);
@@ -688,6 +687,9 @@ begin
   begin
     BoxRect := FSelectionBox.BoundsRect;
     BoxRect.BottomRight := MapToView(EnsureInMap(Zoom, ViewToMap(Point(X, Y))));
+    // ! Rect here could easily become non-normalized (Top below Bottmo, f.ex.,
+    // but that's OK, TShape can handle it. Rect will be normalized later, before
+    // executing callback
     FSelectionBox.BoundsRect := BoxRect;
   end;
   inherited;
@@ -699,7 +701,7 @@ begin
   if FSelectionBox.Visible then
   begin
     FSelectionBox.Visible := False;
-    GeoRect := MapToGeoCoords(ViewToMap(FSelectionBox.BoundsRect));
+    GeoRect := MapToGeoCoords(ViewToMap(TRect.Create(FSelectionBox.BoundsRect, True)));  // normalize Rect
     if Assigned(FOnSelectionBox) then
       FOnSelectionBox(Self, GeoRect);
   end;
