@@ -657,7 +657,7 @@ begin
         begin
           MousePos := ViewToMap(Point(X, Y));
           // Position is inside map and no mapmark below
-          if InMap(Zoom, MousePos) or (FMapMarkList.Find(MapToGeoCoords(MousePos), True) = -1) then
+          if InMap(Zoom, MousePos) and (FMapMarkList.Find(MapToGeoCoords(MousePos), True) = -1) then
             BeginDrag(False, -1);  // < 0 - use the DragThreshold property of the global Mouse variable (c) help
           inherited;
         end;
