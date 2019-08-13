@@ -23,6 +23,22 @@ type
   end;
   PTile = ^TTile;
 
+  // Intentionally not using TPointF and TRectF because they use other system of
+  // coordinates (vertical coord increase from top to down, while lat changes from
+  // +85 to -85)
+  TGeoPoint = record
+    Long: Double;
+    Lat: Double;
+    constructor Create(Long, Lat: Double);
+  end;
+
+  TGeoRect = record
+    TopLeft: TGeoPoint;
+    BottomRight: TGeoPoint;
+    constructor Create(const TopLeft, BottomRight: TGeoPoint);
+    function Contains(const GeoPoint: TGeoPoint): Boolean;
+  end;
+
 const
   TILE_IMAGE_WIDTH = 256;
   TILE_IMAGE_HEIGHT = 256;
@@ -61,14 +77,18 @@ function TileValid(const Tile: TTile): Boolean; inline;
 function TileToStr(const Tile: TTile): string;
 function TilesEqual(const Tile1, Tile2: TTile): Boolean; inline;
 
+function MapWidth(Zoom: TMapZoomLevel): Integer; inline;
+function MapHeight(Zoom: TMapZoomLevel): Integer; inline;
+function InMap(Zoom: TMapZoomLevel; const Pt: TPoint): Boolean;
+function EnsureInMap(Zoom: TMapZoomLevel; const Pt: TPoint): TPoint;
 function LongitudeToMapCoord(Longitude: Double; Zoom: TMapZoomLevel): Integer;
 function LatitudeToMapCoord(Latitude: Double; Zoom: TMapZoomLevel): Integer;
 function MapCoordToLongitude(X: Integer; Zoom: TMapZoomLevel): Double;
 function MapCoordToLatitude(Y: Integer; Zoom: TMapZoomLevel): Double;
-function MapToGeoCoords(const MapPt: TPoint; Zoom: TMapZoomLevel): TPointF;
-function GeoCoordsToMap(const GeoCoords: TPointF; Zoom: TMapZoomLevel): TPoint;
+function MapToGeoCoords(const MapPt: TPoint; Zoom: TMapZoomLevel): TGeoPoint;
+function GeoCoordsToMap(const GeoCoords: TGeoPoint; Zoom: TMapZoomLevel): TPoint;
 
-function CalcLinDistanceInMeter(const Coord1, Coord2: TPointF): Double;
+function CalcLinDistanceInMeter(const Coord1, Coord2: TGeoPoint): Double;
 procedure GetScaleBarParams(Zoom: TMapZoomLevel;
   var ScalebarWidthInPixel: Integer; var ScalebarWidthInMeter: Integer;
   var Text: string);
@@ -102,6 +122,7 @@ begin
   Result := Format('%d * [%d : %d]', [Tile.Zoom, Tile.ParameterX, Tile.ParameterY]);
 end;
 
+// Compare tiles
 function TilesEqual(const Tile1, Tile2: TTile): Boolean;
 begin
   Result :=
@@ -110,11 +131,89 @@ begin
     (Tile1.ParameterY = Tile2.ParameterY);
 end;
 
+// Width of map of given zoom level in pixels
+function MapWidth(Zoom: TMapZoomLevel): Integer;
+begin
+  Result := TileCount(Zoom)*TILE_IMAGE_WIDTH;
+end;
+
+// Height of map of given zoom level in pixels
+function MapHeight(Zoom: TMapZoomLevel): Integer;
+begin
+  Result := TileCount(Zoom)*TILE_IMAGE_HEIGHT;
+end;
+
+// Check if point Pt is inside a map of given zoom level
+function InMap(Zoom: TMapZoomLevel; const Pt: TPoint): Boolean;
+begin
+  Result := Rect(0, 0, MapWidth(Zoom), MapHeight(Zoom)).Contains(Pt);
+end;
+
+// Ensure point Pt is inside a map of given zoom level, move it if necessary
+function EnsureInMap(Zoom: TMapZoomLevel; const Pt: TPoint): TPoint;
+begin
+  Result := Point(
+    Min(Pt.X, MapWidth(Zoom)),
+    Min(Pt.Y, MapHeight(Zoom))
+  );
+end;
+
+// Coord checking
+
+procedure CheckValidLong(Longitude: Double); inline;
+begin
+  Assert(InRange(Longitude, -180, 180));
+end;
+
+procedure CheckValidLat(Latitude: Double); inline;
+begin
+  Assert(InRange(Latitude, -85.1, 85.1));
+end;
+
+procedure CheckValidMapX(Zoom: TMapZoomLevel; X: Integer); inline;
+begin
+  Assert(InRange(X, 0, MapWidth(Zoom)));
+end;
+
+procedure CheckValidMapY(Zoom: TMapZoomLevel; Y: Integer); inline;
+begin
+  Assert(InRange(Y, 0, MapHeight(Zoom)));
+end;
+
+{ TGeoPoint }
+
+constructor TGeoPoint.Create(Long, Lat: Double);
+begin
+  CheckValidLong(Long);
+  CheckValidLat(Lat);
+  Self.Long := Long;
+  Self.Lat := Lat;
+end;
+
+{ TGeoRect }
+
+constructor TGeoRect.Create(const TopLeft, BottomRight: TGeoPoint);
+begin
+  Self.TopLeft := TopLeft;
+  Self.BottomRight := BottomRight;
+end;
+
+function TGeoRect.Contains(const GeoPoint: TGeoPoint): Boolean;
+begin
+  Result :=
+    InRange(GeoPoint.Long, TopLeft.Long, BottomRight.Long) and
+    InRange(GeoPoint.Lat, BottomRight.Lat, TopLeft.Lat); // !
+end;
+
 // Degrees to pixels
 
 function LongitudeToMapCoord(Longitude: Double; Zoom: TMapZoomLevel): Integer;
 begin
-  Result := Floor((Longitude + 180.0) / 360.0 * TileCount(Zoom)*TILE_IMAGE_WIDTH);
+  CheckValidLong(Longitude);
+
+  Result := Floor((Longitude + 180.0) / 360.0 * MapWidth(Zoom));
+
+  CheckValidMapX(Zoom, Result);
 end;
 
 function LatitudeToMapCoord(Latitude: Double; Zoom: TMapZoomLevel): Integer;
@@ -122,16 +221,20 @@ var
   SavePi: Extended;
   LatInRad: Extended;
 begin
+  CheckValidLat(Latitude);
+
   SavePi := Pi;
   LatInRad := Latitude * SavePi / 180.0;
-  Result := Floor((1.0 - ln(Tan(LatInRad) + 1.0 / Cos(LatInRad)) / SavePi) / 2.0 * TileCount(Zoom)*TILE_IMAGE_HEIGHT);
+  Result := Floor((1.0 - ln(Tan(LatInRad) + 1.0 / Cos(LatInRad)) / SavePi) / 2.0 * MapHeight(Zoom));
+
+  CheckValidMapY(Zoom, Result);
 end;
 
-function GeoCoordsToMap(const GeoCoords: TPointF; Zoom: TMapZoomLevel): TPoint;
+function GeoCoordsToMap(const GeoCoords: TGeoPoint; Zoom: TMapZoomLevel): TPoint;
 begin
   Result := Point(
-    LongitudeToMapCoord(GeoCoords.X, Zoom),
-    LatitudeToMapCoord(GeoCoords.Y, Zoom)
+    LongitudeToMapCoord(GeoCoords.Long, Zoom),
+    LatitudeToMapCoord(GeoCoords.Lat, Zoom)
   );
 end;
 
@@ -139,7 +242,9 @@ end;
 
 function MapCoordToLongitude(X: Integer; Zoom: TMapZoomLevel): Double;
 begin
-  Result := X / (TileCount(Zoom)*TILE_IMAGE_WIDTH) * 360.0 - 180.0;
+  CheckValidMapX(Zoom, X);
+
+  Result := X / MapWidth(Zoom) * 360.0 - 180.0;
 end;
 
 function MapCoordToLatitude(Y: Integer; Zoom: TMapZoomLevel): Double;
@@ -147,15 +252,17 @@ var
   n: Extended;
   SavePi: Extended;
 begin
+  CheckValidMapY(Zoom, Y);
+
   SavePi := Pi;
-  n := SavePi - 2.0 * SavePi * Y / (TileCount(Zoom)*TILE_IMAGE_HEIGHT);
+  n := SavePi - 2.0 * SavePi * Y / MapHeight(Zoom);
 
   Result := 180.0 / SavePi * ArcTan(0.5 * (Exp(n) - Exp(-n)));
 end;
 
-function MapToGeoCoords(const MapPt: TPoint; Zoom: TMapZoomLevel): TPointF;
+function MapToGeoCoords(const MapPt: TPoint; Zoom: TMapZoomLevel): TGeoPoint;
 begin
-  Result := PointF(
+  Result := TGeoPoint.Create(
     MapCoordToLongitude(MapPt.X, Zoom),
     MapCoordToLatitude(MapPt.Y, Zoom)
   );
@@ -163,7 +270,7 @@ end;
 
 // Other
 
-function CalcLinDistanceInMeter(const Coord1, Coord2: TPointF): Double;
+function CalcLinDistanceInMeter(const Coord1, Coord2: TGeoPoint): Double;
 var
   Phimean: Double;
   dLambda: Double;
@@ -182,20 +289,20 @@ const
   e2: Double = 0.006739496742337;
   f: Double = 0.003352810664747;
 begin
-  dLambda := (Coord1.X - Coord2.X) * D2R;
-  dPhi := (Coord1.Y - Coord2.Y) * D2R;
-  Phimean := ((Coord1.Y + Coord2.Y) / 2.0) * D2R;
+  dLambda := (Coord1.Long - Coord2.Long) * D2R;
+  dPhi := (Coord1.Lat - Coord2.Lat) * D2R;
+  Phimean := ((Coord1.Lat + Coord2.Lat) / 2.0) * D2R;
 
   Temp := 1 - e2 * Sqr(Sin(Phimean));
   Rho := (a * (1 - e2)) / Power(Temp, 1.5);
   Nu := a / (Sqrt(1 - e2 * (Sin(Phimean) * Sin(Phimean))));
 
-  z := Sqrt(Sqr(Sin(dPhi / 2.0)) + Cos(Coord2.Y * D2R) *
-    Cos(Coord1.Y * D2R) * Sqr(Sin(dLambda / 2.0)));
+  z := Sqrt(Sqr(Sin(dPhi / 2.0)) + Cos(Coord2.Lat * D2R) *
+    Cos(Coord1.Lat * D2R) * Sqr(Sin(dLambda / 2.0)));
 
   z := 2 * ArcSin(z);
 
-  Alpha := Cos(Coord2.Y * D2R) * Sin(dLambda) * 1 / Sin(z);
+  Alpha := Cos(Coord2.Lat * D2R) * Sin(dLambda) * 1 / Sin(z);
   Alpha := ArcSin(Alpha);
 
   R := (Rho * Nu) / (Rho * Sqr(Sin(Alpha)) + (Nu * Sqr(Cos(Alpha))));
