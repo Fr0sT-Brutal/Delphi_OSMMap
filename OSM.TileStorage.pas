@@ -17,6 +17,11 @@ const
   // determine acceptable cache size knowing acceptable memory usage.
   TILE_BITMAP_SIZE = 4*TILE_IMAGE_WIDTH*TILE_IMAGE_HEIGHT;
 
+  // Default pattern of tile file path. Placeholders are for: Zoom, X, Y
+  // Define custom patt in TTileStorage.Create to modify tiles disposition
+  // (f.ex., place them all in a single folder with names like tile_%zoom%_%x%_%y%.png)
+  DefaultTilePathPatt = '%d/%d/%d.png';
+
 type
   // List of cached tile bitmaps with fixed capacity organised as queue
   TTileBitmapCache = class
@@ -49,18 +54,19 @@ type
   strict private
     FBmpCache: TTileBitmapCache;
     FFileCacheBaseDir: string;
+    FTilePathPatt: string;
     FOptions: TTileStorageOptions;
 
+    function GetTileFilePath(const Tile: TTile): string; inline;
     function GetFromFileCache(const Tile: TTile): TBitmap;
     procedure StoreInFileCache(const Tile: TTile; Ms: TMemoryStream);
   public
-    constructor Create(CacheSize: Integer);
+    constructor Create(CacheSize: Integer; const TilePathPatt: string = DefaultTilePathPatt);
     destructor Destroy; override;
     function GetTile(const Tile: TTile): TBitmap;
     procedure StoreTile(const Tile: TTile; Ms: TMemoryStream);
 
     property Options: TTileStorageOptions read FOptions write FOptions;
-    // Base path to images on disk: <FileCacheBaseDir> \ <Zoom> \ <TileX> \ <TileY>.png
     property FileCacheBaseDir: string read FFileCacheBaseDir write FFileCacheBaseDir;
   end;
 
@@ -121,14 +127,20 @@ end;
 {$REGION 'TTileStorage'}
 
 // CacheSize - capacity of image cache.
-constructor TTileStorage.Create(CacheSize: Integer);
+constructor TTileStorage.Create(CacheSize: Integer; const TilePathPatt: string);
 begin
   FBmpCache := TTileBitmapCache.Create(CacheSize);
+  FTilePathPatt := TilePathPatt;
 end;
 
 destructor TTileStorage.Destroy;
 begin
   FreeAndNil(FBmpCache);
+end;
+
+function TTileStorage.GetTileFilePath(const Tile: TTile): string;
+begin
+  Result := FFileCacheBaseDir + Format(FTilePathPatt, [Tile.Zoom, Tile.ParameterX, Tile.ParameterY]);
 end;
 
 function TTileStorage.GetFromFileCache(const Tile: TTile): TBitmap;
@@ -137,7 +149,7 @@ var
   Path: string;
 begin
   Result := nil;
-  Path := FFileCacheBaseDir + TileToSlippyMapFileSubPath(Tile);
+  Path := GetTileFilePath(Tile);
   if FileExists(Path) then
   begin
     png := TPngImage.Create;
@@ -152,7 +164,7 @@ procedure TTileStorage.StoreInFileCache(const Tile: TTile; Ms: TMemoryStream);
 var
   Path: string;
 begin
-  Path := FFileCacheBaseDir + TileToSlippyMapFileSubPath(Tile);
+  Path := GetTileFilePath(Tile);
   ForceDirectories(ExtractFileDir(Path));
   Ms.SaveToFile(Path);
 end;

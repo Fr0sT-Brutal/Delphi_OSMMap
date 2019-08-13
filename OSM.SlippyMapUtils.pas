@@ -69,8 +69,12 @@ const
 
 var // configurable
   TilesCopyright: string = '(c) OpenStreetMap contributors';
+  // URL of tile server
   MapURLPrefix: string = 'http://tile.openstreetmap.org/';
+  // Part of tile URL that goes after tile path
   MapURLPostfix: string = '';
+  // Pattern of tile URL. Placeholders are for: Zoom, X, Y
+  TileURLPatt: string = '%d/%d/%d.png';
 
 function RectFromPoints(const TopLeft, BottomRight: TPoint): TRect; inline;
 
@@ -99,8 +103,6 @@ procedure GetScaleBarParams(Zoom: TMapZoomLevel;
   var ScalebarWidthInPixel: Integer; var ScalebarWidthInMeter: Integer;
   var Text: string);
 
-function TileToSlippyMapFileSubURL(const Tile: TTile): string;
-function TileToSlippyMapFileSubPath(const Tile: TTile): string;
 function TileToFullSlippyMapFileURL(const Tile: TTile): string;
 
 implementation
@@ -393,25 +395,12 @@ end;
 
 // Tile path
 
-function TileToSlippyMapFileSubURL(const Tile: TTile): string;
-begin
-  Result :=
-    IntToStr(Tile.Zoom) + '/' +
-    IntToStr(Tile.ParameterX) + '/' +
-    IntToStr(Tile.ParameterY) + '.png';
-end;
-
-function TileToSlippyMapFileSubPath(const Tile: TTile): string;
-begin
-  Result :=
-    IntToStr(Tile.Zoom) + PathDelim +
-    IntToStr(Tile.ParameterX) + PathDelim +
-    IntToStr(Tile.ParameterY) + '.png';
-end;
-
 function TileToFullSlippyMapFileURL(const Tile: TTile): string;
 begin
-  Result := MapURLPrefix + TileToSlippyMapFileSubURL(Tile) + MapURLPostfix;
+  Result :=
+    MapURLPrefix +
+    Format(TileURLPatt, [Tile.Zoom, Tile.ParameterX, Tile.ParameterY]) +
+    MapURLPostfix;
 end;
 
 end.
