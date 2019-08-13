@@ -557,50 +557,52 @@ begin
   // ViewRect is current view area in CacheImage coords
   ViewRect := ToInnerCoords(FCacheImageRect.TopLeft, ViewAreaRect);
 
-  // draw cache (map background)
-  // ! partial copying from source, TGraphic/TCanvas.Draw can't do that :(
-  BitBlt(DC,
-    0, 0, ViewRect.Width, ViewRect.Height,
-    FCacheImage.Canvas.Handle, ViewRect.Left, ViewRect.Top, SRCCOPY);
+  // Prefer canvas methods over bit blitting
+  Canvas := TCanvas.Create;
+  try
+    Canvas.Handle := DC;
 
-  // init copyright bitmap if not inited yet and draw it
-  if not (moDontDrawCopyright in FMapOptions) then
-  begin
-    if FCopyright = nil then
+    // draw cache (map background)
+    Canvas.CopyRect(
+      TRect.Create(Point(0, 0), ViewRect.Width, ViewRect.Height),
+      FCacheImage.Canvas,
+      ViewRect
+    );
+
+    // init copyright bitmap if not inited yet and draw it
+    if not (moDontDrawCopyright in FMapOptions) then
     begin
-      FCopyright := TBitmap.Create;
-      DrawCopyright(TilesCopyright, FCopyright);
+      if FCopyright = nil then
+      begin
+        FCopyright := TBitmap.Create;
+        DrawCopyright(TilesCopyright, FCopyright);
+      end;
+      TransparentBlt(DC,
+        ClientWidth - FCopyright.Width - LabelMargin,
+        ClientHeight - FCopyright.Height - LabelMargin,
+        FCopyright.Width,
+        FCopyright.Height,
+        FCopyright.Canvas.Handle,
+        0, 0,
+        FCopyright.Width,
+        FCopyright.Height,
+        clWhite);
     end;
-    TransparentBlt(DC,
-      ClientWidth - FCopyright.Width - LabelMargin,
-      ClientHeight - FCopyright.Height - LabelMargin,
-      FCopyright.Width,
-      FCopyright.Height,
-      FCopyright.Canvas.Handle,
-      0, 0,
-      FCopyright.Width,
-      FCopyright.Height,
-      clWhite);
-  end;
 
-  // scaleline bitmap must've been inited already in SetZoom
-  if not (moDontDrawScale in FMapOptions) then
-  begin
-    BitBlt(DC,
-      LabelMargin,
-      ClientHeight - FScaleLine.Height - LabelMargin,
-      FScaleLine.Width,
-      FScaleLine.Height,
-      FScaleLine.Canvas.Handle,
-      0, 0, SRCCOPY);
-  end;
+    // scaleline bitmap must've been inited already in SetZoom
+    if not (moDontDrawScale in FMapOptions) then
+    begin
+      Canvas.CopyRect(
+        TRect.Create(Point(LabelMargin, ClientHeight - FScaleLine.Height - LabelMargin),
+          FScaleLine.Width, FScaleLine.Height),
+        FScaleLine.Canvas,
+        TRect.Create(Point(0, 0), FScaleLine.Width, FScaleLine.Height)
+      );
+    end;
 
-  // Draw mapmarks
-  if FMapMarkList.Count > 0 then
-  begin
-    Canvas := TCanvas.Create;
-    try
-      Canvas.Handle := DC;
+    // Draw mapmarks
+    if FMapMarkList.Count > 0 then
+    begin
       idx := -1;
       // Determine rect of map in view (map could be smaller than view!)
       MapViewGeoRect := MapToGeoCoords(EnsureInMap(FZoom, ViewAreaRect));
@@ -610,9 +612,9 @@ begin
         if idx = -1 then Break;
         DrawMapMark(Canvas, FMapMarkList.Get(idx));
       until False;
-    finally
-      FreeAndNil(Canvas);
     end;
+  finally
+    FreeAndNil(Canvas);
   end;
 end;
 
