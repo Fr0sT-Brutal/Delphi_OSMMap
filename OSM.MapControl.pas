@@ -168,7 +168,7 @@ type
     procedure WMVScroll(var Message: TWMVScroll); message WM_VSCROLL;
     procedure WMPaint(var Message: TWMPaint); message WM_PAINT;
     // main methods
-    function ViewInCache: Boolean;
+    function ViewInCache: Boolean; inline;
     procedure UpdateCache;
     procedure MoveCache;
     function SetCacheDimensions: Boolean;
@@ -197,10 +197,14 @@ type
 
     procedure RefreshTile(TileHorzNum, TileVertNum: Cardinal);
 
-    function MapToGeoCoords(const MapPt: TPoint): TGeoPoint;
-    function GeoCoordsToMap(const GeoCoords: TGeoPoint): TPoint;
-    function ViewToMap(const ViewPt: TPoint): TPoint;
-    function MapToView(const MapPt: TPoint): TPoint;
+    function MapToGeoCoords(const MapPt: TPoint): TGeoPoint; overload;
+    function MapToGeoCoords(const MapRect: TRect): TGeoRect; overload;
+    function GeoCoordsToMap(const GeoCoords: TGeoPoint): TPoint; overload;
+    function GeoCoordsToMap(const GeoRect: TGeoRect): TRect; overload;
+    function ViewToMap(const ViewPt: TPoint): TPoint; overload;
+    function ViewToMap(const ViewRect: TRect): TRect; overload;
+    function MapToView(const MapPt: TPoint): TPoint; overload;
+    function MapToView(const MapRect: TRect): TRect; overload;
 
     procedure ScrollMapBy(DeltaHorz, DeltaVert: Integer);
     procedure ScrollMapTo(Horz, Vert: Integer);
@@ -217,6 +221,7 @@ type
     property MaxZoom: TMapZoomLevel index 1 read FMaxZoom write SetZoomConstraint;
     property MapMarks: TMapMarkList read FMapMarkList;
     property MouseMode: TMapMouseMode read FMouseMode write FMouseMode;
+    property ViewRect: TRect read ViewAreaRect;
     // events/callbacks
     property OnGetTile: TOnGetTile read FOnGetTile write FOnGetTile;
     property OnDrawTile: TOnDrawTile read FOnDrawTile write FOnDrawTile;
@@ -259,21 +264,25 @@ begin
   Result := Pt.Subtract(StartPt);
 end;
 
+function ToInnerCoords(const StartPt: TPoint; const Rect: TRect): TRect;
+begin
+  Result := RectFromPoints(
+    ToInnerCoords(StartPt, Rect.TopLeft),
+    ToInnerCoords(StartPt, Rect.BottomRight)
+  );
+end;
+
 function ToOuterCoords(const StartPt, Pt: TPoint): TPoint;
 begin
   Result := Pt.Add(StartPt);
 end;
 
-function ToInnerCoords(const StartPt: TPoint; const Rect: TRect): TRect;
-begin
-  Result.TopLeft := ToInnerCoords(StartPt, Rect.TopLeft);
-  Result.BottomRight := ToInnerCoords(StartPt, Rect.BottomRight);
-end;
-
 function ToOuterCoords(const StartPt: TPoint; const Rect: TRect): TRect;
 begin
-  Result.TopLeft := ToOuterCoords(StartPt, Rect.TopLeft);
-  Result.BottomRight := ToOuterCoords(StartPt, Rect.BottomRight);
+  Result := RectFromPoints(
+    ToOuterCoords(StartPt, Rect.TopLeft),
+    ToOuterCoords(StartPt, Rect.BottomRight)
+  );
 end;
 
 // Floor value to tile size
@@ -524,21 +533,20 @@ end;
 // DC here has dimensions of current display resolution and top-left at viewport's top-left
 procedure TMapControl.PaintWindow(DC: HDC);
 var
-  ViewRect, MapViewRect: TRect;
+  ViewRect: TRect;
   Canvas: TCanvas;
   MapViewGeoRect: TGeoRect;
   Idx: Integer;
 begin
-  ViewRect := ViewAreaRect;
   // if view area lays within cached image, no update required
-  if not FCacheImageRect.Contains(ViewRect) then
+  if not ViewInCache then
   begin
     MoveCache;
     UpdateCache;
   end;
 
-  // convert ViewRect to CacheImage coords
-  ViewRect := ToInnerCoords(FCacheImageRect.TopLeft, ViewRect);
+  // ViewRect is current view area in CacheImage coords
+  ViewRect := ToInnerCoords(FCacheImageRect.TopLeft, ViewAreaRect);
 
   // draw cache (map background)
   // ! partial copying from source, TGraphic/TCanvas.Draw can't do that :(
@@ -586,12 +594,7 @@ begin
       Canvas.Handle := DC;
       idx := -1;
       // Determine rect of map in view (map could be smaller than view!)
-      ViewRect := ViewAreaRect;
-      MapViewRect.TopLeft := ViewRect.TopLeft;
-      MapViewRect.Height := Min(ViewRect.Height, MapHeight(FZoom));
-      MapViewRect.Width := Min(ViewRect.Width, MapWidth(FZoom));
-      MapViewGeoRect.TopLeft := MapToGeoCoords(MapViewRect.TopLeft);
-      MapViewGeoRect.BottomRight := MapToGeoCoords(MapViewRect.BottomRight);
+      MapViewGeoRect := MapToGeoCoords(EnsureInMap(FZoom, ViewAreaRect));
       // Draw marks within rect
       repeat
         idx := FMapMarkList.Find(MapViewGeoRect, True, idx);
@@ -686,10 +689,7 @@ begin
   if FSelectionBox.Visible then
   begin
     FSelectionBox.Visible := False;
-    GeoRect := TGeoRect.Create(
-      MapToGeoCoords(ViewToMap(FSelectionBox.BoundsRect.TopLeft)),
-      MapToGeoCoords(ViewToMap(FSelectionBox.BoundsRect.BottomRight))
-    );
+    GeoRect := MapToGeoCoords(ViewToMap(FSelectionBox.BoundsRect));
     if Assigned(FOnSelectionBox) then
       FOnSelectionBox(Self, GeoRect);
   end;
@@ -746,7 +746,7 @@ begin
   // save bind point if zoom is valid (zoom value is used to calc geo coords)
   if FZoom in [Low(TMapZoomLevel)..High(TMapZoomLevel)]
     then BindCoords := MapToGeoCoords(ViewToMap(ViewBindPoint))
-    else BindCoords := OSM.SlippyMapUtils.MapToGeoCoords(Point(0, 0), 0);
+    else BindCoords := OSM.SlippyMapUtils.MapToGeoCoords(Low(TMapZoomLevel), Point(0, 0));
 
   FZoom := Value;
   FMapSize := TSize.Create(MapWidth(FZoom), MapHeight(FZoom));
@@ -768,7 +768,7 @@ begin
   SetNWPoint(NewViewNW);
 
   SetCacheDimensions;
-  if not FCacheImageRect.Contains(ViewAreaRect) then
+  if not ViewInCache then
     MoveCache;
   UpdateCache; // zoom changed - update cache anyway
 
@@ -813,10 +813,20 @@ begin
   Result := ToOuterCoords(ViewAreaRect.TopLeft, ViewPt);
 end;
 
+function TMapControl.ViewToMap(const ViewRect: TRect): TRect;
+begin
+  Result := ToOuterCoords(ViewAreaRect.TopLeft, ViewRect);
+end;
+
 // Recalc point in map coords to view area coords
 function TMapControl.MapToView(const MapPt: TPoint): TPoint;
 begin
   Result := ToInnerCoords(ViewAreaRect.TopLeft, MapPt);
+end;
+
+function TMapControl.MapToView(const MapRect: TRect): TRect;
+begin
+  Result := ToInnerCoords(ViewAreaRect.TopLeft, MapRect);
 end;
 
 // View area position and size in map coords
@@ -1019,13 +1029,23 @@ end;
 // Pixels => degrees
 function TMapControl.MapToGeoCoords(const MapPt: TPoint): TGeoPoint;
 begin
-  Result := OSM.SlippyMapUtils.MapToGeoCoords(MapPt, FZoom);
+  Result := OSM.SlippyMapUtils.MapToGeoCoords(FZoom, MapPt);
+end;
+
+function TMapControl.MapToGeoCoords(const MapRect: TRect): TGeoRect;
+begin
+  Result := OSM.SlippyMapUtils.MapToGeoCoords(FZoom, MapRect);
 end;
 
 // Degrees => pixels
 function TMapControl.GeoCoordsToMap(const GeoCoords: TGeoPoint): TPoint;
 begin
-  Result := OSM.SlippyMapUtils.GeoCoordsToMap(GeoCoords, FZoom);
+  Result := OSM.SlippyMapUtils.GeoCoordsToMap(FZoom, GeoCoords);
+end;
+
+function TMapControl.GeoCoordsToMap(const GeoRect: TGeoRect): TRect;
+begin
+  Result := OSM.SlippyMapUtils.GeoCoordsToMap(FZoom, GeoRect);
 end;
 
 // Delta move the view area
@@ -1096,7 +1116,7 @@ begin
     SetZoom(FMaxZoom);
 end;
 
-// Adjust zoom to the **minimal** value that will fit into current size at both dimensions
+// Adjust zoom to the **maximal** value that will fit into current size at both dimensions
 procedure TMapControl.ZoomToFit;
 var
   MinDim, MapDim: Cardinal;
