@@ -144,10 +144,13 @@ begin
   lblZoom.Caption := Format('%d / %d', [TMapControl(Sender).Zoom, High(TMapZoomLevel)]);
 end;
 
+// Zoom to show selected region
 procedure TMainForm.mMapSelectionBox(Sender: TMapControl; const GeoRect: TGeoRect);
 begin
   Log(Format('Selected region: (%.3f : %.3f; %.3f : %.3f)',
     [GeoRect.TopLeft.Long, GeoRect.TopLeft.Lat, GeoRect.BottomRight.Long, GeoRect.BottomRight.Lat]));
+
+  Sender.ZoomToArea(GeoRect);
 end;
 
 // Callback from a thread of network requester that request has been done

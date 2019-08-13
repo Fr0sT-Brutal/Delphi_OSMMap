@@ -210,6 +210,7 @@ type
     procedure ScrollMapTo(Horz, Vert: Integer);
     procedure SetZoom(Value: Integer; const ViewBindPoint: TPoint); overload;
     procedure SetZoom(Value: Integer); overload;
+    procedure ZoomToArea(const GeoRect: TGeoRect);
     procedure ZoomToFit;
 
     // properties
@@ -311,6 +312,15 @@ begin
   Result := ToTileHeightLesser(Height);
   if Height mod TILE_IMAGE_HEIGHT > 0 then
     Inc(Result, TILE_IMAGE_HEIGHT);
+end;
+
+// Draw triangle on canvas
+procedure Triangle(Canvas: TCanvas; const Rect: TRect);
+begin
+  Canvas.Polygon([
+    Point(Rect.Left, Rect.Bottom),
+    Point(Rect.Left + Rect.Width div 2, Rect.Top),
+    Rect.BottomRight]);
 end;
 
 { TMapMark }
@@ -1116,32 +1126,29 @@ begin
     SetZoom(FMaxZoom);
 end;
 
-// Adjust zoom to the **maximal** value that will fit into current size at both dimensions
-procedure TMapControl.ZoomToFit;
+// Zoom to show selected region
+procedure TMapControl.ZoomToArea(const GeoRect: TGeoRect);
 var
-  MinDim, MapDim: Cardinal;
-  NewZoom: TMapZoomLevel;
+  NewZoomH, NewZoomV: TMapZoomLevel;
+  ViewRect: TRect;
 begin
-  // Determine minimal dimension and loop thru zoom levels to find minimal value
-  // ! Here we use the fact that map is square
-  MinDim := Min(Height, Width);
-  for NewZoom := MinZoom to MaxZoom do
-  begin
-    MapDim := MapWidth(NewZoom);
-    if MapDim > MinDim then
-    begin
-      SetZoom(NewZoom - 1);
-      Exit;
-    end;
-  end;
+  ViewRect := ViewToMap(ViewAreaRect);
+  // Determine maximal zoom in which selected region will fit into view
+  // ! After these loops zoom values will be greater by 1 than needed
+  NewZoomH := FZoom;
+  while OSM.SlippyMapUtils.GeoCoordsToMap(NewZoomH, GeoRect).Width <= ViewRect.Width do
+    Inc(NewZoomH);
+  NewZoomV := FZoom;
+  while OSM.SlippyMapUtils.GeoCoordsToMap(NewZoomV, GeoRect).Height <= ViewRect.Height do
+    Inc(NewZoomV);
+  SetZoom(Min(NewZoomH - 1, NewZoomV - 1));
+  SetNWPoint(GeoRect.TopLeft);
 end;
 
-procedure Triangle(Canvas: TCanvas; const Rect: TRect);
+// Zoom to fill view area as much as possible
+procedure TMapControl.ZoomToFit;
 begin
-  Canvas.Polygon([
-    Point(Rect.Left, Rect.Bottom),
-    Point(Rect.Left + Rect.Width div 2, Rect.Top),
-    Rect.BottomRight]);
+  ZoomToArea(MapToGeoCoords(TRect.Create(Point(0, 0), FMapSize.cx, FMapSize.cy)));
 end;
 
 // Base method to draw mapmark. Calls callback to do custom actions

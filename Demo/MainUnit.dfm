@@ -227,12 +227,12 @@ object MainForm: TMainForm
       Left = 24
       Top = 80
       Width = 79
-      Height = 25
+      Height = 16
       Caption = 'Mouse mode'
     end
     object Button1: TButton
       Left = 24
-      Top = 256
+      Top = 127
       Width = 177
       Height = 33
       Caption = 'Save layer'
@@ -241,7 +241,7 @@ object MainForm: TMainForm
     end
     object Button2: TButton
       Left = 24
-      Top = 312
+      Top = 174
       Width = 177
       Height = 41
       Caption = 'Add 100 random marks'
