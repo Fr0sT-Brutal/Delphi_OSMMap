@@ -557,8 +557,7 @@ begin
   // ViewRect is current view area in CacheImage coords
   ViewRect := ToInnerCoords(FCacheImageRect.TopLeft, ViewAreaRect);
 
-  // Prefer canvas methods over bit blitting
-  Canvas := TCanvas.Create;
+  Canvas := TCanvas.Create; // Prefer canvas methods over bit blitting
   try
     Canvas.Handle := DC;
 
@@ -575,28 +574,24 @@ begin
       if FCopyright = nil then
       begin
         FCopyright := TBitmap.Create;
+        FCopyright.Transparent := True;
+        FCopyright.TransparentColor := clWhite;
         DrawCopyright(TilesCopyright, FCopyright);
       end;
-      TransparentBlt(DC,
+      Canvas.Draw(
         ClientWidth - FCopyright.Width - LabelMargin,
         ClientHeight - FCopyright.Height - LabelMargin,
-        FCopyright.Width,
-        FCopyright.Height,
-        FCopyright.Canvas.Handle,
-        0, 0,
-        FCopyright.Width,
-        FCopyright.Height,
-        clWhite);
+        FCopyright
+      );
     end;
 
     // scaleline bitmap must've been inited already in SetZoom
     if not (moDontDrawScale in FMapOptions) then
     begin
-      Canvas.CopyRect(
-        TRect.Create(Point(LabelMargin, ClientHeight - FScaleLine.Height - LabelMargin),
-          FScaleLine.Width, FScaleLine.Height),
-        FScaleLine.Canvas,
-        TRect.Create(Point(0, 0), FScaleLine.Width, FScaleLine.Height)
+      Canvas.Draw(
+        LabelMargin,
+        ClientHeight - FScaleLine.Height - LabelMargin,
+        FScaleLine
       );
     end;
 
@@ -984,6 +979,9 @@ var
   TextExt: TSize;
 begin
   Canv := DestBmp.Canvas;
+
+  Canv.Brush.Color := clWhite;
+  Canv.FillRect(Rect(0, 0, DestBmp.Width, DestBmp.Height));
 
   Canv.Font.Name := 'Arial';
   Canv.Font.Size := 8;
