@@ -72,6 +72,15 @@ type
 
 implementation
 
+// For some reason this is 4x faster than bmp.Assign(png)...
+function PNGtoBitmap(png: TPngImage): TBitmap;
+begin
+  Result := TBitmap.Create;
+  Result.PixelFormat := pf32bit;
+  Result.SetSize(png.Width, png.Height);
+  png.Draw(Result.Canvas, Rect(0, 0, png.Width, png.Height));
+end;
+
 {$REGION 'TTileBitmapCache'}
 
 class function TTileBitmapCache.NewItem(const Tile: TTile; Bmp: TBitmap): PTileBitmapRec;
@@ -154,8 +163,7 @@ begin
   begin
     png := TPngImage.Create;
     png.LoadFromFile(Path);
-    Result := TBitmap.Create;
-    Result.Assign(png);
+    Result := PNGtoBitmap(png);
     FreeAndNil(png);
   end;
 end;
@@ -191,7 +199,6 @@ end;
 procedure TTileStorage.StoreTile(const Tile: TTile; Ms: TMemoryStream);
 var
   png: TPngImage;
-  bmp: TBitmap;
   SavePos: Int64;
 begin
   png := nil;
@@ -205,9 +212,7 @@ begin
     png := TPngImage.Create;
     png.LoadFromStream(Ms);
     Ms.Position := SavePos;
-    bmp := TBitmap.Create;
-    bmp.Assign(png);
-    FBmpCache.Push(Tile, Bmp);
+    FBmpCache.Push(Tile, PNGtoBitmap(png));
   finally
     FreeAndNil(png);
   end;
