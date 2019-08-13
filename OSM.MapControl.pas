@@ -61,6 +61,7 @@ type
     // Mapmark data
     Coord: TGeoPoint;
     Caption: string;
+    Visible: Boolean;
     Data: Pointer;
     // Visual style
     CustomProps: TMapMarkCustomProps;
@@ -428,6 +429,7 @@ end;
 function TMapMarkList.NewItem: TMapMark;
 begin
   Result := TMapMark.Create;
+  Result.Visible := True;
   Result.GlyphStyle := FMap.MapMarkGlyphStyle;
   Result.CaptionStyle := FMap.MapMarkCaptionStyle;
 end;
@@ -1138,6 +1140,8 @@ begin
   if Assigned(FOnDrawMapMark) then
     FOnDrawMapMark(Self, Canvas, MMPt, MapMark, Handled);
   if Handled then Exit;
+
+  if not MapMark.Visible then Exit;
 
   // Draw glyph
 
