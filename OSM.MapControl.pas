@@ -133,6 +133,9 @@ type
   TOnSelectionBox = procedure (Sender: TMapControl; const GeoRect: TGeoRect) of object;
 
   // Control displaying a map or its visible part.
+
+  { TMapControl }
+
   TMapControl = class(TScrollBox)
   strict private
     FMapSize: TSize;         // current map dims in pixels
@@ -146,6 +149,7 @@ type
     FMaxZoom, FMinZoom: TMapZoomLevel; // zoom constraints
     FMapMarkList: TMapMarkList;
     FSelectionBox: TShape;   // much simpler than drawing on canvas, tracking bounds etc.
+    FSelectionBoxBindPoint: TPoint;  // point at which selection starts
     FMouseMode: TMapMouseMode;
 
     FOnGetTile: TOnGetTile;
@@ -670,7 +674,8 @@ begin
           // Position is inside map - start selection
           if InMap(Zoom, MousePos) then
           begin
-            FSelectionBox.SetBounds(X, Y, 0, 0);
+            FSelectionBoxBindPoint := Point(X, Y);
+            FSelectionBox.BoundsRect := TRect.Create(FSelectionBoxBindPoint, 0, 0);
             FSelectionBox.Visible := True;
           end;
           inherited;
@@ -680,17 +685,12 @@ end;
 
 // Resize selection box if active
 procedure TMapControl.MouseMove(Shift: TShiftState; X, Y: Integer);
-var
-  BoxRect: TRect;
 begin
   if FSelectionBox.Visible then
   begin
-    BoxRect := FSelectionBox.BoundsRect;
-    BoxRect.BottomRight := MapToView(EnsureInMap(Zoom, ViewToMap(Point(X, Y))));
-    // ! Rect here could easily become non-normalized (Top below Bottmo, f.ex.,
-    // but that's OK, TShape can handle it. Rect will be normalized later, before
-    // executing callback
-    FSelectionBox.BoundsRect := BoxRect;
+    // ! Rect here could easily become non-normalized (Top below Bottom, f.ex.) so we normalize it
+    FSelectionBox.BoundsRect := TRect.Create(FSelectionBoxBindPoint,
+      MapToView(EnsureInMap(Zoom, ViewToMap(Point(X, Y)))), True);
   end;
   inherited;
 end;
@@ -701,7 +701,7 @@ begin
   if FSelectionBox.Visible then
   begin
     FSelectionBox.Visible := False;
-    GeoRect := MapToGeoCoords(ViewToMap(TRect.Create(FSelectionBox.BoundsRect, True)));  // normalize Rect
+    GeoRect := MapToGeoCoords(ViewToMap(FSelectionBox.BoundsRect));
     if Assigned(FOnSelectionBox) then
       FOnSelectionBox(Self, GeoRect);
   end;
