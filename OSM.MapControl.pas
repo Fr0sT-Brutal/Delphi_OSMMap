@@ -739,7 +739,7 @@ end;
 procedure TMapControl.KeyDown(var Key: Word; Shift: TShiftState);
 begin
   if FSelectionBox.Visible then
-    if (Shift = [ssLeft]) and (Key = VK_ESCAPE) then
+    if (Shift = []) and (Key = VK_ESCAPE) then
       FSelectionBox.Visible := False;
   inherited;
 end;
