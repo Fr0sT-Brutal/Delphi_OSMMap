@@ -1,7 +1,10 @@
 {
   Implements blocking HTTP request with WinInet.
+  Windows-only
 }
 unit WinInetRequest;
+
+{$IFNDEF MSWINDOWS} This unit is Windows-only {$ENDIF}
 
 interface
 
