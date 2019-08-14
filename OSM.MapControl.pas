@@ -859,15 +859,11 @@ end;
 // Fill the cache image
 procedure TMapControl.UpdateCache;
 var
-  CanvRect: TRect;
   CacheHorzCount, CacheVertCount, horz, vert, CacheHorzNum, CacheVertNum: Cardinal;
 begin
-  // Bounds of cache image in its own coords
-  CanvRect := FCacheImageRect;
-  CanvRect.SetLocation(0, 0);
   // Clear the image
   FCacheImage.Canvas.Brush.Color := Self.Color;
-  FCacheImage.Canvas.FillRect(CanvRect);
+  FCacheImage.Canvas.FillRect(TRect.Create(Point(0, 0), FCacheImage.Width, FCacheImage.Height));
   // Get dimensions of cache
   CacheHorzCount := Min(FMapSize.cx - FCacheImageRect.Left, FCacheImageRect.Width) div TILE_IMAGE_WIDTH;
   CacheVertCount := Min(FMapSize.cy - FCacheImageRect.Top, FCacheImageRect.Height) div TILE_IMAGE_HEIGHT;
