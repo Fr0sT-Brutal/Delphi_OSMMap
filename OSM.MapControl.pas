@@ -164,6 +164,7 @@ type
     function MouseActivate(Button: TMouseButton; Shift: TShiftState; X, Y: Integer; HitTest: Integer): TMouseActivate; override;
     function DoMouseWheel(Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint): Boolean; override;
     procedure DragOver(Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean); override;
+    procedure KeyDown(var Key: Word; Shift: TShiftState); override;
     procedure WMHScroll(var Message: TWMHScroll); message WM_HSCROLL;
     procedure WMVScroll(var Message: TWMVScroll); message WM_VSCROLL;
     procedure WMPaint(var Message: TWMPaint); message WM_PAINT;
@@ -737,6 +738,15 @@ begin
         FDragPos := Point(X, Y);
       end;
   end;
+end;
+
+// Cancel selection box on Escape press
+procedure TMapControl.KeyDown(var Key: Word; Shift: TShiftState);
+begin
+  if FSelectionBox.Visible then
+    if (Shift = [ssLeft]) and (Key = VK_ESCAPE) then
+      FSelectionBox.Visible := False;
+  inherited;
 end;
 
 // *** new methods ***
