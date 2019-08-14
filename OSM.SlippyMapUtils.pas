@@ -100,8 +100,8 @@ function GeoCoordsToMap(Zoom: TMapZoomLevel; const GeoRect: TGeoRect): TRect; ov
 
 function CalcLinDistanceInMeter(const Coord1, Coord2: TGeoPoint): Double;
 procedure GetScaleBarParams(Zoom: TMapZoomLevel;
-  var ScalebarWidthInPixel: Integer; var ScalebarWidthInMeter: Integer;
-  var Text: string);
+  out ScalebarWidthInPixel, ScalebarWidthInMeter: Integer;
+  out Text: string);
 
 function TileToFullSlippyMapFileURL(const Tile: TTile): string;
 
@@ -355,7 +355,7 @@ begin
   Result := (z * R);
 end;
 
-procedure GetScaleBarParams(Zoom: TMapZoomLevel; var ScalebarWidthInPixel, ScalebarWidthInMeter: Integer; var Text: string);
+procedure GetScaleBarParams(Zoom: TMapZoomLevel; out ScalebarWidthInPixel, ScalebarWidthInMeter: Integer; out Text: string);
 const
   ScalebarWidthInKm: array [TMapZoomLevel] of Double =
   (
