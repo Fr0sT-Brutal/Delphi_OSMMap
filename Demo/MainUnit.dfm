@@ -47,16 +47,7 @@ object MainForm: TMainForm
       Top = 0
       Width = 767
       Height = 576
-      HorzScrollBar.Tracking = True
-      VertScrollBar.Smooth = True
-      VertScrollBar.Tracking = True
       Align = alClient
-      AutoScroll = False
-      DoubleBuffered = True
-      DragCursor = crSizeAll
-      Color = clBtnFace
-      ParentColor = False
-      ParentDoubleBuffered = False
       TabOrder = 0
       OnMouseMove = mMapMouseMove
     end
