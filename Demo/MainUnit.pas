@@ -1,10 +1,20 @@
 unit MainUnit;
 
+{$IFDEF FPC}
+  {$MODE Delphi}
+{$ENDIF}
+
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, Buttons, Vcl.StdCtrls, Math, Types,
+  {$IFDEF FPC}
+  LCLIntf, LCLType,
+  {$ENDIF}
+  {$IFDEF MSWINDOWS}
+  Windows,
+  {$ENDIF}
+  Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, ExtCtrls, Buttons, StdCtrls, Math, Types,
   OSM.SlippyMapUtils, OSM.MapControl, OSM.TileStorage,
   OSM.NetworkRequest, {SynapseRequest,} WinInetRequest;
 
@@ -66,7 +76,13 @@ var
 
 implementation
 
-{$R *.dfm}
+{$IFDEF FPC}
+  {$R *.lfm}
+{$ENDIF}
+
+{$IFDEF DCC}
+  {$R *.dfm}
+{$ENDIF}
 
 { TMainForm }
 
@@ -102,7 +118,9 @@ end;
 procedure TMainForm.Log(const s: string);
 begin
   mLog.Lines.Add(DateTimeToStr(Now)+' '+s);
+  {$IF DECLARED(OutputDebugString)}
   OutputDebugString(PChar(DateTimeToStr(Now)+' '+s));
+  {$IFEND}
 end;
 
 // Callback from map control to receive a tile image

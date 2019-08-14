@@ -1,14 +1,22 @@
 program OSMMapDemo;
 
+{$IFDEF FPC}
+  {$MODE Delphi}
+{$ENDIF}
+
 uses
-  FastMM4,
+  {$IFDEF FPC}
+  Interfaces,
+  {$ENDIF}
   Forms,
   MainUnit in 'MainUnit.pas' {MainForm};
 
 {$R *.res}
 
 begin
+  {$IF DECLARED(ReportMemoryLeaksOnShutdown)}
   ReportMemoryLeaksOnShutdown := True;
+  {$IFEND}
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
   Application.Run;
