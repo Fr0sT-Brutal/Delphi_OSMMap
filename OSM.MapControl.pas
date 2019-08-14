@@ -161,7 +161,6 @@ type
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
-    function MouseActivate(Button: TMouseButton; Shift: TShiftState; X, Y: Integer; HitTest: Integer): TMouseActivate; override;
     function DoMouseWheel(Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint): Boolean; override;
     procedure DragOver(Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean); override;
     procedure KeyDown(var Key: Word; Shift: TShiftState); override;
@@ -638,7 +637,8 @@ begin
   ControlState := ControlState - [csCustomPaint];
 end;
 
-// Reposition cache
+// Control resized - reposition cache, set new scrollbar props
+// Parent's method only calls OnResize
 procedure TMapControl.Resize;
 begin
   if SetCacheDimensions then
@@ -647,10 +647,12 @@ begin
   inherited;
 end;
 
+// Focus self on mouse press
 // Start dragging or selecting on mouse press
 procedure TMapControl.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var MousePos: TPoint;
 begin
+  SetFocus;
   // Left button and no shifts only
   if (Button = mbLeft) and (Shift = [ssLeft]) then
     case MouseMode of
@@ -704,13 +706,6 @@ begin
       FOnSelectionBox(Self, GeoRect);
   end;
   inherited;
-end;
-
-// Focus self on mouse press
-function TMapControl.MouseActivate(Button: TMouseButton; Shift: TShiftState; X, Y, HitTest: Integer): TMouseActivate;
-begin
-  SetFocus;
-  Result := inherited;
 end;
 
 // Zoom in/out on mouse wheel
@@ -988,20 +983,20 @@ var
 begin
   Canv := DestBmp.Canvas;
 
-  Canv.Brush.Color := clWhite;
-  Canv.FillRect(Rect(0, 0, DestBmp.Width, DestBmp.Height));
-
   Canv.Font.Name := 'Arial';
   Canv.Font.Size := 8;
   Canv.Font.Style := [];
 
   TextExt := Canv.TextExtent(Text);
-
   DestBmp.SetSize(TextExt.cx, TextExt.cy);
+
+  // Fill background
+  Canv.Brush.Color := clWhite;
+  Canv.FillRect(Rect(0, 0, DestBmp.Width, DestBmp.Height));
 
   // Text
   Canv.Font.Color := clGray;
-  Canv.TextOut(LabelMargin, LabelMargin, Text);
+  Canv.TextOut(0, 0, Text);
 end;
 
 // Draw scale line on bitmap and set its size. Happens every zoom change.
