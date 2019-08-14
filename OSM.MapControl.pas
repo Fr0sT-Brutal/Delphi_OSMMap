@@ -121,7 +121,7 @@ type
   // If OnDrawTileLoading assigned, the handler will be called only for empty tiles
   // allowing a user to draw his own label
   TOnDrawTile = procedure (Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal;
-    const TopLeft: TPoint; DestBmp: TBitMap) of object;
+    const TopLeft: TPoint; Canvas: TCanvas) of object;
 
   // Callback to custom draw a mapmark. It is called before default drawing.
   // User could draw a mapmark fully or just change some props and let default
@@ -173,8 +173,8 @@ type
     procedure UpdateCache;
     procedure MoveCache;
     function SetCacheDimensions: Boolean;
-    procedure DrawTileLoading(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; DestBmp: TBitMap);
-    procedure DrawTile(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; DestBmp: TBitMap);
+    procedure DrawTileLoading(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas);
+    procedure DrawTile(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas);
     procedure DrawMapMark(Canvas: TCanvas; MapMark: TMapMark);
     // getters/setters
     procedure SetNWPoint(const MapPt: TPoint); overload;
@@ -882,7 +882,7 @@ begin
   // Draw cache tiles
   for horz := 0 to CacheHorzCount - 1 do
     for vert := 0 to CacheVertCount - 1 do
-      DrawTile(CacheHorzNum + horz, CacheVertNum + vert, Point(horz*TILE_IMAGE_WIDTH, vert*TILE_IMAGE_HEIGHT), FCacheImage);
+      DrawTile(CacheHorzNum + horz, CacheVertNum + vert, Point(horz*TILE_IMAGE_WIDTH, vert*TILE_IMAGE_HEIGHT), FCacheImage.Canvas);
 end;
 
 // Calc new cache coords to cover current view area
@@ -925,20 +925,20 @@ begin
   // convert tile to cache image coords
   TileTopLeft.SetLocation(ToInnerCoords(FCacheImageRect.TopLeft, TileTopLeft));
   // draw to cache
-  DrawTile(TileHorzNum, TileVertNum, TileTopLeft, FCacheImage);
+  DrawTile(TileHorzNum, TileVertNum, TileTopLeft, FCacheImage.Canvas);
   // redraw the view
   Refresh;
 end;
 
-// Draw single tile (TileHorzNum;TileVertNum) to bitmap DestBmp at point TopLeft
-procedure TMapControl.DrawTile(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; DestBmp: TBitMap);
+// Draw single tile (TileHorzNum;TileVertNum) to canvas Canvas at point TopLeft
+procedure TMapControl.DrawTile(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas);
 var
   TileBmp: TBitmap;
 begin
   // check if user wants custom draw
   if Assigned(OnDrawTile) then
   begin
-    OnDrawTile(Self, TileHorzNum, TileVertNum, TopLeft, DestBmp);
+    OnDrawTile(Self, TileHorzNum, TileVertNum, TopLeft, Canvas);
     Exit;
   end;
   // request tile bitmap via callback
@@ -949,34 +949,32 @@ begin
   if TileBmp = nil then
   begin
     if Assigned(FOnDrawTileLoading) then
-      FOnDrawTileLoading(Self, TileHorzNum, TileVertNum, TopLeft, DestBmp)
+      FOnDrawTileLoading(Self, TileHorzNum, TileVertNum, TopLeft, Canvas)
     else
-      DrawTileLoading(TileHorzNum, TileVertNum, TopLeft, DestBmp);
+      DrawTileLoading(TileHorzNum, TileVertNum, TopLeft, Canvas);
   end
   else
-    DestBmp.Canvas.Draw(TopLeft.X, TopLeft.Y, TileBmp);
+    Canvas.Draw(TopLeft.X, TopLeft.Y, TileBmp);
 end;
 
-// Draw single tile (TileHorzNum;TileVertNum) loading to bitmap DestBmp at point TopLeft
-procedure TMapControl.DrawTileLoading(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; DestBmp: TBitMap);
+// Draw single tile (TileHorzNum;TileVertNum) loading to canvas Canvas at point TopLeft
+procedure TMapControl.DrawTileLoading(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas);
 var
   TileRect: TRect;
   TextExt: TSize;
-  Canv: TCanvas;
   txt: string;
 begin
   TileRect.TopLeft := TopLeft;
   TileRect.Size := TSize.Create(TILE_IMAGE_WIDTH, TILE_IMAGE_HEIGHT);
 
-  Canv := DestBmp.Canvas;
-  Canv.Brush.Color := Color;
-  Canv.Pen.Color := clDkGray;
-  Canv.Rectangle(TileRect);
+  Canvas.Brush.Color := Color;
+  Canvas.Pen.Color := clDkGray;
+  Canvas.Rectangle(TileRect);
 
   txt := Format(SLbl_Loading, [TileHorzNum, TileVertNum]);
-  TextExt := Canv.TextExtent(txt);
-  Canv.Font.Color := clGreen;
-  Canv.TextOut(
+  TextExt := Canvas.TextExtent(txt);
+  Canvas.Font.Color := clGreen;
+  Canvas.TextOut(
     TileRect.Left + (TileRect.Width - TextExt.cx) div 2,
     TileRect.Top + (TileRect.Height - TextExt.cy) div 2,
     txt);

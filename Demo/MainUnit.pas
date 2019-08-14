@@ -46,11 +46,10 @@ type
     procedure btnZoomInClick(Sender: TObject);
     procedure btnZoomOutClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
-    procedure mMapMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-
-    procedure mMapGetTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal; out TileBmp: TBitmap);
     procedure MsgGotTile(var Message: TMessage); message MSG_GOTTILE;
     procedure NetReqGotTile(const Tile: TTile; Ms: TMemoryStream; const Error: string);
+    procedure mMapMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure mMapGetTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal; out TileBmp: TBitmap);
     procedure mMapZoomChanged(Sender: TObject);
     procedure mMapSelectionBox(Sender: TMapControl; const GeoRect: TGeoRect);
     procedure Button2Click(Sender: TObject);
