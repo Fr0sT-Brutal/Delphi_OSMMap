@@ -6,6 +6,10 @@ unit WinInetRequest;
 
 {$IFNDEF MSWINDOWS} This unit is Windows-only {$ENDIF}
 
+{$IFDEF FPC}
+  {$MODE Delphi}
+{$ENDIF}
+
 interface
 
 uses
