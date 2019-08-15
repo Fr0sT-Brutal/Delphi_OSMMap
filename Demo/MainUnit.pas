@@ -19,6 +19,9 @@ uses
   OSM.NetworkRequest, {SynapseRequest,} WinInetRequest;
 
 const
+  {$IF NOT DECLARED(WM_APP)}
+  WM_APP = $8000;
+  {$IFEND}
   MSG_GOTTILE = WM_APP + 200;
 
 type
@@ -76,11 +79,12 @@ var
 
 implementation
 
+// ! This should be (IFDEF FPC => $R *.lfm); (IFDEF DCC => $R *.dfm) but XE2-10.1
+// cannot handle it and disables form view. So using ELSE
+
 {$IFDEF FPC}
   {$R *.lfm}
-{$ENDIF}
-
-{$IFDEF DCC}
+{$ELSE}
   {$R *.dfm}
 {$ENDIF}
 
@@ -91,7 +95,7 @@ begin
   // Memory/disc cache of tile images
   // You probably won't need it if you have another fast storage (f.e. database)
   TileStorage := TTileStorage.Create(30);
-  TileStorage.FileCacheBaseDir := ExpandFileName('..\Map\');
+  TileStorage.FileCacheBaseDir := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) + 'Map';
   // Queuer of tile image network requests
   // You won't need it if you have another source (f.e. database)
   NetRequest := TNetworkRequestQueue.Create(4, 3, {}{SynapseRequest.}WinInetRequest.NetworkRequest, NetReqGotTileBgThr);
