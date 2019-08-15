@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="4">
+    <PathDelim Value="\"/>
+    <Name Value="OSMMapLaz"/>
+    <Type Value="RunAndDesignTime"/>
+    <Author Value="Fr0sT-Brutal"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <OtherUnitFiles Value="..\Source"/>
+        <UnitOutputDirectory Value="..\Lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+    </CompilerOptions>
+    <Description Value="OpenStreetMap map control and support classes"/>
+    <Files Count="4">
+      <Item1>
+        <Filename Value="..\Source\OSM.MapControl.pas"/>
+        <UnitName Value="OSM.MapControl"/>
+      </Item1>
+      <Item2>
+        <Filename Value="..\Source\OSM.NetworkRequest.pas"/>
+        <UnitName Value="OSM.NetworkRequest"/>
+      </Item2>
+      <Item3>
+        <Filename Value="..\Source\OSM.SlippyMapUtils.pas"/>
+        <UnitName Value="OSM.SlippyMapUtils"/>
+      </Item3>
+      <Item4>
+        <Filename Value="..\Source\OSM.TileStorage.pas"/>
+        <UnitName Value="OSM.TileStorage"/>
+      </Item4>
+    </Files>
+    <RequiredPkgs Count="3">
+      <Item1>
+        <PackageName Value="ImagesForLazarus"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="LCLBase"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="FCL"/>
+      </Item3>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+      <UseFileFilters Value="True"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>
