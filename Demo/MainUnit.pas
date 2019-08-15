@@ -47,7 +47,7 @@ type
     procedure btnZoomOutClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure MsgGotTile(var Message: TMessage); message MSG_GOTTILE;
-    procedure NetReqGotTile(const Tile: TTile; Ms: TMemoryStream; const Error: string);
+    procedure NetReqGotTileBgThr(const Tile: TTile; Ms: TMemoryStream; const Error: string);
     procedure mMapMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure mMapGetTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal; out TileBmp: TBitmap);
     procedure mMapZoomChanged(Sender: TObject);
@@ -56,7 +56,7 @@ type
     procedure btnMouseModePanClick(Sender: TObject);
     procedure btnMouseModeSelClick(Sender: TObject);
   private
-    NetworkRequest: TNetworkRequestQueue;
+    NetRequest: TNetworkRequestQueue;
     TileStorage: TTileStorage;
     procedure Log(const s: string);
   end;
@@ -78,7 +78,7 @@ begin
   TileStorage.FileCacheBaseDir := ExpandFileName('..\Map\');
   // Queuer of tile image network requests
   // You won't need it if you have another source (f.e. database)
-  NetworkRequest := TNetworkRequestQueue.Create(4, 3, {}{SynapseRequest.}WinInetRequest.NetworkRequest, NetReqGotTile);
+  NetRequest := TNetworkRequestQueue.Create(4, 3, {}{SynapseRequest.}WinInetRequest.NetworkRequest, NetReqGotTileBgThr);
 
   mMap.OnGetTile := mMapGetTile;
   mMap.OnZoomChanged := mMapZoomChanged;
@@ -95,7 +95,7 @@ end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
-  FreeAndNil(NetworkRequest);
+  FreeAndNil(NetRequest);
   FreeAndNil(TileStorage);
 end;
 
@@ -120,7 +120,7 @@ begin
   // Tile image unavailable - queue network request
   if TileBmp = nil then
   begin
-    NetworkRequest.RequestTile(Tile);
+    NetRequest.RequestTile(Tile);
     Log(Format('Queued request from inet %s', [TileToStr(Tile)]));
   end;
 end;
@@ -154,7 +154,7 @@ end;
 
 // Callback from a thread of network requester that request has been done
 // To avoid thread access troubles, re-post all the data to form
-procedure TMainForm.NetReqGotTile(const Tile: TTile; Ms: TMemoryStream; const Error: string);
+procedure TMainForm.NetReqGotTileBgThr(const Tile: TTile; Ms: TMemoryStream; const Error: string);
 var
   pData: PGotTileData;
 begin
@@ -220,7 +220,7 @@ begin
         bmTile := TileStorage.GetTile(tile);
         if bmTile = nil then
         begin
-          NetworkRequest.RequestTile(tile);
+          NetRequest.RequestTile(tile);
           imgAbsent := True;
           Continue;
         end;
