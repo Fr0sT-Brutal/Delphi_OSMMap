@@ -43,6 +43,7 @@ type
     FThreads: TList;
     FCurrentTasks: TList; // list of tiles that are requested but not yet received
     FNotEmpty: Boolean;
+    FDestroying: Boolean; // object is being destroyed, do cleanup, don't call any callbacks
 
     FMaxTasksPerThread: Cardinal;
     FMaxThreads: Cardinal;
@@ -138,6 +139,8 @@ end;
 destructor TNetworkRequestQueue.Destroy;
 var i: Integer;
 begin
+  FDestroying := True;
+
   // Command the threads to stop, wait and destroy them
   for i := 0 to FThreads.Count - 1 do
     TThread(FThreads[i]).Terminate;
@@ -257,7 +260,11 @@ begin
   finally
     Unlock;
   end;
-  FGotTileCb(Tile, Ms, Error);
+
+  // Run callback or just cleanup
+  if not FDestroying
+    then FGotTileCb(Tile, Ms, Error)
+    else FreeAndNil(Ms);
 end;
 
 end.
