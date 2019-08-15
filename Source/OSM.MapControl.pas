@@ -267,7 +267,14 @@ const
 const
   SLbl_Loading = 'Loading [%d : %d]...';
 
+procedure Register;
+
 implementation
+
+procedure Register;
+begin
+  RegisterComponents('OSM', [TMapControl]);
+end;
 
 // *** Utils ***
 
