@@ -34,7 +34,7 @@ type
 
   // Generic type of method to call when request is completed
   // ! Called from the context of a background thread !
-  TGotTileFromNetworkCallback = procedure (const Tile: TTile; Ms: TMemoryStream; const Error: string) of object;
+  TGotTileCallbackBgThr = procedure (const Tile: TTile; Ms: TMemoryStream; const Error: string) of object;
 
   // Queuer of network requests
   TNetworkRequestQueue = class
@@ -46,7 +46,7 @@ type
 
     FMaxTasksPerThread: Cardinal;
     FMaxThreads: Cardinal;
-    FGotTileCb: TGotTileFromNetworkCallback;
+    FGotTileCb: TGotTileCallbackBgThr;
     FRequestFunc: TBlockingNetworkRequestFunc;
     procedure Lock;
     procedure Unlock;
@@ -61,7 +61,7 @@ type
   public
     constructor Create(MaxTasksPerThread, MaxThreads: Cardinal;
       RequestFunc: TBlockingNetworkRequestFunc;
-      GotTileCb: TGotTileFromNetworkCallback);
+      GotTileCb: TGotTileCallbackBgThr);
     destructor Destroy; override;
 
     procedure RequestTile(const Tile: TTile);
@@ -124,7 +124,7 @@ end;
 //   MaxThreads - limit the number of threads
 //   GotTileCb - method to call when request is completed
 constructor TNetworkRequestQueue.Create(MaxTasksPerThread, MaxThreads: Cardinal;
-  RequestFunc: TBlockingNetworkRequestFunc; GotTileCb: TGotTileFromNetworkCallback);
+  RequestFunc: TBlockingNetworkRequestFunc; GotTileCb: TGotTileCallbackBgThr);
 begin
   FTaskQueue := TQueue.Create;
   FThreads := TList.Create;
