@@ -5,10 +5,20 @@
 }
 unit OSM.MapControl;
 
+{$IFDEF FPC}
+  {$MODE Delphi}
+{$ENDIF}
+
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, ExtCtrls, Forms,
+  {$IFDEF FPC}
+  LCLIntf, LCLType,
+  {$ENDIF}
+  {$IFDEF DCC} // Currently VCL only => Windows only
+  Windows,
+  {$ENDIF}
+  Messages, SysUtils, Classes, Graphics, Controls, ExtCtrls, Forms,
   Math, Types,
   OSM.SlippyMapUtils;
 
@@ -543,13 +553,16 @@ end;
 // *** overrides - events ***
 
 // Main drawing routine
-// DC here has dimensions of current display resolution and top-left at viewport's top-left
+// DC here varies:
+//   - Delphi: dimensions of current display res and top-left at viewport's top-left
+//   - LCL: dimensions somewhat larger than client area and top-left at control top-left
 procedure TMapControl.PaintWindow(DC: HDC);
 var
   ViewRect: TRect;
   Canvas: TCanvas;
   MapViewGeoRect: TGeoRect;
   Idx: Integer;
+  DCClipRectTopLeft: TPoint;
 begin
   // if view area lays within cached image, no update required
   if not ViewInCache then
@@ -564,15 +577,17 @@ begin
   Canvas := TCanvas.Create; // Prefer canvas methods over bit blitting
   try
     Canvas.Handle := DC;
+    // Top-left point of view area in DC coords
+    DCClipRectTopLeft := Canvas.ClipRect.TopLeft;
 
     // draw cache (map background)
     Canvas.CopyRect(
-      TRect.Create(Point(0, 0), ViewRect.Width, ViewRect.Height),
+      TRect.Create(DCClipRectTopLeft, ViewRect.Width, ViewRect.Height),
       FCacheImage.Canvas,
       ViewRect
     );
 
-    // init copyright bitmap if not inited yet and draw it
+    // init copyright bitmap if not inited yet and draw it in bottom-right corner
     if not (moDontDrawCopyright in FMapOptions) then
     begin
       if FCopyright = nil then
@@ -583,18 +598,19 @@ begin
         DrawCopyright(TilesCopyright, FCopyright);
       end;
       Canvas.Draw(
-        ClientWidth - FCopyright.Width - LabelMargin,
-        ClientHeight - FCopyright.Height - LabelMargin,
+        DCClipRectTopLeft.X + ViewRect.Width - FCopyright.Width - LabelMargin,
+        DCClipRectTopLeft.Y + ViewRect.Height - FCopyright.Height - LabelMargin,
         FCopyright
       );
     end;
 
     // scaleline bitmap must've been inited already in SetZoom
+    // draw it in bottom-left corner
     if not (moDontDrawScale in FMapOptions) then
     begin
       Canvas.Draw(
-        LabelMargin,
-        ClientHeight - FScaleLine.Height - LabelMargin,
+        DCClipRectTopLeft.X + LabelMargin,
+        DCClipRectTopLeft.Y + ViewRect.Height - FScaleLine.Height - LabelMargin,
         FScaleLine
       );
     end;
@@ -647,6 +663,11 @@ procedure TMapControl.Resize;
 begin
   if SetCacheDimensions then
     UpdateCache;
+  {$IFDEF FPC}
+  // LCL has weird scrollbars - they require Page to be set to actual size
+  Self.HorzScrollBar.Page := Self.ClientWidth;
+  Self.VertScrollBar.Page := Self.ClientHeight;
+  {$ENDIF}
   Invalidate;
   inherited;
 end;
@@ -1173,6 +1194,8 @@ var
 begin
   Handled := False;
   MMPt := ToInnerCoords(ViewAreaRect.TopLeft, GeoCoordsToMap(MapMark.Coord));
+  // ! Consider Canvas.ClipRect
+  MMPt.Offset(Canvas.ClipRect.TopLeft);
 
   if Assigned(FOnDrawMapMark) then
     FOnDrawMapMark(Self, Canvas, MMPt, MapMark, Handled);

@@ -9,6 +9,10 @@
 }
 unit OSM.SlippyMapUtils;
 
+{$IFDEF FPC}
+  {$MODE Delphi}
+{$ENDIF}
+
 interface
 
 uses Types, SysUtils, Math;

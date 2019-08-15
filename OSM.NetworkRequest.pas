@@ -5,10 +5,17 @@
 }
 unit OSM.NetworkRequest;
 
+{$IFDEF FPC}
+  {$MODE Delphi}
+{$ENDIF}
+
 interface
 
 uses
   SysUtils, Classes, Contnrs,
+  {$IF NOT DECLARED(TMonitor)}
+  syncobjs,
+  {$IFEND}
   OSM.SlippyMapUtils;
 
 type
@@ -40,6 +47,9 @@ type
   TNetworkRequestQueue = class
   strict private
     FTaskQueue: TQueue;   // list of tiles to be requested
+    {$IF NOT DECLARED(TMonitor)}
+    FCS: TCriticalSection;
+    {$IFEND}
     FThreads: TList;
     FCurrentTasks: TList; // list of tiles that are requested but not yet received
     FNotEmpty: Boolean;
@@ -128,6 +138,9 @@ constructor TNetworkRequestQueue.Create(MaxTasksPerThread, MaxThreads: Cardinal;
   RequestFunc: TBlockingNetworkRequestFunc; GotTileCb: TGotTileCallbackBgThr);
 begin
   FTaskQueue := TQueue.Create;
+  {$IF NOT DECLARED(TMonitor)}
+  FCS := TCriticalSection.Create;
+  {$IFEND}
   FThreads := TList.Create;
   FCurrentTasks := TList.Create;
   FMaxTasksPerThread := MaxTasksPerThread;
@@ -160,16 +173,27 @@ begin
   for i := 0 to FCurrentTasks.Count - 1 do
     Dispose(PTile(FCurrentTasks[0]));
   FreeAndNil(FCurrentTasks);
+  {$IF NOT DECLARED(TMonitor)}
+  FreeAndNil(FCS);
+  {$IFEND}
 end;
 
 procedure TNetworkRequestQueue.Lock;
 begin
+  {$IF NOT DECLARED(TMonitor)}
+  FCS.Enter;
+  {$ELSE}
   System.TMonitor.Enter(Self);
+  {$IFEND}
 end;
 
 procedure TNetworkRequestQueue.Unlock;
 begin
+  {$IF NOT DECLARED(TMonitor)}
+  FCS.Leave;
+  {$ELSE}
   System.TMonitor.Exit(Self);
+  {$IFEND}
 end;
 
 function IndexOfTile(const Tile: TTile; List: TList): Integer;

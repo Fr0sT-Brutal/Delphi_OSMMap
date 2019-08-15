@@ -5,10 +5,20 @@
 }
 unit OSM.TileStorage;
 
+{$IFDEF FPC}
+  {$MODE Delphi}
+{$ENDIF}
+
 interface
 
 uses
-  SysUtils, Classes, Graphics, PngImage,
+  {$IFDEF FPC}
+  LazPNG,
+  {$ENDIF}
+  {$IFDEF DCC}
+  PngImage,
+  {$ENDIF}
+  SysUtils, Classes, Graphics,
   OSM.SlippyMapUtils;
 
 const
@@ -76,9 +86,14 @@ implementation
 function PNGtoBitmap(png: TPngImage): TBitmap;
 begin
   Result := TBitmap.Create;
+  {$IFDEF FPC}
+  Result.Assign(png);  {}// TODO - maybe alternative option
+  {$ENDIF}
+  {$IFDEF DCC}
   Result.PixelFormat := pf32bit;
   Result.SetSize(png.Width, png.Height);
   png.Draw(Result.Canvas, Rect(0, 0, png.Width, png.Height));
+  {$ENDIF}
 end;
 
 {$REGION 'TTileBitmapCache'}
