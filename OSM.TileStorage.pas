@@ -20,7 +20,7 @@ const
   // Default pattern of tile file path. Placeholders are for: Zoom, X, Y
   // Define custom patt in TTileStorage.Create to modify tiles disposition
   // (f.ex., place them all in a single folder with names like tile_%zoom%_%x%_%y%.png)
-  DefaultTilePathPatt = '%d/%d/%d.png';
+  DefaultTilePathPatt = '%d'+PathDelim+'%d'+PathDelim+'%d.png';
 
 type
   // List of cached tile bitmaps with fixed capacity organised as queue
