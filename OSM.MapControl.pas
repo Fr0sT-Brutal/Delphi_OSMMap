@@ -1130,19 +1130,28 @@ end;
 // Zoom to show selected region
 procedure TMapControl.ZoomToArea(const GeoRect: TGeoRect);
 var
-  NewZoomH, NewZoomV: TMapZoomLevel;
+  zoom, NewZoomH, NewZoomV: TMapZoomLevel;
   ViewRect: TRect;
 begin
   ViewRect := ViewToMap(ViewAreaRect);
   // Determine maximal zoom in which selected region will fit into view
-  // ! After these loops zoom values will be greater by 1 than needed
-  NewZoomH := FZoom;
-  while OSM.SlippyMapUtils.GeoCoordsToMap(NewZoomH, GeoRect).Width <= ViewRect.Width do
-    Inc(NewZoomH);
-  NewZoomV := FZoom;
-  while OSM.SlippyMapUtils.GeoCoordsToMap(NewZoomV, GeoRect).Height <= ViewRect.Height do
-    Inc(NewZoomV);
-  SetZoom(Min(NewZoomH - 1, NewZoomV - 1));
+  // Separately for width and height
+  NewZoomH := FMaxZoom;
+  for zoom := FZoom to FMaxZoom do
+    if OSM.SlippyMapUtils.GeoCoordsToMap(zoom, GeoRect).Width > ViewRect.Width then
+    begin
+      NewZoomH := zoom;
+      Break;
+    end;
+  NewZoomV := FMaxZoom;
+  for zoom := FZoom to FMaxZoom do
+    if OSM.SlippyMapUtils.GeoCoordsToMap(zoom, GeoRect).Height > ViewRect.Height then
+    begin
+      NewZoomV := zoom;
+      Break;
+    end;
+
+  SetZoom(Min(NewZoomH, NewZoomV));
   SetNWPoint(GeoRect.TopLeft);
 end;
 
