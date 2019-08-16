@@ -164,7 +164,7 @@ end;
 
 function TTileStorage.GetTileFilePath(const Tile: TTile): string;
 begin
-  Result := FFileCacheBaseDir + Format(FTilePathPatt, [Tile.Zoom, Tile.ParameterX, Tile.ParameterY]);
+  Result := IncludeTrailingPathDelimiter(FFileCacheBaseDir) + Format(FTilePathPatt, [Tile.Zoom, Tile.ParameterX, Tile.ParameterY]);
 end;
 
 function TTileStorage.GetFromFileCache(const Tile: TTile): TBitmap;
