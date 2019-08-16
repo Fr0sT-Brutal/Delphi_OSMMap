@@ -16,7 +16,14 @@ uses
   Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, Buttons, StdCtrls, Math, Types,
   OSM.SlippyMapUtils, OSM.MapControl, OSM.TileStorage,
-  OSM.NetworkRequest, {SynapseRequest,} WinInetRequest;
+  OSM.NetworkRequest
+  // Use Synapse for HTTP requests
+  //, SynapseRequest
+  // Use WinInet (Windows only) for HTTP requests
+  //, WinInetRequest
+  // Use stock RTL classes for HTTP requests
+  , RTLInetRequest
+  ;
 
 const
   {$IF NOT DECLARED(WM_APP)}
@@ -98,7 +105,7 @@ begin
   TileStorage.FileCacheBaseDir := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) + 'Map';
   // Queuer of tile image network requests
   // You won't need it if you have another source (f.e. database)
-  NetRequest := TNetworkRequestQueue.Create(4, 3, {}{SynapseRequest.}WinInetRequest.NetworkRequest, NetReqGotTileBgThr);
+  NetRequest := TNetworkRequestQueue.Create(4, 3, NetworkRequest, NetReqGotTileBgThr);
 
   mMap.OnGetTile := mMapGetTile;
   mMap.OnZoomChanged := mMapZoomChanged;
