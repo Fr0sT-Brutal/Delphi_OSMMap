@@ -6,7 +6,10 @@ program OSMMapDemo;
 
 uses
   {$IFDEF FPC}
-  Interfaces,
+    {$IFDEF UNIX}{$IFDEF UseCThreads}
+    cthreads, cmem, // the c memory manager is on some systems much faster for multi-threading
+    {$ENDIF}{$ENDIF}
+    Interfaces,
   {$ENDIF}
   Forms,
   MainUnit in 'MainUnit.pas' {MainForm};
