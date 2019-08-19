@@ -254,6 +254,7 @@ object MainForm: TMainForm
     Width = 1003
     Height = 144
     Align = alBottom
+    ScrollBars = ssVertical
     TabOrder = 2
   end
 end

@@ -252,6 +252,7 @@ object MainForm: TMainForm
     Top = 720
     Width = 1254
     Align = alBottom
+    ScrollBars = ssAutoVertical
     TabOrder = 2
   end
 end
