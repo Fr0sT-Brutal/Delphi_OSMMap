@@ -721,6 +721,7 @@ begin
     // ! Rect here could easily become non-normalized (Top below Bottom, f.ex.) so we normalize it
     FSelectionBox.BoundsRect := TRect.Create(FSelectionBoxBindPoint,
       MapToView(EnsureInMap(Zoom, ViewToMap(Point(X, Y)))), True);
+    Invalidate;
   end;
   inherited;
 end;
@@ -731,6 +732,7 @@ begin
   if FSelectionBox.Visible then
   begin
     FSelectionBox.Visible := False;
+    Invalidate;
     GeoRect := MapToGeoCoords(ViewToMap(FSelectionBox.BoundsRect));
     if Assigned(FOnSelectionBox) then
       FOnSelectionBox(Self, GeoRect);
@@ -770,7 +772,10 @@ procedure TMapControl.KeyDown(var Key: Word; Shift: TShiftState);
 begin
   if FSelectionBox.Visible then
     if (Shift = []) and (Key = VK_ESCAPE) then
+    begin
       FSelectionBox.Visible := False;
+      Invalidate;
+    end;
   inherited;
 end;
 
