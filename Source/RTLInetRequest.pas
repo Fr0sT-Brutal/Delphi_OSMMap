@@ -39,7 +39,8 @@ var
   httpCli: TFPCustomHTTPClient;
   {$ENDIF}
   {$IFDEF DCC}
-  httpCli: TNetHTTPRequest;
+  httpCli: TNetHTTPClient;
+  httpReq: TNetHTTPRequest;
   {$ENDIF}
 begin
   ErrMsg := ''; Result := False;
@@ -53,8 +54,10 @@ begin
     httpCli.SimpleGet(RequestProps.URL, ResponseStm);
     {$ENDIF}
     {$IFDEF DCC}
-    httpCli := TNetHTTPRequest.Create(nil);
-    httpCli.Get(RequestProps.URL, ResponseStm);
+    httpCli := TNetHTTPClient.Create(nil);
+    httpReq := TNetHTTPRequest.Create(httpCli); // to have it destroyed by client
+    httpReq.Client := httpCli;
+    httpReq.Get(RequestProps.URL, ResponseStm);
     {$ENDIF}
 
     Result := ResponseStm.Size > 0;
