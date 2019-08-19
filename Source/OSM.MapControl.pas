@@ -2,6 +2,8 @@
   Visual control displaying a map.
   Data for the map (tile images) must be supplied via callbacks.
   See OSM.TileStorage unit
+
+  (c) Fr0sT-Brutal https://github.com/Fr0sT-Brutal/Delphi_OSMMap
 }
 unit OSM.MapControl;
 

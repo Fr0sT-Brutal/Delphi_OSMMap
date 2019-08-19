@@ -2,6 +2,8 @@
   OSM tile images cache.
   Stores tile images for the map, could read/save them from/to local files but
   doesn't request them from network. See OSM.NetworkRequest unit
+
+  (c) Fr0sT-Brutal https://github.com/Fr0sT-Brutal/Delphi_OSMMap
 }
 unit OSM.TileStorage;
 

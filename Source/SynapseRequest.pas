@@ -2,6 +2,8 @@
   Implements blocking HTTP request with Synapse framework.
 
     based on code by Simon Kroik, 06.2018, kroiksm@gmx.de
+
+  (c) Fr0sT-Brutal https://github.com/Fr0sT-Brutal/Delphi_OSMMap
 }
 unit SynapseRequest;
 

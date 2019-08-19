@@ -6,6 +6,8 @@
     which is based on UNIT openmap.pas
     https://github.com/norayr/meridian23/blob/master/openmap/openmap.pas
     New BSD License
+
+  (c) Fr0sT-Brutal https://github.com/Fr0sT-Brutal/Delphi_OSMMap
 }
 unit OSM.SlippyMapUtils;
 

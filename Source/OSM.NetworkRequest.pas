@@ -2,6 +2,8 @@
   Generic (no real network implementation) classes and declarations for
   requesting OSM tile images from network.
   Real network function from any network must be supplied to actually execute request.
+
+  (c) Fr0sT-Brutal https://github.com/Fr0sT-Brutal/Delphi_OSMMap
 }
 unit OSM.NetworkRequest;
 

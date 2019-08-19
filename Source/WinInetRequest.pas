@@ -1,6 +1,8 @@
 {
   Implements blocking HTTP request with WinInet.
   Windows-only
+
+  (c) Fr0sT-Brutal https://github.com/Fr0sT-Brutal/Delphi_OSMMap
 }
 unit WinInetRequest;
 

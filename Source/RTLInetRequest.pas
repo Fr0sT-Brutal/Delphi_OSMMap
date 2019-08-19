@@ -2,6 +2,8 @@
   Implements blocking HTTP request with HTTP class from RTL
   FPC: fphttpclient unit
   Delphi: TNetHTTPRequest (since XE8). Older versions must use other engines
+
+  (c) Fr0sT-Brutal https://github.com/Fr0sT-Brutal/Delphi_OSMMap
 }
 unit RTLInetRequest;
 
