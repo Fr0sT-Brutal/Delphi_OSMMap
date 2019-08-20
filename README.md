@@ -1,7 +1,7 @@
 ﻿OSM MapControl
 ==============
 
-**Version: 0.3.3**
+**Version: 0.4.0**
 
 Delphi/Lazarus visual component for displaying OpenStreetMap map. Also includes helper classes for storing and downloading map tiles.
 Demo project implements downloading map tiles from network.
