@@ -564,9 +564,11 @@ end;
 // *** overrides - events ***
 
 // Main drawing routine
+// ! Compiler-specific input !
 // DC here varies:
 //   - Delphi: dimensions of current display res and top-left at viewport's top-left
 //   - LCL: dimensions somewhat larger than client area and top-left at control top-left
+// Canvas.ClipRect helps avoiding defines here
 procedure TMapControl.PaintWindow(DC: HDC);
 var
   ViewRect: TRect;
@@ -675,6 +677,7 @@ begin
   if SetCacheDimensions then
     UpdateCache;
   {$IFDEF FPC}
+  // ! Compiler-specific !
   // LCL has weird scrollbars - they require Page to be set to actual size
   Self.HorzScrollBar.Page := Self.ClientWidth;
   Self.VertScrollBar.Page := Self.ClientHeight;
@@ -745,12 +748,19 @@ begin
 end;
 
 // Zoom in/out on mouse wheel
-// Mouse position is in screen coords, it could be any point outside the client area!
+// ! Compiler-specific input !
+//   - Delphi: Mouse position is in screen coords, it could be any point outside the client area!
+//   - FPC: Mouse position is in client coords
 function TMapControl.DoMouseWheel(Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint): Boolean;
 begin
   inherited;
-  SetZoom(FZoom + Sign(WheelDelta),
-    EnsureInMap(FZoom, ViewToMap(ScreenToClient(MousePos))));
+
+  // Calc mouse pos in client coords
+  {$IFDEF DCC}
+  MousePos := ScreenToClient(MousePos);
+  {$ENDIF}
+
+  SetZoom(FZoom + Sign(WheelDelta), EnsureInMap(FZoom, ViewToMap(MousePos)));
   Result := True;
 end;
 
