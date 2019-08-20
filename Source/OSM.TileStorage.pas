@@ -36,6 +36,9 @@ const
 
 type
   // List of cached tile bitmaps with fixed capacity organised as queue
+
+  { TTileBitmapCache }
+
   TTileBitmapCache = class
   strict private
   type
@@ -53,6 +56,7 @@ type
     destructor Destroy; override;
     procedure Push(const Tile: TTile; Bmp: TBitmap);
     function Find(const Tile: TTile): TBitmap;
+    procedure Clear;
   end;
 
   TTileStorageOption = (
@@ -62,6 +66,9 @@ type
   TTileStorageOptions = set of TTileStorageOption;
 
   // Class that encapsulates memory and file cache of tile images
+
+  { TTileStorage }
+
   TTileStorage = class
   strict private
     FBmpCache: TTileBitmapCache;
@@ -77,6 +84,7 @@ type
     destructor Destroy; override;
     function GetTile(const Tile: TTile): TBitmap;
     procedure StoreTile(const Tile: TTile; Ms: TMemoryStream);
+    procedure ClearCache;
 
     property Options: TTileStorageOptions read FOptions write FOptions;
     property FileCacheBaseDir: string read FFileCacheBaseDir write FFileCacheBaseDir;
@@ -146,6 +154,11 @@ begin
     if TilesEqual(Tile, PTileBitmapRec(FCache[idx]).Tile) then
       Exit(PTileBitmapRec(FCache[idx]).Bmp);
   Result := nil;
+end;
+
+procedure TTileBitmapCache.Clear;
+begin
+  FCache.Clear;
 end;
 
 {$ENDREGION}
@@ -233,6 +246,12 @@ begin
   finally
     FreeAndNil(png);
   end;
+end;
+
+// Empty bitmap cache
+procedure TTileStorage.ClearCache;
+begin
+  FBmpCache.Clear;
 end;
 
 {$ENDREGION}
