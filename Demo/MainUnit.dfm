@@ -247,6 +247,15 @@ object MainForm: TMainForm
       Caption = 'Button3'
       TabOrder = 2
     end
+    object btnTest: TButton
+      Left = 24
+      Top = 230
+      Width = 177
+      Height = 41
+      Caption = 'Run test suite'
+      TabOrder = 3
+      OnClick = btnTestClick
+    end
   end
   object mLog: TMemo
     Left = 0

@@ -24,7 +24,7 @@ uses
   Windows,
   {$ENDIF}
   Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, ExtCtrls,
-  Buttons, StdCtrls, Math,
+  Buttons, StdCtrls, Math, Types,
   OSM.SlippyMapUtils, OSM.MapControl, OSM.TileStorage,
   OSM.NetworkRequest
   //, SynapseRequest // Use Synapse for HTTP requests
@@ -33,7 +33,7 @@ uses
   {$ELSE}
   , WinInetRequest // Use WinInet (Windows only) for HTTP requests
   {$ENDIF}
-  ;
+  , TestSuite;
 
 const
   {$IF NOT DECLARED(WM_APP)}
@@ -53,6 +53,8 @@ type
   end;
   PGotTileData = ^TGotTileData;
 
+  { TMainForm }
+
   TMainForm = class(TForm)
     Panel1: TPanel;
     Panel2: TPanel;
@@ -70,6 +72,7 @@ type
     btnMouseModePan: TSpeedButton;
     btnMouseModeSel: TSpeedButton;
     Label3: TLabel;
+    btnTest: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
@@ -85,10 +88,25 @@ type
     procedure Button2Click(Sender: TObject);
     procedure btnMouseModePanClick(Sender: TObject);
     procedure btnMouseModeSelClick(Sender: TObject);
+    procedure btnTestClick(Sender: TObject);
   private
     NetRequest: TNetworkRequestQueue;
     TileStorage: TTileStorage;
     procedure Log(const s: string);
+    procedure InitMap;
+  end;
+
+  { TMapTestCase }
+
+  TMapTestCase = class(TTestSuite)
+  private
+    FMap: TMapControl;
+  public
+    constructor Create(Map: TMapControl; LogProc: TLogProc);
+    procedure Setup; override;
+    // Tests
+    procedure TestZoom;
+    procedure TestPosition;
   end;
 
 var
@@ -105,6 +123,93 @@ implementation
   {$R *.dfm}
 {$ENDIF}
 
+{ TTestSuite }
+
+constructor TMapTestCase.Create(Map: TMapControl; LogProc: TLogProc);
+begin
+  inherited Create(LogProc,
+    [
+      TestZoom,
+      TestPosition
+    ]);
+  FMap := Map;
+end;
+
+procedure TMapTestCase.Setup;
+const
+  StdMapSize: TSize = (cx: 800; cy: 800);  // between zoom 1 and 2
+var
+  ClRect: TRect;
+  Form: TForm;
+begin
+  // Setup
+  FMap.MinZoom := 1;
+  FMap.MaxZoom := 10;
+  FMap.SetZoom(1);
+  FMap.MapMarkCaptionFont.Style := [];
+  FMap.MouseMode := mmDrag;
+  FMap.OnGetTile := nil;
+  FMap.OnZoomChanged := nil;
+  FMap.OnSelectionBox := nil;
+
+  ClRect := FMap.ClientRect;
+  Form := FMap.Owner as TForm;
+  Form.Left := 0;
+  Form.Top := 0;
+  Form.Width := Form.Width - (ClRect.Width - StdMapSize.cx);
+  Form.Height := Form.Height - (ClRect.Height - StdMapSize.cy);
+end;
+
+procedure TMapTestCase.TestZoom;
+var
+  OldZoom, OldMinZoom, OldMaxZoom: TMapZoomLevel;
+begin
+  // Save props
+  OldZoom := FMap.Zoom;
+  OldMinZoom := FMap.MinZoom;
+  OldMaxZoom := FMap.MaxZoom;
+
+  // Test Min/max zoom
+  try
+    FMap.MinZoom := 2;
+    Assert(FMap.Zoom = 2);
+    FMap.SetZoom(1);
+    Assert(FMap.Zoom = 2);
+
+    FMap.SetZoom(4);
+    FMap.MaxZoom := 3;
+    Assert(FMap.Zoom = 3);
+    FMap.SetZoom(4);
+    Assert(FMap.Zoom = 3);
+  finally
+    // Restore props
+    FMap.MinZoom := OldMinZoom;
+    FMap.MaxZoom := OldMaxZoom;
+    FMap.SetZoom(OldZoom);
+  end;
+end;
+
+procedure TMapTestCase.TestPosition;
+var
+  OldZoom: TMapZoomLevel;
+begin
+  // Save props
+  OldZoom := FMap.Zoom;
+
+  // Test scrolling and positions
+  try
+    FMap.SetZoom(3);
+    FMap.ScrollMapTo(100, 50);
+    Assert(PointsEqual(FMap.ViewRect.TopLeft, Point(100, 50)));
+    FMap.ScrollMapBy(100, 50);
+    Assert(PointsEqual(FMap.ViewRect.TopLeft, Point(200, 100)));
+  finally
+    // Restore props
+    FMap.ScrollMapTo(0, 0);
+    FMap.SetZoom(OldZoom);
+  end;
+end;
+
 { TMainForm }
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -116,13 +221,7 @@ begin
   // Queuer of tile image network requests
   // You won't need it if you have another source (f.e. database)
   NetRequest := TNetworkRequestQueue.Create(4, 3, NetworkRequest, NetReqGotTileBgThr);
-
-  mMap.OnGetTile := mMapGetTile;
-  mMap.OnZoomChanged := mMapZoomChanged;
-  mMap.OnSelectionBox := mMapSelectionBox;
-  mMap.SetZoom(1);
-  mMap.MaxZoom := 10;
-  mMap.MapMarkCaptionFont.Style := [fsItalic, fsBold];
+  InitMap;
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -142,6 +241,17 @@ begin
   {$IF DECLARED(OutputDebugString)}
   OutputDebugString(PChar(DateTimeToStr(Now)+' '+s));
   {$IFEND}
+end;
+
+// Extracted to separate method to re-init the control after test
+procedure TMainForm.InitMap;
+begin
+  mMap.OnGetTile := mMapGetTile;
+  mMap.OnZoomChanged := mMapZoomChanged;
+  mMap.OnSelectionBox := mMapSelectionBox;
+  mMap.SetZoom(1);
+  mMap.MaxZoom := 10;
+  mMap.MapMarkCaptionFont.Style := [fsItalic, fsBold];
 end;
 
 // Callback from map control to receive a tile image
@@ -307,6 +417,17 @@ end;
 procedure TMainForm.btnMouseModeSelClick(Sender: TObject);
 begin
   mMap.MouseMode := mmSelect;
+end;
+
+procedure TMainForm.btnTestClick(Sender: TObject);
+var suite: TMapTestCase;
+begin
+  TileStorage.ClearCache;
+  suite := TMapTestCase.Create(mMap, Log);
+  suite.Run;
+  FreeAndNil(suite);
+  InitMap;
+  mMap.Refresh;
 end;
 
 end.
