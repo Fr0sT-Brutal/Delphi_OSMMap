@@ -225,7 +225,7 @@ type
 
     procedure ScrollMapBy(DeltaHorz, DeltaVert: Integer);
     procedure ScrollMapTo(Horz, Vert: Integer);
-    procedure SetZoom(Value: Integer; const ViewBindPoint: TPoint); overload;
+    procedure SetZoom(Value: Integer; const MapBindPt: TPoint); overload;
     procedure SetZoom(Value: Integer); overload;
     procedure ZoomToArea(const GeoRect: TGeoRect);
     procedure ZoomToFit;
@@ -745,11 +745,12 @@ begin
 end;
 
 // Zoom in/out on mouse wheel
+// Mouse position is in screen coords, it could be any point outside the client area!
 function TMapControl.DoMouseWheel(Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint): Boolean;
 begin
   inherited;
-  MousePos := EnsureInMap(Zoom, ScreenToClient(MousePos));
-  SetZoom(Zoom + Sign(WheelDelta), MousePos);
+  SetZoom(FZoom + Sign(WheelDelta),
+    EnsureInMap(FZoom, ViewToMap(ScreenToClient(MousePos))));
   Result := True;
 end;
 
@@ -786,10 +787,10 @@ end;
 // *** new methods ***
 
 // Set zoom level to Value and reposition to given point
-//   ViewBindPoint - point in view area's coords that must keep its position
-procedure TMapControl.SetZoom(Value: Integer; const ViewBindPoint: TPoint);
+//   MapBindPt - point in map coords that must keep its position within view
+procedure TMapControl.SetZoom(Value: Integer; const MapBindPt: TPoint);
 var
-  CurrBindPt, NewViewNW: TPoint;
+  CurrBindPt, NewViewNW, ViewBindPt: TPoint;
   BindCoords: TGeoPoint;
 begin
   // New value violates contraints - reject it
@@ -798,9 +799,10 @@ begin
 
   // save bind point if zoom is valid (zoom value is used to calc geo coords)
   if FZoom in [Low(TMapZoomLevel)..High(TMapZoomLevel)]
-    then BindCoords := MapToGeoCoords(ViewToMap(ViewBindPoint))
+    then BindCoords := MapToGeoCoords(MapBindPt)
     else BindCoords := OSM.SlippyMapUtils.MapToGeoCoords(Low(TMapZoomLevel), Point(0, 0));
 
+  ViewBindPt := MapToView(MapBindPt); // save bind point in view coords, we'll reposition to it after zoom
   FZoom := Value;
   FMapSize := TSize.Create(MapWidth(FZoom), MapHeight(FZoom));
 
@@ -817,7 +819,7 @@ begin
 
   // move viewport
   CurrBindPt := GeoCoordsToMap(BindCoords); // bind point in new map coords
-  NewViewNW := CurrBindPt.Subtract(ViewBindPoint); // view's top-left corner in new map coords
+  NewViewNW := CurrBindPt.Subtract(ViewBindPt); // view's top-left corner in new map coords
   SetNWPoint(NewViewNW);
 
   SetCacheDimensions;
@@ -924,7 +926,7 @@ end;
 // Fill the cache image
 procedure TMapControl.UpdateCache;
 var
-  CacheHorzCount, CacheVertCount, horz, vert, CacheHorzNum, CacheVertNum: Cardinal;
+  CacheHorzCount, CacheVertCount, horz, vert, CacheHorzNum, CacheVertNum: Integer;
 begin
   // Clear the image
   FCacheImage.Canvas.Brush.Color := Self.Color;
