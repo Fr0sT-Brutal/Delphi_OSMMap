@@ -6,6 +6,16 @@ unit MainUnit;
 
 interface
 
+// Check whether compiler has stock HTTP request class
+{$IFDEF FPC}
+  {$DEFINE HAS_RTL_HTTP}
+{$ENDIF}
+{$IFDEF DCC}
+  {$IF CompilerVersion >= 29} // XE8+
+    {$DEFINE HAS_RTL_HTTP}
+  {$IFEND}
+{$ENDIF}
+
 uses
   {$IFDEF FPC}
   LCLIntf, LCLType,
@@ -13,16 +23,16 @@ uses
   {$IFDEF MSWINDOWS}
   Windows,
   {$ENDIF}
-  Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, Buttons, StdCtrls, Math, Types,
+  Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, ExtCtrls,
+  Buttons, StdCtrls, Math,
   OSM.SlippyMapUtils, OSM.MapControl, OSM.TileStorage,
   OSM.NetworkRequest
-  // Use Synapse for HTTP requests
-  //, SynapseRequest
-  // Use WinInet (Windows only) for HTTP requests
-  //, WinInetRequest
-  // Use stock RTL classes for HTTP requests
-  , RTLInetRequest
+  //, SynapseRequest // Use Synapse for HTTP requests
+  {$IFDEF HAS_RTL_HTTP}
+  , RTLInetRequest // Use stock RTL classes for HTTP requests
+  {$ELSE}
+  , WinInetRequest // Use WinInet (Windows only) for HTTP requests
+  {$ENDIF}
   ;
 
 const
