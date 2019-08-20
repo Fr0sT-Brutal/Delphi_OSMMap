@@ -1139,17 +1139,17 @@ end;
 // Delta move the view area
 procedure TMapControl.ScrollMapBy(DeltaHorz, DeltaVert: Integer);
 begin
-  Invalidate; // refresh the image
   HorzScrollBar.Position := HorzScrollBar.Position + DeltaHorz;
   VertScrollBar.Position := VertScrollBar.Position + DeltaVert;
+  Invalidate;
 end;
 
 // Absolutely move the view area
 procedure TMapControl.ScrollMapTo(Horz, Vert: Integer);
 begin
-  Invalidate; // refresh the image
   HorzScrollBar.Position := Horz;
   VertScrollBar.Position := Vert;
+  Invalidate;
 end;
 
 // Move the view area to new top-left point
