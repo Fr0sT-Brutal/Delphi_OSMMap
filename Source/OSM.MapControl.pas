@@ -220,6 +220,8 @@ type
     function ViewToMap(const ViewRect: TRect): TRect; overload;
     function MapToView(const MapPt: TPoint): TPoint; overload;
     function MapToView(const MapRect: TRect): TRect; overload;
+    function MapToInner(const MapPt: TPoint): TPoint;
+    function InnerToMap(const Pt: TPoint): TPoint;
 
     procedure ScrollMapBy(DeltaHorz, DeltaVert: Integer);
     procedure ScrollMapTo(Horz, Vert: Integer);
@@ -704,7 +706,7 @@ begin
           // Position is inside map - start selection
           if InMap(Zoom, MousePos) then
           begin
-            FSelectionBoxBindPoint := Point(X, Y);
+            FSelectionBoxBindPoint := MapToInner(MousePos);
             FSelectionBox.BoundsRect := TRect.Create(FSelectionBoxBindPoint, 0, 0);
             FSelectionBox.Visible := True;
           end;
@@ -720,7 +722,7 @@ begin
   begin
     // ! Rect here could easily become non-normalized (Top below Bottom, f.ex.) so we normalize it
     FSelectionBox.BoundsRect := TRect.Create(FSelectionBoxBindPoint,
-      MapToView(EnsureInMap(Zoom, ViewToMap(Point(X, Y)))), True);
+      MapToInner(EnsureInMap(Zoom, ViewToMap(Point(X, Y)))), True);
     Invalidate;
   end;
   inherited;
@@ -733,7 +735,9 @@ begin
   begin
     FSelectionBox.Visible := False;
     Invalidate;
-    GeoRect := MapToGeoCoords(ViewToMap(FSelectionBox.BoundsRect));
+    GeoRect := MapToGeoCoords(
+      TRect.Create(InnerToMap(FSelectionBox.BoundsRect.TopLeft), FSelectionBox.Width, FSelectionBox.Height)
+    );
     if Assigned(FOnSelectionBox) then
       FOnSelectionBox(Self, GeoRect);
   end;
@@ -876,6 +880,32 @@ end;
 function TMapControl.MapToView(const MapRect: TRect): TRect;
 begin
   Result := ToInnerCoords(ViewAreaRect.TopLeft, MapRect);
+end;
+
+// ! Compiler-specific !
+// TScrollBox is different in different compilers.
+//   - FPC considers internal area just as scrollbars' range are set (that is, whole
+//     scrollable area inside the box).
+//   - Delphi considers control bounds only (just a visible area)
+// So this method converts map points to scrollbox inner coordinates (not client!)
+function TMapControl.MapToInner(const MapPt: TPoint): TPoint;
+begin
+  {$IFDEF FPC}
+  Result := MapPt; // scrollbox coords = absolute coords
+  {$ENDIF}
+  {$IFDEF DCC}
+  Result := MapToView(MapPt); // scrollbox coords = current view coords
+  {$ENDIF}
+end;
+
+function TMapControl.InnerToMap(const Pt: TPoint): TPoint;
+begin
+  {$IFDEF FPC}
+  Result := Pt; // scrollbox coords = absolute coords
+  {$ENDIF}
+  {$IFDEF DCC}
+  Result := ViewToMap(Pt); // scrollbox coords = current view coords
+  {$ENDIF}
 end;
 
 // View area position and size in map coords
