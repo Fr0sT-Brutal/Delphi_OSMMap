@@ -216,7 +216,7 @@ procedure TMainForm.FormCreate(Sender: TObject);
 begin
   // Memory/disc cache of tile images
   // You probably won't need it if you have another fast storage (f.e. database)
-  TileStorage := TTileStorage.Create(30);
+  TileStorage := TTileStorage.Create(50*1000*1000);
   TileStorage.FileCacheBaseDir := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) + 'Map';
   // Queuer of tile image network requests
   // You won't need it if you have another source (f.e. database)
@@ -333,7 +333,6 @@ begin
     TileStorage.StoreTile(pData.Tile, pData.Ms);
     mMap.RefreshTile(pData.Tile.ParameterX, pData.Tile.ParameterY);
   end;
-  FreeAndNil(pData.Ms);
   Dispose(pData);
 end;
 
