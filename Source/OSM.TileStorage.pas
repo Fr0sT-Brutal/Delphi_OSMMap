@@ -306,7 +306,9 @@ begin
           Exit;
         // stream loaded - add to cache
         FStmCache.Push(Tile, ms, ms.Size);
-      end;
+      end
+      else
+        Exit;
     // convert stream to PNG and store in cache
     png := TPngImage.Create;
     ms.Position := 0;
