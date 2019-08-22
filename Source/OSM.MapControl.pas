@@ -120,20 +120,17 @@ type
   // Mode of handling of plain left mouse button press
   TMapMouseMode = (mmDrag, mmSelect);
 
-  // Callback to get bitmap of a single tile having number (TileHorzNum;TileVertNum)
-  // If TileBmp is returned nil, DrawTileLoading method is called for this tile
+  // Callback to draw an image of a single tile having number (TileHorzNum;TileVertNum)
+  // at point TopLeft on canvas Canvas.
+  // Callback must set Handled to True, otherwise default actions will be done.
+  // This type is common for both OnDrawTile and OnDrawTileLoading callbacks.
+  // Note for OnDrawTile:
+  // If Handled is not set to True, DrawTileLoading method is called for this tile.
   // Generally you must assign this callback only.
-  TOnGetTile = procedure (Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal;
-    out TileBmp: TBitmap) of object;
-
-  // Callback to draw bitmap of a single tile having number (TileHorzNum;TileVertNum)
-  // If OnDrawTile assigned, it means fully custom drawing process, f.ex. if user has
-  // fast tile sources that are not TBitmap-s, and it is user responsibility to indicate
-  // tiles that are loading at the moment.
-  // If OnDrawTileLoading assigned, the handler will be called only for empty tiles
-  // allowing a user to draw his own label
+  // Note for OnDrawTileLoading:
+  // The handler is called only for empty tiles allowing a user to draw his own label
   TOnDrawTile = procedure (Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal;
-    const TopLeft: TPoint; Canvas: TCanvas) of object;
+    const TopLeft: TPoint; Canvas: TCanvas; var Handled: Boolean) of object;
 
   // Callback to custom draw a mapmark. It is called before default drawing.
   // User could draw a mapmark fully or just change some props and let default
@@ -164,7 +161,6 @@ type
     FSelectionBoxBindPoint: TPoint;  // point at which selection starts
     FMouseMode: TMapMouseMode;
 
-    FOnGetTile: TOnGetTile;
     FOnDrawTile: TOnDrawTile;
     FOnDrawTileLoading: TOnDrawTile;
     FOnZoomChanged: TNotifyEvent;
@@ -241,7 +237,6 @@ type
     property MouseMode: TMapMouseMode read FMouseMode write FMouseMode;
     property ViewRect: TRect read ViewAreaRect;
     // events/callbacks
-    property OnGetTile: TOnGetTile read FOnGetTile write FOnGetTile;
     property OnDrawTile: TOnDrawTile read FOnDrawTile write FOnDrawTile;
     property OnDrawTileLoading: TOnDrawTile read FOnDrawTileLoading write FOnDrawTileLoading;
     property OnZoomChanged: TNotifyEvent read FOnZoomChanged write FOnZoomChanged;
@@ -1000,29 +995,26 @@ end;
 
 // Draw single tile (TileHorzNum;TileVertNum) to canvas Canvas at point TopLeft
 procedure TMapControl.DrawTile(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas);
-var
-  TileBmp: TBitmap;
+var Handled: Boolean;
 begin
   // check if user wants custom draw
-  if Assigned(OnDrawTile) then
+  if Assigned(FOnDrawTile) then
   begin
-    OnDrawTile(Self, TileHorzNum, TileVertNum, TopLeft, Canvas);
-    Exit;
+    Handled := False;
+    FOnDrawTile(Self, TileHorzNum, TileVertNum, TopLeft, Canvas, Handled);
+    if Handled then
+      Exit;
   end;
-  // request tile bitmap via callback
-  TileBmp := nil;
-  if Assigned(OnGetTile) then
-    OnGetTile(Self, TileHorzNum, TileVertNum, TileBmp);
-  // no such tile - draw "loading"
-  if TileBmp = nil then
+  // not handled - draw "loading"
+  if Assigned(FOnDrawTileLoading) then
   begin
-    if Assigned(FOnDrawTileLoading) then
-      FOnDrawTileLoading(Self, TileHorzNum, TileVertNum, TopLeft, Canvas)
-    else
-      DrawTileLoading(TileHorzNum, TileVertNum, TopLeft, Canvas);
-  end
-  else
-    Canvas.Draw(TopLeft.X, TopLeft.Y, TileBmp);
+    Handled := False;
+    FOnDrawTileLoading(Self, TileHorzNum, TileVertNum, TopLeft, Canvas, Handled);
+    if Handled then
+      Exit;
+  end;
+  // default draw
+  DrawTileLoading(TileHorzNum, TileVertNum, TopLeft, Canvas);
 end;
 
 // Draw single tile (TileHorzNum;TileVertNum) loading to canvas Canvas at point TopLeft

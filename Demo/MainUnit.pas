@@ -82,7 +82,7 @@ type
     procedure MsgGotTile(var Message: TMessage); message MSG_GOTTILE;
     procedure NetReqGotTileBgThr(const Tile: TTile; Ms: TMemoryStream; const Error: string);
     procedure mMapMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-    procedure mMapGetTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal; out TileBmp: TBitmap);
+    procedure mMapDrawTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas; var Handled: Boolean);
     procedure mMapZoomChanged(Sender: TObject);
     procedure mMapSelectionBox(Sender: TMapControl; const GeoRect: TGeoRect);
     procedure Button2Click(Sender: TObject);
@@ -148,7 +148,7 @@ begin
   FMap.SetZoom(1);
   FMap.MapMarkCaptionFont.Style := [];
   FMap.MouseMode := mmDrag;
-  FMap.OnGetTile := nil;
+  FMap.OnDrawTile := nil;
   FMap.OnZoomChanged := nil;
   FMap.OnSelectionBox := nil;
 
@@ -246,7 +246,7 @@ end;
 // Extracted to separate method to re-init the control after test
 procedure TMainForm.InitMap;
 begin
-  mMap.OnGetTile := mMapGetTile;
+  mMap.OnDrawTile := mMapDrawTile;
   mMap.OnZoomChanged := mMapZoomChanged;
   mMap.OnSelectionBox := mMapSelectionBox;
   mMap.SetZoom(1);
@@ -254,10 +254,11 @@ begin
   mMap.MapMarkCaptionFont.Style := [fsItalic, fsBold];
 end;
 
-// Callback from map control to receive a tile image
-procedure TMainForm.mMapGetTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal; out TileBmp: TBitmap);
+// Callback from map control to draw a tile image
+procedure TMainForm.mMapDrawTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas; var Handled: Boolean);
 var
   Tile: TTile;
+  TileBmp: TBitmap;
 begin
   Tile.Zoom := Sender.Zoom;
   Tile.ParameterX := TileHorzNum;
@@ -271,6 +272,11 @@ begin
   begin
     NetRequest.RequestTile(Tile);
     Log(Format('Queued request from inet %s', [TileToStr(Tile)]));
+  end
+  else
+  begin
+    Canvas.Draw(TopLeft.X, TopLeft.Y, TileBmp);
+    Handled := True;
   end;
 end;
 
