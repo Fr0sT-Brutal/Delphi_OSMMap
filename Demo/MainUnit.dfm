@@ -223,7 +223,7 @@ object MainForm: TMainForm
     end
     object Button1: TButton
       Left = 24
-      Top = 127
+      Top = 167
       Width = 177
       Height = 33
       Caption = 'Save layer'
@@ -232,7 +232,7 @@ object MainForm: TMainForm
     end
     object Button2: TButton
       Left = 24
-      Top = 174
+      Top = 214
       Width = 177
       Height = 41
       Caption = 'Add 100 random marks'
@@ -249,12 +249,34 @@ object MainForm: TMainForm
     end
     object btnTest: TButton
       Left = 24
-      Top = 230
+      Top = 270
       Width = 177
       Height = 41
       Caption = 'Run test suite'
       TabOrder = 3
       OnClick = btnTestClick
+    end
+    object chbCacheUseFiles: TCheckBox
+      Left = 24
+      Top = 112
+      Width = 145
+      Height = 17
+      Caption = 'Use file cache'
+      Checked = True
+      State = cbChecked
+      TabOrder = 4
+      OnClick = chbCacheUseFilesClick
+    end
+    object chbCacheSaveFiles: TCheckBox
+      Left = 24
+      Top = 136
+      Width = 145
+      Height = 17
+      Caption = 'Save files to cache'
+      Checked = True
+      State = cbChecked
+      TabOrder = 5
+      OnClick = chbCacheSaveFilesClick
     end
   end
   object mLog: TMemo

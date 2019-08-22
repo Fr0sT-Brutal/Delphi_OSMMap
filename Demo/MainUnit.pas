@@ -73,6 +73,8 @@ type
     btnMouseModeSel: TSpeedButton;
     Label3: TLabel;
     btnTest: TButton;
+    chbCacheUseFiles: TCheckBox;
+    chbCacheSaveFiles: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
@@ -89,6 +91,8 @@ type
     procedure btnMouseModePanClick(Sender: TObject);
     procedure btnMouseModeSelClick(Sender: TObject);
     procedure btnTestClick(Sender: TObject);
+    procedure chbCacheUseFilesClick(Sender: TObject);
+    procedure chbCacheSaveFilesClick(Sender: TObject);
   private
     NetRequest: TNetworkRequestQueue;
     TileStorage: TTileStorage;
@@ -433,6 +437,20 @@ begin
   FreeAndNil(suite);
   InitMap;
   mMap.Refresh;
+end;
+
+procedure TMainForm.chbCacheUseFilesClick(Sender: TObject);
+begin
+  if (Sender as TCheckBox).Checked
+    then TileStorage.Options := TileStorage.Options - [tsoNoFileCache]
+    else TileStorage.Options := TileStorage.Options + [tsoNoFileCache];
+end;
+
+procedure TMainForm.chbCacheSaveFilesClick(Sender: TObject);
+begin
+  if (Sender as TCheckBox).Checked
+    then TileStorage.Options := TileStorage.Options - [tsoReadOnlyFileCache]
+    else TileStorage.Options := TileStorage.Options + [tsoReadOnlyFileCache];
 end;
 
 end.
