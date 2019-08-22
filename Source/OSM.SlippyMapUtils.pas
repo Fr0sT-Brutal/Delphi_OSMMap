@@ -17,18 +17,21 @@ unit OSM.SlippyMapUtils;
 
 interface
 
-uses Types, SysUtils, Math;
+uses
+  Types, SysUtils, Math;
 
 type
   TMapZoomLevel = 0..19; // 19 = Maximum zoom for Mapnik layer
 
+  // Props of a map tile
   TTile = record
     Zoom: TMapZoomLevel;
-    ParameterX: Integer;
-    ParameterY: Integer;
+    ParameterX: Cardinal; // horz number of tile, 0..524288 (=TileCount(MaxZoom))
+    ParameterY: Cardinal; // vert number of tile, 0..524288 (=TileCount(MaxZoom))
   end;
   PTile = ^TTile;
 
+  // Point on a map defined by longitude and latitude.
   // Intentionally not using TPointF and TRectF because they use other system of
   // coordinates (vertical coord increase from top to down, while lat changes from
   // +85 to -85)
@@ -38,6 +41,7 @@ type
     constructor Create(Long, Lat: Double);
   end;
 
+  // Region on a map defined by two pairs of longitude and latitude.
   TGeoRect = record
     TopLeft: TGeoPoint;
     BottomRight: TGeoPoint;
@@ -84,21 +88,21 @@ var // configurable
 
 function RectFromPoints(const TopLeft, BottomRight: TPoint): TRect; inline;
 
-function TileCount(Zoom: TMapZoomLevel): Integer; inline;
+function TileCount(Zoom: TMapZoomLevel): Cardinal; inline;
 function TileValid(const Tile: TTile): Boolean; inline;
 function TileToStr(const Tile: TTile): string;
 function TilesEqual(const Tile1, Tile2: TTile): Boolean; inline;
 
-function MapWidth(Zoom: TMapZoomLevel): Integer; inline;
-function MapHeight(Zoom: TMapZoomLevel): Integer; inline;
+function MapWidth(Zoom: TMapZoomLevel): Cardinal; inline;
+function MapHeight(Zoom: TMapZoomLevel): Cardinal; inline;
 function InMap(Zoom: TMapZoomLevel; const Pt: TPoint): Boolean; overload; inline;
 function InMap(Zoom: TMapZoomLevel; const Rc: TRect): Boolean; overload; inline;
 function EnsureInMap(Zoom: TMapZoomLevel; const Pt: TPoint): TPoint; overload; inline;
 function EnsureInMap(Zoom: TMapZoomLevel; const Rc: TRect): TRect; overload; inline;
-function LongitudeToMapCoord(Zoom: TMapZoomLevel; Longitude: Double): Integer;
-function LatitudeToMapCoord(Zoom: TMapZoomLevel; Latitude: Double): Integer;
-function MapCoordToLongitude(Zoom: TMapZoomLevel; X: Integer): Double;
-function MapCoordToLatitude(Zoom: TMapZoomLevel; Y: Integer): Double;
+function LongitudeToMapCoord(Zoom: TMapZoomLevel; Longitude: Double): Cardinal;
+function LatitudeToMapCoord(Zoom: TMapZoomLevel; Latitude: Double): Cardinal;
+function MapCoordToLongitude(Zoom: TMapZoomLevel; X: Cardinal): Double;
+function MapCoordToLatitude(Zoom: TMapZoomLevel; Y: Cardinal): Double;
 function MapToGeoCoords(Zoom: TMapZoomLevel; const MapPt: TPoint): TGeoPoint; overload; inline;
 function MapToGeoCoords(Zoom: TMapZoomLevel; const MapRect: TRect): TGeoRect; overload; inline;
 function GeoCoordsToMap(Zoom: TMapZoomLevel; const GeoCoords: TGeoPoint): TPoint; overload; inline;
@@ -106,7 +110,7 @@ function GeoCoordsToMap(Zoom: TMapZoomLevel; const GeoRect: TGeoRect): TRect; ov
 
 function CalcLinDistanceInMeter(const Coord1, Coord2: TGeoPoint): Double;
 procedure GetScaleBarParams(Zoom: TMapZoomLevel;
-  out ScalebarWidthInPixel, ScalebarWidthInMeter: Integer;
+  out ScalebarWidthInPixel, ScalebarWidthInMeter: Cardinal;
   out Text: string);
 
 function TileToFullSlippyMapFileURL(const Tile: TTile): string;
@@ -122,7 +126,7 @@ end;
 // Tile utils
 
 // Tile count on <Zoom> level is 2^Zoom
-function TileCount(Zoom: TMapZoomLevel): Integer;
+function TileCount(Zoom: TMapZoomLevel): Cardinal;
 begin
   Result := 1 shl Zoom;
 end;
@@ -132,8 +136,8 @@ function TileValid(const Tile: TTile): Boolean;
 begin
   Result :=
     (Tile.Zoom in [Low(TMapZoomLevel)..High(TMapZoomLevel)]) and
-    (Tile.ParameterX >= 0) and (Tile.ParameterX < TileCount(Tile.Zoom)) and
-    (Tile.ParameterY >= 0) and (Tile.ParameterY < TileCount(Tile.Zoom));
+    (Tile.ParameterX < TileCount(Tile.Zoom)) and
+    (Tile.ParameterY < TileCount(Tile.Zoom));
 end;
 
 // Just a standartized string representation
@@ -152,13 +156,13 @@ begin
 end;
 
 // Width of map of given zoom level in pixels
-function MapWidth(Zoom: TMapZoomLevel): Integer;
+function MapWidth(Zoom: TMapZoomLevel): Cardinal;
 begin
   Result := TileCount(Zoom)*TILE_IMAGE_WIDTH;
 end;
 
 // Height of map of given zoom level in pixels
-function MapHeight(Zoom: TMapZoomLevel): Integer;
+function MapHeight(Zoom: TMapZoomLevel): Cardinal;
 begin
   Result := TileCount(Zoom)*TILE_IMAGE_HEIGHT;
 end;
@@ -205,12 +209,12 @@ begin
   Assert(InRange(Latitude, -85.1, 85.1));
 end;
 
-procedure CheckValidMapX(Zoom: TMapZoomLevel; X: Integer); inline;
+procedure CheckValidMapX(Zoom: TMapZoomLevel; X: Cardinal); inline;
 begin
   Assert(InRange(X, 0, MapWidth(Zoom)));
 end;
 
-procedure CheckValidMapY(Zoom: TMapZoomLevel; Y: Integer); inline;
+procedure CheckValidMapY(Zoom: TMapZoomLevel; Y: Cardinal); inline;
 begin
   Assert(InRange(Y, 0, MapHeight(Zoom)));
 end;
@@ -242,7 +246,7 @@ end;
 
 // Degrees to pixels
 
-function LongitudeToMapCoord(Zoom: TMapZoomLevel; Longitude: Double): Integer;
+function LongitudeToMapCoord(Zoom: TMapZoomLevel; Longitude: Double): Cardinal;
 begin
   CheckValidLong(Longitude);
 
@@ -251,7 +255,7 @@ begin
   CheckValidMapX(Zoom, Result);
 end;
 
-function LatitudeToMapCoord(Zoom: TMapZoomLevel; Latitude: Double): Integer;
+function LatitudeToMapCoord(Zoom: TMapZoomLevel; Latitude: Double): Cardinal;
 var
   SavePi: Extended;
   LatInRad: Extended;
@@ -283,14 +287,14 @@ end;
 
 // Pixels to degrees
 
-function MapCoordToLongitude(Zoom: TMapZoomLevel; X: Integer): Double;
+function MapCoordToLongitude(Zoom: TMapZoomLevel; X: Cardinal): Double;
 begin
   CheckValidMapX(Zoom, X);
 
   Result := X / MapWidth(Zoom) * 360.0 - 180.0;
 end;
 
-function MapCoordToLatitude(Zoom: TMapZoomLevel; Y: Integer): Double;
+function MapCoordToLatitude(Zoom: TMapZoomLevel; Y: Cardinal): Double;
 var
   n: Extended;
   SavePi: Extended;
@@ -358,7 +362,7 @@ begin
   Result := (z * R);
 end;
 
-procedure GetScaleBarParams(Zoom: TMapZoomLevel; out ScalebarWidthInPixel, ScalebarWidthInMeter: Integer; out Text: string);
+procedure GetScaleBarParams(Zoom: TMapZoomLevel; out ScalebarWidthInPixel, ScalebarWidthInMeter: Cardinal; out Text: string);
 const
   ScalebarWidthInKm: array [TMapZoomLevel] of Double =
   (

@@ -1068,7 +1068,7 @@ end;
 class procedure TMapControl.DrawScale(Zoom: TMapZoomLevel; DestBmp: TBitmap);
 var
   Canv: TCanvas;
-  LetterWidth, ScalebarWidthPixel, ScalebarWidthMeter: Integer;
+  LetterWidth, ScalebarWidthPixel, ScalebarWidthMeter: Cardinal;
   Text: string;
   TextExt: TSize;
   ScalebarRect: TRect;
