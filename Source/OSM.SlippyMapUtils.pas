@@ -334,11 +334,8 @@ var
   Temp: Double;
 const
   D2R: Double = 0.017453;
-  R2D: Double = 57.295781;
   a: Double = 6378137.0;
-  b: Double = 6356752.314245;
   e2: Double = 0.006739496742337;
-  f: Double = 0.003352810664747;
 begin
   dLambda := (Coord1.Long - Coord2.Long) * D2R;
   dPhi := (Coord1.Lat - Coord2.Lat) * D2R;
