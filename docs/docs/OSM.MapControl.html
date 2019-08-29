@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>OSM Map control: OSM.MapControl</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="PasDoc 0.15.0">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<table class="container"><tr><td class="navigation">
+<h2>OSM Map control</h2><p><a href="AllUnits.html" class="navigation">Units</a></p><p><a href="ClassHierarchy.html" class="navigation">Class Hierarchy</a></p><p><a href="AllClasses.html" class="navigation">Classes, Interfaces, Objects and Records</a></p><p><a href="AllTypes.html" class="navigation">Types</a></p><p><a href="AllVariables.html" class="navigation">Variables</a></p><p><a href="AllConstants.html" class="navigation">Constants</a></p><p><a href="AllFunctions.html" class="navigation">Functions and Procedures</a></p><p><a href="AllIdentifiers.html" class="navigation">Identifiers</a></p></td><td class="content">
+<h1 class="unit">Unit OSM.MapControl</h1>
+<div class="sections">
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div><div class="one_section"><a class="section" href="#PasDoc-Types">Types</a></div><div class="one_section"><a class="section" href="#PasDoc-Constants">Constants</a></div><div class="one_section">Variables</div></div>
+<span id="PasDoc-Description"></span><h2 class="description">Description</h2>
+<p>
+Visual control displaying a map. Data for the map (tile images) must be supplied via callbacks. 
+
+<p>(c) Fr0sT-Brutal <a  href="https://github.com/Fr0sT-Brutal/Delphi_OSMMap">https://github.com/Fr0sT-Brutal/Delphi_OSMMap</a>
+
+<p></p>
+<h6 class="description_section">See also</h6>
+<dl class="see_also">
+  <dt><a class="normal" href="OSM.TileStorage.html">OSM.TileStorage</a></dt>
+  <dd>OSM tile images cache.</dd>
+</dl>
+<span id="PasDoc-Uses"></span><h2 class="overview">Overview</h2>
+<span id="PasDoc-Classes"></span><h3 class="cio">Classes, Interfaces, Objects and Records</h3>
+<table class="classestable wide_list">
+<tr class="listheader">
+<th class="itemname">Name</th>
+<th class="itemdesc">Description</th>
+</tr>
+<tr class="list">
+<td class="itemname">Record&nbsp;<a class="bold" href="OSM.MapControl.TMapMarkGlyphStyle.html"><code>TMapMarkGlyphStyle</code></a></td>
+<td class="itemdesc">Visual properties of mapmark's glyph</td>
+</tr>
+<tr class="list2">
+<td class="itemname">Record&nbsp;<a class="bold" href="OSM.MapControl.TMapMarkCaptionStyle.html"><code>TMapMarkCaptionStyle</code></a></td>
+<td class="itemdesc">Visual properties of mapmark's caption</td>
+</tr>
+<tr class="list">
+<td class="itemname">Class&nbsp;<a class="bold" href="OSM.MapControl.TMapMark.html"><code>TMapMark</code></a></td>
+<td class="itemdesc">Class representing a single mapmark.</td>
+</tr>
+<tr class="list2">
+<td class="itemname">Class&nbsp;<a class="bold" href="OSM.MapControl.TMapMarkList.html"><code>TMapMarkList</code></a></td>
+<td class="itemdesc">List of mapmarks</td>
+</tr>
+<tr class="list">
+<td class="itemname">Class&nbsp;<a class="bold" href="OSM.MapControl.TMapControl.html"><code>TMapControl</code></a></td>
+<td class="itemdesc">Control displaying a map or its visible part.</td>
+</tr>
+</table>
+<span id="PasDoc-FuncsProcs"></span><h3 class="summary">Functions and Procedures</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code>function <strong><a  href="OSM.MapControl.html#ToInnerCoords">ToInnerCoords</a></strong>(const StartPt, Pt: TPoint): TPoint; overload; inline;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>function <strong><a  href="OSM.MapControl.html#ToOuterCoords">ToOuterCoords</a></strong>(const StartPt, Pt: TPoint): TPoint; overload; inline;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>function <strong><a  href="OSM.MapControl.html#ToInnerCoords">ToInnerCoords</a></strong>(const StartPt: TPoint; const Rect: TRect): TRect; overload; inline;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>function <strong><a  href="OSM.MapControl.html#ToOuterCoords">ToOuterCoords</a></strong>(const StartPt: TPoint; const Rect: TRect): TRect; overload; inline;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Types"></span><h3 class="summary">Types</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code><strong><a  href="OSM.MapControl.html#TMapMarkGlyphShape">TMapMarkGlyphShape</a></strong> = (...);</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a  href="OSM.MapControl.html#PMapMarkGlyphStyle">PMapMarkGlyphStyle</a></strong> = &circ;<a  href="OSM.MapControl.TMapMarkGlyphStyle.html">TMapMarkGlyphStyle</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code><strong><a  href="OSM.MapControl.html#PMapMarkCaptionStyle">PMapMarkCaptionStyle</a></strong> = &circ;<a  href="OSM.MapControl.TMapMarkCaptionStyle.html">TMapMarkCaptionStyle</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a  href="OSM.MapControl.html#TMapMarkCustomProp">TMapMarkCustomProp</a></strong> = (...);</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code><strong><a  href="OSM.MapControl.html#TMapMarkCustomProps">TMapMarkCustomProps</a></strong> = set of <a  href="OSM.MapControl.html#TMapMarkCustomProp">TMapMarkCustomProp</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a  href="OSM.MapControl.html#TOnItemNotify">TOnItemNotify</a></strong> = procedure (Sender: TObject; Item: <a  href="OSM.MapControl.TMapMark.html">TMapMark</a>; Action: TListNotification) of object;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code><strong><a  href="OSM.MapControl.html#TMapOption">TMapOption</a></strong> = (...);</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a  href="OSM.MapControl.html#TMapOptions">TMapOptions</a></strong> = set of <a  href="OSM.MapControl.html#TMapOption">TMapOption</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code><strong><a  href="OSM.MapControl.html#TMapMouseMode">TMapMouseMode</a></strong> = (...);</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a  href="OSM.MapControl.html#TOnDrawTile">TOnDrawTile</a></strong> = procedure (Sender: <a  href="OSM.MapControl.TMapControl.html">TMapControl</a>; TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas; var Handled: Boolean) of object;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code><strong><a  href="OSM.MapControl.html#TOnDrawMapMark">TOnDrawMapMark</a></strong> = procedure (Sender: <a  href="OSM.MapControl.TMapControl.html">TMapControl</a>; Canvas: TCanvas; const Point: TPoint; MapMark: <a  href="OSM.MapControl.TMapMark.html">TMapMark</a>; var Handled: Boolean) of object;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a  href="OSM.MapControl.html#TOnSelectionBox">TOnSelectionBox</a></strong> = procedure (Sender: <a  href="OSM.MapControl.TMapControl.html">TMapControl</a>; const GeoRect: <a  href="OSM.SlippyMapUtils.TGeoRect.html">TGeoRect</a>) of object;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Constants"></span><h3 class="summary">Constants</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code><strong><a  href="OSM.MapControl.html#CacheImageDefTilesH">CacheImageDefTilesH</a></strong> = 8;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a  href="OSM.MapControl.html#CacheImageDefTilesV">CacheImageDefTilesV</a></strong> = 8;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code><strong><a  href="OSM.MapControl.html#CacheImageDefWidth">CacheImageDefWidth</a></strong> = <a  href="OSM.MapControl.html#CacheImageDefTilesH">CacheImageDefTilesH</a>*<a  href="OSM.SlippyMapUtils.html#TILE_IMAGE_WIDTH">TILE_IMAGE_WIDTH</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a  href="OSM.MapControl.html#CacheImageDefHeight">CacheImageDefHeight</a></strong> = <a  href="OSM.MapControl.html#CacheImageDefTilesV">CacheImageDefTilesV</a>*<a  href="OSM.SlippyMapUtils.html#TILE_IMAGE_HEIGHT">TILE_IMAGE_HEIGHT</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code><strong><a  href="OSM.MapControl.html#CacheMarginSize">CacheMarginSize</a></strong> = 2;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a  href="OSM.MapControl.html#LabelMargin">LabelMargin</a></strong> = 2;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code><strong><a  href="OSM.MapControl.html#DefaultMapMarkGlyphStyle">DefaultMapMarkGlyphStyle</a></strong>: <a  href="OSM.MapControl.TMapMarkGlyphStyle.html">TMapMarkGlyphStyle</a> = (
+    Shape: <a  href="OSM.MapControl.html#gshCircle">gshCircle</a>;
+    Size: 20;
+    BorderColor: clWindowFrame;
+    BgColor: clSkyBlue;
+  );</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a  href="OSM.MapControl.html#DefaultMapMarkCaptionStyle">DefaultMapMarkCaptionStyle</a></strong>: <a  href="OSM.MapControl.TMapMarkCaptionStyle.html">TMapMarkCaptionStyle</a> = (
+    Color: clMenuText;
+    BgColor: clWindow;
+    DX: 3;
+    Transparent: True
+  );</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code><strong><a  href="OSM.MapControl.html#S_Lbl_Loading">S_Lbl_Loading</a></strong> = 'Loading [%d : %d]...';</code></td>
+</tr>
+</table>
+<h2 class="description">Description</h2>
+<h3 class="detail">Functions and Procedures</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="ToInnerCoords"></span><code>function <strong>ToInnerCoords</strong>(const StartPt, Pt: TPoint): TPoint; overload; inline;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="ToOuterCoords"></span><code>function <strong>ToOuterCoords</strong>(const StartPt, Pt: TPoint): TPoint; overload; inline;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="ToInnerCoords"></span><code>function <strong>ToInnerCoords</strong>(const StartPt: TPoint; const Rect: TRect): TRect; overload; inline;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="ToOuterCoords"></span><code>function <strong>ToOuterCoords</strong>(const StartPt: TPoint; const Rect: TRect): TRect; overload; inline;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<h3 class="detail">Types</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TMapMarkGlyphShape"></span><code><strong>TMapMarkGlyphShape</strong> = (...);</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Shape of mapmark glyph</p>
+<h6 class="description_section">Values</h6>
+<ul>
+<li>
+<span id="gshCircle">gshCircle</span></li>
+<li>
+<span id="gshSquare">gshSquare</span></li>
+<li>
+<span id="gshTriangle">gshTriangle</span></li>
+</ul>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="PMapMarkGlyphStyle"></span><code><strong>PMapMarkGlyphStyle</strong> = &circ;<a  href="OSM.MapControl.TMapMarkGlyphStyle.html">TMapMarkGlyphStyle</a>;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="PMapMarkCaptionStyle"></span><code><strong>PMapMarkCaptionStyle</strong> = &circ;<a  href="OSM.MapControl.TMapMarkCaptionStyle.html">TMapMarkCaptionStyle</a>;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TMapMarkCustomProp"></span><code><strong>TMapMarkCustomProp</strong> = (...);</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Flags to indicate which properties must be taken from MapMark object when drawing. By default props will use owner's values</p>
+<h6 class="description_section">Values</h6>
+<ul>
+<li>
+<span id="propGlyphStyle">propGlyphStyle</span></li>
+<li>
+<span id="propCaptionStyle">propCaptionStyle</span></li>
+<li>
+<span id="propFont">propFont</span></li>
+</ul>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TMapMarkCustomProps"></span><code><strong>TMapMarkCustomProps</strong> = set of <a  href="OSM.MapControl.html#TMapMarkCustomProp">TMapMarkCustomProp</a>;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TOnItemNotify"></span><code><strong>TOnItemNotify</strong> = procedure (Sender: TObject; Item: <a  href="OSM.MapControl.TMapMark.html">TMapMark</a>; Action: TListNotification) of object;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Notification of an action over a mapmark in a list</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TMapOption"></span><code><strong>TMapOption</strong> = (...);</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Options of map control</p>
+<h6 class="description_section">Values</h6>
+<ul>
+<li>
+<span id="moDontDrawCopyright">moDontDrawCopyright</span></li>
+<li>
+<span id="moDontDrawScale">moDontDrawScale</span></li>
+</ul>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TMapOptions"></span><code><strong>TMapOptions</strong> = set of <a  href="OSM.MapControl.html#TMapOption">TMapOption</a>;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TMapMouseMode"></span><code><strong>TMapMouseMode</strong> = (...);</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Mode of handling of plain left mouse button press</p>
+<h6 class="description_section">Values</h6>
+<ul>
+<li>
+<span id="mmDrag">mmDrag</span></li>
+<li>
+<span id="mmSelect">mmSelect</span></li>
+</ul>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TOnDrawTile"></span><code><strong>TOnDrawTile</strong> = procedure (Sender: <a  href="OSM.MapControl.TMapControl.html">TMapControl</a>; TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas; var Handled: Boolean) of object;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Callback to draw an image of a single tile having number (<code>TileHorzNum</code>;<code>TileVertNum</code>) at point <code>TopLeft</code> on canvas <code>Canvas</code>. Callback must set <code>Handled</code> to <code>True</code>, otherwise default actions will be done. This type is common for both <a class="normal" href="OSM.MapControl.TMapControl.html#OnDrawTile">TMapControl.OnDrawTile</a> and <a class="normal" href="OSM.MapControl.TMapControl.html#OnDrawTileLoading">TMapControl.OnDrawTileLoading</a> callbacks.
+
+<p><em>Note for <a class="normal" href="OSM.MapControl.TMapControl.html#OnDrawTile">TMapControl.OnDrawTile</a>:</em><br> If <code>Handled</code> is not set to <code>True</code>, TMapControl.DrawTileLoading method is called for this tile. Usually you have to assign this callback only.
+
+<p><em>Note for <a class="normal" href="OSM.MapControl.TMapControl.html#OnDrawTileLoading">TMapControl.OnDrawTileLoading</a>:</em><br> The handler is called only for empty tiles allowing a user to draw his own label</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TOnDrawMapMark"></span><code><strong>TOnDrawMapMark</strong> = procedure (Sender: <a  href="OSM.MapControl.TMapControl.html">TMapControl</a>; Canvas: TCanvas; const Point: TPoint; MapMark: <a  href="OSM.MapControl.TMapMark.html">TMapMark</a>; var Handled: Boolean) of object;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Callback to custom draw a mapmark. It is called before default drawing. If <code>Handled</code> is not set to <code>True</code>, default drawing will be done. User could draw a mapmark fully or just change some props and let default drawing do its job</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TOnSelectionBox"></span><code><strong>TOnSelectionBox</strong> = procedure (Sender: <a  href="OSM.MapControl.TMapControl.html">TMapControl</a>; const GeoRect: <a  href="OSM.SlippyMapUtils.TGeoRect.html">TGeoRect</a>) of object;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Callback to react on selection by mouse</p>
+</td></tr>
+</table>
+<h3 class="detail">Constants</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="CacheImageDefTilesH"></span><code><strong>CacheImageDefTilesH</strong> = 8;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Default W and H of cache image in number of tiles. Memory occupation of an image: (4 bytes per pixel) * <code>TilesH</code> * <code>TilesV</code> * (65536 pixels in single tile) <br> For value 8 it counts 16.7 Mb</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="CacheImageDefTilesV"></span><code><strong>CacheImageDefTilesV</strong> = 8;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="CacheImageDefWidth"></span><code><strong>CacheImageDefWidth</strong> = <a  href="OSM.MapControl.html#CacheImageDefTilesH">CacheImageDefTilesH</a>*<a  href="OSM.SlippyMapUtils.html#TILE_IMAGE_WIDTH">TILE_IMAGE_WIDTH</a>;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Default W and H of cache image in pixels</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="CacheImageDefHeight"></span><code><strong>CacheImageDefHeight</strong> = <a  href="OSM.MapControl.html#CacheImageDefTilesV">CacheImageDefTilesV</a>*<a  href="OSM.SlippyMapUtils.html#TILE_IMAGE_HEIGHT">TILE_IMAGE_HEIGHT</a>;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="CacheMarginSize"></span><code><strong>CacheMarginSize</strong> = 2;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Margin that is added to cache image to hold view area, in number of tiles</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="LabelMargin"></span><code><strong>LabelMargin</strong> = 2;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Size of margin for labels on map, in pixels</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="DefaultMapMarkGlyphStyle"></span><code><strong>DefaultMapMarkGlyphStyle</strong>: <a  href="OSM.MapControl.TMapMarkGlyphStyle.html">TMapMarkGlyphStyle</a> = (
+    Shape: <a  href="OSM.MapControl.html#gshCircle">gshCircle</a>;
+    Size: 20;
+    BorderColor: clWindowFrame;
+    BgColor: clSkyBlue;
+  );</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Default style of mapmark glyph. <a class="normal" href="OSM.MapControl.TMapControl.html#MapMarkGlyphStyle">TMapControl.MapMarkGlyphStyle</a> is init-ed with this value</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="DefaultMapMarkCaptionStyle"></span><code><strong>DefaultMapMarkCaptionStyle</strong>: <a  href="OSM.MapControl.TMapMarkCaptionStyle.html">TMapMarkCaptionStyle</a> = (
+    Color: clMenuText;
+    BgColor: clWindow;
+    DX: 3;
+    Transparent: True
+  );</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Default style of mapmark caption. <a class="normal" href="OSM.MapControl.TMapControl.html#MapMarkGlyphStyle">TMapControl.MapMarkGlyphStyle</a> is init-ed with this value</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="S_Lbl_Loading"></span><code><strong>S_Lbl_Loading</strong> = 'Loading [%d : %d]...';</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<h2 class="authors">Author</h2>
+<ul class="authors">
+<li>Fr0sT-Brutal (https://github.com/Fr0sT-Brutal)</li>
+</ul>
+<hr><span class="appinfo"><em>Generated by <a  href="https://github.com/pasdoc/pasdoc/wiki">PasDoc 0.15.0</a>. </em>
+</span>
+</td></tr></table></body></html>

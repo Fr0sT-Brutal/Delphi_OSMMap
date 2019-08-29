@@ -1,9 +1,11 @@
 {
   Generic (no real network implementation) classes and declarations for
   requesting OSM tile images from network.
-  Real network function from any network must be supplied to actually execute request.
+  Real network function from any framework must be supplied to actually execute request.
 
   (c) Fr0sT-Brutal https://github.com/Fr0sT-Brutal/Delphi_OSMMap
+
+  @author(Fr0sT-Brutal (https://github.com/Fr0sT-Brutal))
 }
 unit OSM.NetworkRequest;
 
@@ -18,12 +20,9 @@ uses
   OSM.SlippyMapUtils;
 
 type
-  THttpRequestType = (reqPost, reqGet);
-
+  // Generic properties of request
   THttpRequestProps = record
-    RequestType: THttpRequestType;
     URL: string;
-    POSTData: string;
     HttpUserName: string;
     HttpPassword: string;
     HeaderLines: TStrings;
@@ -31,18 +30,22 @@ type
   end;
 
   // Generic type of blocking network request function
-  //   RequestProps - all details regarding a request
-  //   ResponseStm - stream that accepts response data
-  //   ErrMsg - error description if any.
-  // Returns: success flag
+  //   @param RequestProps - all details regarding a request
+  //   @param ResponseStm - stream that accepts response data
+  //   @param ErrMsg - [OUT] error description if any
+  //   @returns success flag
   TBlockingNetworkRequestFunc = function (const RequestProps: THttpRequestProps;
     const ResponseStm: TStream; out ErrMsg: string): Boolean;
 
-  // Generic type of method to call when request is completed
-  // ! Called from the context of a background thread !
+  // Generic type of method to call when request is completed @br
+  // ! **Called from the context of a background thread** !
+  //   @param Tile - tile that has been received
+  //   @param Ms - stream with tile image data
+  //   @param Error - error description if any
   TGotTileCallbackBgThr = procedure (const Tile: TTile; Ms: TMemoryStream; const Error: string) of object;
 
-  // Queuer of network requests
+  // Queuer of network requests. Under the hood uses multiple background threads
+  // to execute several blocking requests at the same time.
   TNetworkRequestQueue = class
   strict private
     FTaskQueue: TQueue;   // list of tiles to be requested
@@ -59,41 +62,49 @@ type
     procedure Lock;
     procedure Unlock;
     procedure AddThread;
-  private
-    // for access from TNetworkRequestThread
     procedure DoRequestComplete(Sender: TThread; const Tile: TTile; Ms: TMemoryStream; const Error: string);
+  private // for access from TNetworkRequestThread
     function PopTask: Pointer;
-
-    property NotEmpty: Boolean read FNotEmpty;
-    property RequestFunc: TBlockingNetworkRequestFunc read FRequestFunc;
   public
+    // Constructor
+    //   @param(MaxTasksPerThread - if number of tasks becomes more than
+    //     `MaxTasksPerThread*%currentThreadCount%`, add one more thread)
+    //   @param MaxThreads - limit of the number of threads
+    //   @param GotTileCb - method to call when request is completed
     constructor Create(MaxTasksPerThread, MaxThreads: Cardinal;
       RequestFunc: TBlockingNetworkRequestFunc;
       GotTileCb: TGotTileCallbackBgThr);
     destructor Destroy; override;
 
+    // Add request for an image for `Tile` to request queue
     procedure RequestTile(const Tile: TTile);
   end;
 
 implementation
 
 type
+  TOnRequestComplete = procedure(Sender: TThread; const Tile: TTile; Ms: TMemoryStream; const Error: string) of object;
+
   // Thread that consumes tasks from owner's queue and executes them
   // When there are no tasks in the queue, it finishes and must be destroyed
   TNetworkRequestThread = class(TThread)
   strict private
     FOwner: TNetworkRequestQueue;
+    FOnRequestComplete: TOnRequestComplete;
+    FRequestFunc: TBlockingNetworkRequestFunc;
   public
-    constructor Create(Owner: TNetworkRequestQueue);
+    constructor Create(Owner: TNetworkRequestQueue; RequestFunc: TBlockingNetworkRequestFunc);
     procedure Execute; override;
+    property OnRequestComplete: TOnRequestComplete read FOnRequestComplete write FOnRequestComplete;
   end;
 
 { TNetworkRequestThread }
 
-constructor TNetworkRequestThread.Create(Owner: TNetworkRequestQueue);
+constructor TNetworkRequestThread.Create(Owner: TNetworkRequestQueue; RequestFunc: TBlockingNetworkRequestFunc);
 begin
+  inherited Create(True);
   FOwner := Owner;
-  inherited Create(False);
+  FRequestFunc := RequestFunc;
 end;
 
 procedure TNetworkRequestThread.Execute;
@@ -105,7 +116,6 @@ var
   ReqProps: THttpRequestProps;
 begin
   ReqProps := Default(THttpRequestProps);
-  ReqProps.RequestType := reqGet;
 
   while not Terminated do
   begin
@@ -116,21 +126,19 @@ begin
       sURL := TileToFullSlippyMapFileURL(tile);
       ms := TMemoryStream.Create;
       ReqProps.URL := sURL;
-      if not FOwner.RequestFunc(ReqProps, ms, sErrMsg) then
+      if not FRequestFunc(ReqProps, ms, sErrMsg) then
         FreeAndNil(ms)
       else
         ms.Position := 0;
 
-      FOwner.DoRequestComplete(Self, tile, ms, sErrMsg);
+      if Assigned(FOnRequestComplete) then
+        FOnRequestComplete(Self, tile, ms, sErrMsg);
     end;
   end;
 end;
 
 { TNetworkRequestQueue }
 
-//   MaxTasksPerThread - if TaskCount > MaxTasksPerThread*ThreadCount, add one more thread
-//   MaxThreads - limit the number of threads
-//   GotTileCb - method to call when request is completed
 constructor TNetworkRequestQueue.Create(MaxTasksPerThread, MaxThreads: Cardinal;
   RequestFunc: TBlockingNetworkRequestFunc; GotTileCb: TGotTileCallbackBgThr);
 begin
@@ -181,6 +189,7 @@ begin
   FCS.Leave;
 end;
 
+// Search for tile in list
 function IndexOfTile(const Tile: TTile; List: TList): Integer;
 begin
   for Result := 0 to List.Count - 1 do
@@ -193,8 +202,7 @@ type
   TQueueHack = class(TQueue) end;
 
 procedure TNetworkRequestQueue.RequestTile(const Tile: TTile);
-var
-  pT: PTile;
+var pT: PTile;
 begin
   Lock;
   try
@@ -217,11 +225,16 @@ begin
   end;
 end;
 
+// Create new thread and add to list
 procedure TNetworkRequestQueue.AddThread;
+var thr: TNetworkRequestThread;
 begin
   Lock;
   try
-    FThreads.Add(TNetworkRequestThread.Create(Self));
+    thr := TNetworkRequestThread.Create(Self, FRequestFunc);
+    thr.OnRequestComplete := DoRequestComplete;
+    thr.Start;
+    FThreads.Add(thr);
   finally
     Unlock;
   end;
@@ -232,7 +245,7 @@ end;
 function TNetworkRequestQueue.PopTask: Pointer;
 begin
   // Fast check
-  if not NotEmpty then
+  if not FNotEmpty then
     Exit(nil);
 
   Lock;
@@ -253,8 +266,7 @@ end;
 // Network request complete
 // ! Executed from bg threads
 procedure TNetworkRequestQueue.DoRequestComplete(Sender: TThread; const Tile: TTile; Ms: TMemoryStream; const Error: string);
-var
-  idx: Integer;
+var idx: Integer;
 begin
   Lock;
   try

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>OSM Map control: OSM.TileStorage</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="PasDoc 0.15.0">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<table class="container"><tr><td class="navigation">
+<h2>OSM Map control</h2><p><a href="AllUnits.html" class="navigation">Units</a></p><p><a href="ClassHierarchy.html" class="navigation">Class Hierarchy</a></p><p><a href="AllClasses.html" class="navigation">Classes, Interfaces, Objects and Records</a></p><p><a href="AllTypes.html" class="navigation">Types</a></p><p><a href="AllVariables.html" class="navigation">Variables</a></p><p><a href="AllConstants.html" class="navigation">Constants</a></p><p><a href="AllFunctions.html" class="navigation">Functions and Procedures</a></p><p><a href="AllIdentifiers.html" class="navigation">Identifiers</a></p></td><td class="content">
+<h1 class="unit">Unit OSM.TileStorage</h1>
+<div class="sections">
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section">Functions and Procedures</div><div class="one_section"><a class="section" href="#PasDoc-Types">Types</a></div><div class="one_section"><a class="section" href="#PasDoc-Constants">Constants</a></div><div class="one_section">Variables</div></div>
+<span id="PasDoc-Description"></span><h2 class="description">Description</h2>
+<p>
+OSM tile images cache. Stores tile images for the map, could read/save them from/to local files but doesn't request them from network. 
+
+<p>(c) Fr0sT-Brutal <a  href="https://github.com/Fr0sT-Brutal/Delphi_OSMMap">https://github.com/Fr0sT-Brutal/Delphi_OSMMap</a>
+
+<p></p>
+<h6 class="description_section">See also</h6>
+<dl class="see_also">
+  <dt><a class="normal" href="OSM.NetworkRequest.html">OSM.NetworkRequest</a></dt>
+  <dd>Generic (no real network implementation) classes and declarations for requesting OSM tile images from network.</dd>
+</dl>
+<span id="PasDoc-Uses"></span><h2 class="overview">Overview</h2>
+<span id="PasDoc-Classes"></span><h3 class="cio">Classes, Interfaces, Objects and Records</h3>
+<table class="classestable wide_list">
+<tr class="listheader">
+<th class="itemname">Name</th>
+<th class="itemdesc">Description</th>
+</tr>
+<tr class="list">
+<td class="itemname">Class&nbsp;<a class="bold" href="OSM.TileStorage.TTileObjectCache.html"><code>TTileObjectCache</code></a></td>
+<td class="itemdesc">Abstract object cache class indexed by tiles with fixed capacity organised as queue.</td>
+</tr>
+<tr class="list2">
+<td class="itemname">Record&nbsp;<a class="bold" href="OSM.TileStorage.TCacheLimits.html"><code>TCacheLimits</code></a></td>
+<td class="itemdesc">Limits of tile cache in memory</td>
+</tr>
+<tr class="list">
+<td class="itemname">Class&nbsp;<a class="bold" href="OSM.TileStorage.TTileStorage.html"><code>TTileStorage</code></a></td>
+<td class="itemdesc">Class that encapsulates memory and file cache of tile images.</td>
+</tr>
+</table>
+<span id="PasDoc-Types"></span><h3 class="summary">Types</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code><strong><a  href="OSM.TileStorage.html#TTileStorageOption">TTileStorageOption</a></strong> = (...);</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a  href="OSM.TileStorage.html#TTileStorageOptions">TTileStorageOptions</a></strong> = set of <a  href="OSM.TileStorage.html#TTileStorageOption">TTileStorageOption</a>;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Constants"></span><h3 class="summary">Constants</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code><strong><a  href="OSM.TileStorage.html#TILE_BITMAP_SIZE">TILE_BITMAP_SIZE</a></strong> = 4*<a  href="OSM.SlippyMapUtils.html#TILE_IMAGE_WIDTH">TILE_IMAGE_WIDTH</a>*<a  href="OSM.SlippyMapUtils.html#TILE_IMAGE_HEIGHT">TILE_IMAGE_HEIGHT</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a  href="OSM.TileStorage.html#DefaultTilePathPatt">DefaultTilePathPatt</a></strong> = '%d'+PathDelim+'%d'+PathDelim+'%d.png';</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code><strong><a  href="OSM.TileStorage.html#GDI_HANDLES_LIMIT">GDI_HANDLES_LIMIT</a></strong> = 3000;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a  href="OSM.TileStorage.html#GDI_PER_BMP">GDI_PER_BMP</a></strong> = 1;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code><strong><a  href="OSM.TileStorage.html#GDI_PER_PNG">GDI_PER_PNG</a></strong> = 3;</code></td>
+</tr>
+</table>
+<h2 class="description">Description</h2>
+<h3 class="detail">Types</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TTileStorageOption"></span><code><strong>TTileStorageOption</strong> = (...);</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Flags for <a class="normal" href="OSM.TileStorage.TTileStorage.html">TTileStorage</a></p>
+<h6 class="description_section">Values</h6>
+<ul>
+<li>
+<span id="tsoNoFileCache">tsoNoFileCache</span>: disable all file cache operations</li>
+<li>
+<span id="tsoReadOnlyFileCache">tsoReadOnlyFileCache</span>: disable write file cache operations</li>
+</ul>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TTileStorageOptions"></span><code><strong>TTileStorageOptions</strong> = set of <a  href="OSM.TileStorage.html#TTileStorageOption">TTileStorageOption</a>;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<h3 class="detail">Constants</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TILE_BITMAP_SIZE"></span><code><strong>TILE_BITMAP_SIZE</strong> = 4*<a  href="OSM.SlippyMapUtils.html#TILE_IMAGE_WIDTH">TILE_IMAGE_WIDTH</a>*<a  href="OSM.SlippyMapUtils.html#TILE_IMAGE_HEIGHT">TILE_IMAGE_HEIGHT</a>;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Amount of bytes that a single tile bitmap occupies in memory. Bitmap consumes &tilde;4 byte per pixel. This constant could be used to determine acceptable cache size knowing acceptable memory usage.</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="DefaultTilePathPatt"></span><code><strong>DefaultTilePathPatt</strong> = '%d'+PathDelim+'%d'+PathDelim+'%d.png';</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Default pattern of tile file path. Placeholders are for: Zoom, X, Y. Define custom patt in <a class="normal" href="OSM.TileStorage.TTileStorage.html#Create">TTileStorage.Create</a> to modify tiles disposition (f.ex., place them all in a single folder with names like <code>tile_%zoom%<em>%x%</em>%y%.png</code>)</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="GDI_HANDLES_LIMIT"></span><code><strong>GDI_HANDLES_LIMIT</strong> = 3000;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Default overall limit is 10k per process, choose reasonable number below this limit</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="GDI_PER_BMP"></span><code><strong>GDI_PER_BMP</strong> = 1;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Number of GDI handles per <code>TBitmap</code></p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="GDI_PER_PNG"></span><code><strong>GDI_PER_PNG</strong> = 3;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Number of GDI handles per <code>TPngImage</code></p>
+</td></tr>
+</table>
+<h2 class="authors">Author</h2>
+<ul class="authors">
+<li>Fr0sT-Brutal (https://github.com/Fr0sT-Brutal)</li>
+</ul>
+<hr><span class="appinfo"><em>Generated by <a  href="https://github.com/pasdoc/pasdoc/wiki">PasDoc 0.15.0</a>. </em>
+</span>
+</td></tr></table></body></html>

@@ -1,7 +1,9 @@
 {
-  Implements blocking HTTP request with HTTP class from RTL
-  FPC: fphttpclient unit
-  Delphi: TNetHTTPRequest (since XE8). Older versions must use other engines
+  Implements blocking HTTP request with HTTP class from RTL.
+
+  FPC: **fphttpclient.TFPCustomHTTPClient** class
+
+  Delphi: **System.Net.HttpClientComponent.TNetHTTPRequest** (since XE8). Older versions must use other engines
 
   (c) Fr0sT-Brutal https://github.com/Fr0sT-Brutal/Delphi_OSMMap
 }
@@ -23,14 +25,12 @@ uses
   {$ENDIF}
   OSM.NetworkRequest;
 
-// Only GET requests. No auth fields used.
+// Function executing a network request. See description of
+// OSM.NetworkRequest.TBlockingNetworkRequestFunc type.@br
 function NetworkRequest(const RequestProps: THttpRequestProps;
   const ResponseStm: TStream; out ErrMsg: string): Boolean;
 
 implementation
-
-const
-  SEMsg_UnsuppReqType = 'Only GET request type supported';
 
 function NetworkRequest(const RequestProps: THttpRequestProps;
   const ResponseStm: TStream; out ErrMsg: string): Boolean;
@@ -46,9 +46,6 @@ begin
   ErrMsg := ''; Result := False;
 
   try try
-    if RequestProps.RequestType <> reqGet then
-      raise Exception.Create(SEMsg_UnsuppReqType);
-
     {$IFDEF FPC}
     httpCli := TFPCustomHTTPClient.Create(nil);
     httpCli.SimpleGet(RequestProps.URL, ResponseStm);

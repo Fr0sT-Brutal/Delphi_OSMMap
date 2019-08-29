@@ -1,0 +1,13 @@
+name=OSM Map control
+title=OSM Map control
+format=html
+auto-abstract
+auto-link
+auto-link-exclude=$CFG_PATH\autolink-excl
+define=MSWINDOWS
+markdown
+ignore-marker=~
+ignore-marker=TODO
+auto-back-comments
+visible-members=public,published,automated
+output=$CFG_PATH\docs

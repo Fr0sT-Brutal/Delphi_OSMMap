@@ -1,9 +1,11 @@
 {
   Visual control displaying a map.
   Data for the map (tile images) must be supplied via callbacks.
-  See OSM.TileStorage unit
+  @seealso OSM.TileStorage
 
   (c) Fr0sT-Brutal https://github.com/Fr0sT-Brutal/Delphi_OSMMap
+
+  @author(Fr0sT-Brutal (https://github.com/Fr0sT-Brutal))
 }
 unit OSM.MapControl;
 
@@ -25,21 +27,22 @@ uses
   OSM.SlippyMapUtils;
 
 const
-  // default W and H of cache image in number of tiles.
-  // Image's memory occupation:
-  //   (4 bytes per pixel)*TilesH*TilesV*(65536 pixels in single tile)
+  // Default W and H of cache image in number of tiles.
+  // Memory occupation of an image:
+  //   (4 bytes per pixel) * `TilesH` * `TilesV` * (65536 pixels in single tile) @br
   // For value 8 it counts 16.7 Mb
   CacheImageDefTilesH = 8;
   CacheImageDefTilesV = 8;
-  // default W and H of cache image in pixels
+  // Default W and H of cache image in pixels
   CacheImageDefWidth = CacheImageDefTilesH*TILE_IMAGE_WIDTH;
   CacheImageDefHeight = CacheImageDefTilesV*TILE_IMAGE_HEIGHT;
-  // margin that is added to cache image to hold view area, in number of tiles
+  // Margin that is added to cache image to hold view area, in number of tiles
   CacheMarginSize = 2;
-  // size of margin for labels on map, in pixels
+  // Size of margin for labels on map, in pixels
   LabelMargin = 2;
 
 type
+  // Shape of mapmark glyph
   TMapMarkGlyphShape = (gshCircle, gshSquare, gshTriangle);
 
   // Visual properties of mapmark's glyph
@@ -66,16 +69,16 @@ type
   TMapMarkCustomProp = (propGlyphStyle, propCaptionStyle, propFont);
   TMapMarkCustomProps = set of TMapMarkCustomProp;
 
-  // Class representing a single mapmark
+  // Class representing a single mapmark.
   // It is recommended to be created by TMapMarkList.NewItem
   TMapMark = class
   public
-    // Mapmark data
+    //~ Mapmark data
     Coord: TGeoPoint;
     Caption: string;
     Visible: Boolean;
     Data: Pointer;
-    // Visual style
+    //~ Visual style
     CustomProps: TMapMarkCustomProps;
     GlyphStyle: TMapMarkGlyphStyle;
     CaptionStyle: TMapMarkCaptionStyle;
@@ -86,6 +89,7 @@ type
 
   TMapControl = class;
 
+  // Notification of an action over a mapmark in a list
   TOnItemNotify = procedure (Sender: TObject; Item: TMapMark; Action: TListNotification) of object;
 
   // List of mapmarks
@@ -102,49 +106,76 @@ type
     procedure BeginUpdate;
     procedure EndUpdate;
     function Get(Index: Integer): TMapMark;
+    // Find the next map mark that is near specified coordinates.
+    //   @param GeoCoords - coordinates to search
+    //   @param ConsiderMapMarkSize - widen an area to search by mapmark size
+    //   @param(PrevIndex - index of previous found mapmark in the list.
+    //     `-1` (default) will start from the 1st element)
+    //   @returns index of mapmark in the list, `-1` if not found.
+    //
+    // Samples:
+    //   1) Check if there's any map marks at this point:
+    //     ```pascal
+    //     if Find(Point) <> -1 then ...
+    //     ```
+    //   2) Select all map marks at this point
+    //     ```pascal
+    //     idx := -1;
+    //     repeat
+    //       idx := MapMarks.Find(Point, idx);
+    //       if idx = -1 then Break;
+    //       ... do something with MapMarks[idx] ...
+    //     until False;
+    //     ```
     function Find(const GeoCoords: TGeoPoint; ConsiderMapMarkSize: Boolean = True; StartIndex: Integer = -1): Integer; overload;
+    // The same as above but searches within specified rectangle
     function Find(const GeoRect: TGeoRect; ConsiderMapMarkSize: Boolean = True; StartIndex: Integer = -1): Integer; overload;
+    // Create TMapMark object and initially assign values from owner map's fields
     function NewItem: TMapMark;
+    // Simple method to add a mapmark by coords and caption
     function Add(const GeoCoords: TGeoPoint; const Caption: string): TMapMark; overload;
+    // Add a mapmark with fully customizable properties. `MapMark` should be init-ed by NewItem
     function Add(MapMark: TMapMark): TMapMark; overload;
     procedure Delete(MapMark: TMapMark);
     function Count: Integer;
     procedure Clear;
-
+    // Assigning a handler for this event allows implementing custom init, disposal
+    // of allocated memory etc.
     property OnItemNotify: TOnItemNotify read FOnItemNotify write FOnItemNotify;
   end;
 
+  // Options of map control
   TMapOption = (moDontDrawCopyright, moDontDrawScale);
   TMapOptions = set of TMapOption;
 
   // Mode of handling of plain left mouse button press
   TMapMouseMode = (mmDrag, mmSelect);
 
-  // Callback to draw an image of a single tile having number (TileHorzNum;TileVertNum)
-  // at point TopLeft on canvas Canvas.
-  // Callback must set Handled to True, otherwise default actions will be done.
-  // This type is common for both OnDrawTile and OnDrawTileLoading callbacks.
-  // Note for OnDrawTile:
-  // If Handled is not set to True, DrawTileLoading method is called for this tile.
-  // Generally you must assign this callback only.
-  // Note for OnDrawTileLoading:
+  // Callback to draw an image of a single tile having number (`TileHorzNum`;`TileVertNum`)
+  // at point `TopLeft` on canvas `Canvas`.
+  // Callback must set `Handled` to @true, otherwise default actions will be done.
+  // This type is common for both TMapControl.OnDrawTile and TMapControl.OnDrawTileLoading callbacks.
+  //
+  // _Note for TMapControl.OnDrawTile:_@br
+  // If `Handled` is not set to @true, TMapControl.DrawTileLoading method is called for this tile.
+  // Usually you have to assign this callback only.
+  //
+  // _Note for TMapControl.OnDrawTileLoading:_@br
   // The handler is called only for empty tiles allowing a user to draw his own label
   TOnDrawTile = procedure (Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal;
     const TopLeft: TPoint; Canvas: TCanvas; var Handled: Boolean) of object;
 
   // Callback to custom draw a mapmark. It is called before default drawing.
+  // If `Handled` is not set to @true, default drawing will be done.
   // User could draw a mapmark fully or just change some props and let default
-  // drawing do it job
+  // drawing do its job
   TOnDrawMapMark = procedure (Sender: TMapControl; Canvas: TCanvas; const Point: TPoint;
     MapMark: TMapMark; var Handled: Boolean) of object;
 
-  // Selection was made
+  // Callback to react on selection by mouse
   TOnSelectionBox = procedure (Sender: TMapControl; const GeoRect: TGeoRect) of object;
 
   // Control displaying a map or its visible part.
-
-  { TMapControl }
-
   TMapControl = class(TScrollBox)
   strict private
     FMapSize: TSize;         // current map dims in pixels
@@ -166,8 +197,8 @@ type
     FOnZoomChanged: TNotifyEvent;
     FOnDrawMapMark: TOnDrawMapMark;
     FOnSelectionBox: TOnSelectionBox;
-  protected
-    // overrides
+  strict protected
+    //~ overrides
     procedure PaintWindow(DC: HDC); override;
     procedure Resize; override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
@@ -179,7 +210,7 @@ type
     procedure WMHScroll(var Message: TWMHScroll); message WM_HSCROLL;
     procedure WMVScroll(var Message: TWMVScroll); message WM_VSCROLL;
     procedure WMPaint(var Message: TWMPaint); message WM_PAINT;
-    // main methods
+    //~ main methods
     function ViewInCache: Boolean; inline;
     procedure UpdateCache;
     procedure MoveCache;
@@ -187,60 +218,96 @@ type
     procedure DrawTileLoading(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas);
     procedure DrawTile(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas);
     procedure DrawMapMark(Canvas: TCanvas; MapMark: TMapMark);
-    // getters/setters
+    //~ getters/setters
     procedure SetNWPoint(const MapPt: TPoint); overload;
     function GetCenterPoint: TGeoPoint;
     procedure SetCenterPoint(const GeoCoords: TGeoPoint);
     function GetNWPoint: TGeoPoint;
     procedure SetNWPoint(const GeoCoords: TGeoPoint); overload;
     procedure SetZoomConstraint(Index: Integer; ZoomConstraint: TMapZoomLevel);
-    // helpers
+    //~ helpers
     function ViewAreaRect: TRect;
     class procedure DrawCopyright(const Text: string; DestBmp: TBitmap);
     class procedure DrawScale(Zoom: TMapZoomLevel; DestBmp: TBitmap);
   public
+    // Default glyph style of mapmarks. New items will be init-ed with this value
     MapMarkGlyphStyle: TMapMarkGlyphStyle;
+    // Default caption style of mapmarks. New items will be init-ed with this value
     MapMarkCaptionStyle: TMapMarkCaptionStyle;
+    // Default font of mapmarks. New items will be init-ed with this value
     MapMarkCaptionFont: TFont;
 
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
+    // (Re)draw single tile having numbers `(TileHorzNum;TileVertNum)`
     procedure RefreshTile(TileHorzNum, TileVertNum: Cardinal);
 
+    // Convert a point from map pixel coords to geo coords
     function MapToGeoCoords(const MapPt: TPoint): TGeoPoint; overload;
+    // Convert a rect from map pixel coords to geo coords
     function MapToGeoCoords(const MapRect: TRect): TGeoRect; overload;
+    // Convert a point from geo coords to map pixel coords
     function GeoCoordsToMap(const GeoCoords: TGeoPoint): TPoint; overload;
+    // Convert a rect from geo coords to map pixel coords
     function GeoCoordsToMap(const GeoRect: TGeoRect): TRect; overload;
+    // Convert a point from view area coords to map coords
     function ViewToMap(const ViewPt: TPoint): TPoint; overload;
+    // Convert a rect from view area coords to map coords
     function ViewToMap(const ViewRect: TRect): TRect; overload;
+    // Convert a point from map coords to view area coords
     function MapToView(const MapPt: TPoint): TPoint; overload;
+    // Convert a rect from map coords to view area coords
     function MapToView(const MapRect: TRect): TRect; overload;
+    // Convert map points to scrollbox inner coordinates (not client!)
     function MapToInner(const MapPt: TPoint): TPoint;
+    // Convert scrollbox inner coordinates (not client!) to map points
     function InnerToMap(const Pt: TPoint): TPoint;
 
+    // Delta move the view area
     procedure ScrollMapBy(DeltaHorz, DeltaVert: Integer);
+    // Absolutely move the view area
     procedure ScrollMapTo(Horz, Vert: Integer);
+    // Set zoom level to new value and reposition to given point
+    //   @param Value - new zoom value
+    //   @param MapBindPt - point in map coords that must keep its position within view
     procedure SetZoom(Value: Integer; const MapBindPt: TPoint); overload;
+    // Simple zoom change with binding to top-left corner
     procedure SetZoom(Value: Integer); overload;
+    // Zoom to show given region `GeoRect`
     procedure ZoomToArea(const GeoRect: TGeoRect);
+    // Zoom to fill view area as much as possible
     procedure ZoomToFit;
 
-    // properties
+    //~ properties
+    // Current zoom level
     property Zoom: Integer read FZoom;
+    // Map options
     property MapOptions: TMapOptions read FMapOptions write FMapOptions;
+    // Point of center of current view area. Set this property to move view
     property CenterPoint: TGeoPoint read GetCenterPoint write SetCenterPoint;
+    // Point of top-left corner of current view area. Set this property to move view
     property NWPoint: TGeoPoint read GetNWPoint write SetNWPoint;
+    // Minimal zoom level. Zoom couldn't be set to a value less than this value
     property MinZoom: TMapZoomLevel index 0 read FMinZoom write SetZoomConstraint;
+    // Maximal zoom level. Zoom couldn't be set to a value greater than this value
     property MaxZoom: TMapZoomLevel index 1 read FMaxZoom write SetZoomConstraint;
+    // List of mapmarks on a map
     property MapMarks: TMapMarkList read FMapMarkList;
+    // Mode of handling left mouse button press
     property MouseMode: TMapMouseMode read FMouseMode write FMouseMode;
+    // View area in map coords
     property ViewRect: TRect read ViewAreaRect;
-    // events/callbacks
+    //~ events/callbacks
+    // Callback is called when map tile must be drawn
     property OnDrawTile: TOnDrawTile read FOnDrawTile write FOnDrawTile;
+    // Callback is called when map tile with loading state must be drawn
     property OnDrawTileLoading: TOnDrawTile read FOnDrawTileLoading write FOnDrawTileLoading;
+    // Callback is called when zoom level is changed
     property OnZoomChanged: TNotifyEvent read FOnZoomChanged write FOnZoomChanged;
+    // Callback is called when mapmark must be drawn
     property OnDrawMapMark: TOnDrawMapMark read FOnDrawMapMark write FOnDrawMapMark;
+    // Callback is called when selection with mouse was made
     property OnSelectionBox: TOnSelectionBox read FOnSelectionBox write FOnSelectionBox;
   end;
 
@@ -250,12 +317,16 @@ function ToInnerCoords(const StartPt: TPoint; const Rect: TRect): TRect; overloa
 function ToOuterCoords(const StartPt: TPoint; const Rect: TRect): TRect; overload; inline;
 
 const
+  // Default style of mapmark glyph.
+  // TMapControl.MapMarkGlyphStyle is init-ed with this value
   DefaultMapMarkGlyphStyle: TMapMarkGlyphStyle = (
     Shape: gshCircle;
     Size: 20;
     BorderColor: clWindowFrame;
     BgColor: clSkyBlue;
   );
+  // Default style of mapmark caption.
+  // TMapControl.MapMarkGlyphStyle is init-ed with this value
   DefaultMapMarkCaptionStyle: TMapMarkCaptionStyle = (
     Color: clMenuText;
     BgColor: clWindow;
@@ -264,8 +335,9 @@ const
   );
 
 const
-  SLbl_Loading = 'Loading [%d : %d]...';
+  S_Lbl_Loading = 'Loading [%d : %d]...';
 
+// @exclude
 procedure Register;
 
 implementation
@@ -383,7 +455,6 @@ begin
   Result := FList.Count;
 end;
 
-// Remove all mapmarks
 procedure TMapMarkList.Clear;
 var i: Integer;
 begin
@@ -399,29 +470,11 @@ begin
     FMap.Invalidate;
 end;
 
-// Get mapmark at the specified index
 function TMapMarkList.Get(Index: Integer): TMapMark;
 begin
   Result := FList[Index];
 end;
 
-// Find the next map mark that is near specified coordinates.
-//   ConsiderMapMarkSize - widen an area to search by mapmark size.
-//   PrevIndex - index of previous found map mark in the list. -1 (default) to
-//     start from the 1st element.
-// Returns:
-//   index of map mark in the list, -1 if not found.
-//
-// Samples:
-//   1) Check if there's any map marks at this point
-//     if Find(Point) <> -1 then ...
-//   2) Select all map marks at this point
-//     idx := -1;
-//     repeat
-//       idx := MapMarks.Find(Point, idx);
-//       if idx = -1 then Break;
-//       ... do something with MapMarks[idx] ...
-//     until False;
 function TMapMarkList.Find(const GeoCoords: TGeoPoint; ConsiderMapMarkSize: Boolean; StartIndex: Integer): Integer;
 var
   i: Integer;
@@ -441,7 +494,6 @@ begin
   Result := -1;
 end;
 
-// The same as above but searches within specified rectangle
 function TMapMarkList.Find(const GeoRect: TGeoRect; ConsiderMapMarkSize: Boolean; StartIndex: Integer): Integer;
 var
   i: Integer;
@@ -463,7 +515,6 @@ begin
   Result := -1;
 end;
 
-// Create MapMark object and initially assign values from owner's fields
 function TMapMarkList.NewItem: TMapMark;
 begin
   Result := TMapMark.Create;
@@ -791,8 +842,6 @@ end;
 
 // *** new methods ***
 
-// Set zoom level to Value and reposition to given point
-//   MapBindPt - point in map coords that must keep its position within view
 procedure TMapControl.SetZoom(Value: Integer; const MapBindPt: TPoint);
 var
   CurrBindPt, NewViewNW, ViewBindPt: TPoint;
@@ -838,7 +887,6 @@ begin
     FOnZoomChanged(Self);
 end;
 
-// Simple zoom change with binding to top-left corner
 procedure TMapControl.SetZoom(Value: Integer);
 begin
   SetZoom(Value, Point(0,0));
@@ -867,7 +915,6 @@ begin
   FCacheImage.SetSize(CacheSize.cx, CacheSize.cy);
 end;
 
-// Recalc point in view area coords to map coords
 function TMapControl.ViewToMap(const ViewPt: TPoint): TPoint;
 begin
   Result := ToOuterCoords(ViewAreaRect.TopLeft, ViewPt);
@@ -878,7 +925,6 @@ begin
   Result := ToOuterCoords(ViewAreaRect.TopLeft, ViewRect);
 end;
 
-// Recalc point in map coords to view area coords
 function TMapControl.MapToView(const MapPt: TPoint): TPoint;
 begin
   Result := ToInnerCoords(ViewAreaRect.TopLeft, MapPt);
@@ -975,7 +1021,6 @@ begin
   FCacheImageRect.TopLeft.Subtract(Point(MarginH, MarginV));
 end;
 
-// Draw single tile (TileHorzNum;TileVertNum)
 procedure TMapControl.RefreshTile(TileHorzNum, TileVertNum: Cardinal);
 var
   TileTopLeft: TPoint;
@@ -1031,7 +1076,7 @@ begin
   Canvas.Pen.Color := clDkGray;
   Canvas.Rectangle(TileRect);
 
-  txt := Format(SLbl_Loading, [TileHorzNum, TileVertNum]);
+  txt := Format(S_Lbl_Loading, [TileHorzNum, TileVertNum]);
   TextExt := Canvas.TextExtent(txt);
   Canvas.Font.Color := clGreen;
   Canvas.TextOut(
@@ -1128,7 +1173,6 @@ begin
   Result := OSM.SlippyMapUtils.GeoCoordsToMap(FZoom, GeoRect);
 end;
 
-// Delta move the view area
 procedure TMapControl.ScrollMapBy(DeltaHorz, DeltaVert: Integer);
 begin
   HorzScrollBar.Position := HorzScrollBar.Position + DeltaHorz;
@@ -1136,7 +1180,6 @@ begin
   Invalidate;
 end;
 
-// Absolutely move the view area
 procedure TMapControl.ScrollMapTo(Horz, Vert: Integer);
 begin
   HorzScrollBar.Position := Horz;
@@ -1196,7 +1239,6 @@ begin
     SetZoom(FMaxZoom);
 end;
 
-// Zoom to show selected region
 procedure TMapControl.ZoomToArea(const GeoRect: TGeoRect);
 var
   zoom, NewZoomH, NewZoomV: TMapZoomLevel;

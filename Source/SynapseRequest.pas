@@ -1,9 +1,12 @@
 {
   Implements blocking HTTP request with Synapse framework.
 
-    based on code by Simon Kroik, 06.2018, kroiksm@gmx.de
+    based on code by Simon Kroik, 06.2018, kroiksm@@gmx.de
 
   (c) Fr0sT-Brutal https://github.com/Fr0sT-Brutal/Delphi_OSMMap
+
+  @author(Simon Kroik (kroiksm@gmx.de))
+  @author(Fr0sT-Brutal (https://github.com/Fr0sT-Brutal))
 }
 unit SynapseRequest;
 
@@ -14,7 +17,9 @@ uses
   HTTPSend, SynaUtil,
   OSM.NetworkRequest;
 
-// RequestProps.Additional: Boolean - SendAsMozilla flag
+// Function executing a network request. See description of
+// OSM.NetworkRequest.TBlockingNetworkRequestFunc type.@br
+// `RequestProps.Additional: Boolean` - SendAsMozilla flag
 function NetworkRequest(const RequestProps: THttpRequestProps;
   const ResponseStm: TStream; out ErrMsg: string): Boolean;
 
@@ -30,7 +35,6 @@ begin
   AHTTP.Headers.Add('Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
 end;
 
-//------------------------------------------------------------------------------
 //based on Synapse
 //For HTTPS-Support:
 //  1) USES ssl_openssl;
@@ -48,22 +52,13 @@ begin
     HTTP.UserName := RequestProps.HttpUserName;
     HTTP.Password := RequestProps.HttpPassword;
 
-    if RequestProps.RequestType = reqPost then
-    begin
-      WriteStrToStream(HTTP.Document, RawByteString(RequestProps.POSTData));
-      HTTP.MimeType := 'application/x-www-form-urlencoded';
-    end;
-
     if Boolean(RequestProps.Additional) then
       PrepareHTTPSendAsMozilla(HTTP);
 
     if Assigned(RequestProps.HeaderLines) then
       HTTP.Headers.AddStrings(RequestProps.HeaderLines);
 
-    if RequestProps.RequestType = reqPost then
-      Result := HTTP.HTTPMethod('POST', RequestProps.URL)
-    else
-      Result := HTTP.HTTPMethod('GET', RequestProps.URL);
+    Result := HTTP.HTTPMethod('GET', RequestProps.URL);
 
     // check network error
     if not Result then

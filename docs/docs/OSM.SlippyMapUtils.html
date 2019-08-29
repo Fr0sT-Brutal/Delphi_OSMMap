@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>OSM Map control: OSM.SlippyMapUtils</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="PasDoc 0.15.0">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<table class="container"><tr><td class="navigation">
+<h2>OSM Map control</h2><p><a href="AllUnits.html" class="navigation">Units</a></p><p><a href="ClassHierarchy.html" class="navigation">Class Hierarchy</a></p><p><a href="AllClasses.html" class="navigation">Classes, Interfaces, Objects and Records</a></p><p><a href="AllTypes.html" class="navigation">Types</a></p><p><a href="AllVariables.html" class="navigation">Variables</a></p><p><a href="AllConstants.html" class="navigation">Constants</a></p><p><a href="AllFunctions.html" class="navigation">Functions and Procedures</a></p><p><a href="AllIdentifiers.html" class="navigation">Identifiers</a></p></td><td class="content">
+<h1 class="unit">Unit OSM.SlippyMapUtils</h1>
+<div class="sections">
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div><div class="one_section"><a class="section" href="#PasDoc-Types">Types</a></div><div class="one_section"><a class="section" href="#PasDoc-Constants">Constants</a></div><div class="one_section"><a class="section" href="#PasDoc-Variables">Variables</a></div></div>
+<span id="PasDoc-Description"></span><h2 class="description">Description</h2>
+<p>
+OSM map types &amp; functions. Ref.: <a  href="https://wiki.openstreetmap.org/wiki/Slippy_Map">https://wiki.openstreetmap.org/wiki/Slippy_Map</a>
+
+<p>based on unit by Simon Kroik, 06.2018, kroiksm@gmx.de which is based on unit openmap.pas <a  href="https://github.com/norayr/meridian23/blob/master/openmap/openmap.pas">https://github.com/norayr/meridian23/blob/master/openmap/openmap.pas</a> New BSD License
+
+<p>(c) Fr0sT-Brutal <a  href="https://github.com/Fr0sT-Brutal/Delphi_OSMMap">https://github.com/Fr0sT-Brutal/Delphi_OSMMap</a>
+
+<p></p>
+<span id="PasDoc-Uses"></span><h2 class="overview">Overview</h2>
+<span id="PasDoc-Classes"></span><h3 class="cio">Classes, Interfaces, Objects and Records</h3>
+<table class="classestable wide_list">
+<tr class="listheader">
+<th class="itemname">Name</th>
+<th class="itemdesc">Description</th>
+</tr>
+<tr class="list">
+<td class="itemname">Record&nbsp;<a class="bold" href="OSM.SlippyMapUtils.TTile.html"><code>TTile</code></a></td>
+<td class="itemdesc">Properties of a map tile</td>
+</tr>
+<tr class="list2">
+<td class="itemname">Record&nbsp;<a class="bold" href="OSM.SlippyMapUtils.TGeoPoint.html"><code>TGeoPoint</code></a></td>
+<td class="itemdesc">Point on a map defined by longitude and latitude.</td>
+</tr>
+<tr class="list">
+<td class="itemname">Record&nbsp;<a class="bold" href="OSM.SlippyMapUtils.TGeoRect.html"><code>TGeoRect</code></a></td>
+<td class="itemdesc">Region on a map defined by two pairs of longitude and latitude.</td>
+</tr>
+</table>
+<span id="PasDoc-FuncsProcs"></span><h3 class="summary">Functions and Procedures</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code>function <strong><a  href="OSM.SlippyMapUtils.html#RectFromPoints">RectFromPoints</a></strong>(const TopLeft, BottomRight: TPoint): TRect; inline;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>function <strong><a  href="OSM.SlippyMapUtils.html#TileCount">TileCount</a></strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>): Cardinal; inline;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>function <strong><a  href="OSM.SlippyMapUtils.html#TileValid">TileValid</a></strong>(const Tile: <a  href="OSM.SlippyMapUtils.TTile.html">TTile</a>): Boolean; inline;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>function <strong><a  href="OSM.SlippyMapUtils.html#TileToStr">TileToStr</a></strong>(const Tile: <a  href="OSM.SlippyMapUtils.TTile.html">TTile</a>): string;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>function <strong><a  href="OSM.SlippyMapUtils.html#TilesEqual">TilesEqual</a></strong>(const Tile1, Tile2: <a  href="OSM.SlippyMapUtils.TTile.html">TTile</a>): Boolean; inline;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>function <strong><a  href="OSM.SlippyMapUtils.html#MapWidth">MapWidth</a></strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>): Cardinal; inline;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>function <strong><a  href="OSM.SlippyMapUtils.html#MapHeight">MapHeight</a></strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>): Cardinal; inline;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>function <strong><a  href="OSM.SlippyMapUtils.html#InMap">InMap</a></strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; const Pt: TPoint): Boolean; overload; inline;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>function <strong><a  href="OSM.SlippyMapUtils.html#InMap">InMap</a></strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; const Rc: TRect): Boolean; overload; inline;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>function <strong><a  href="OSM.SlippyMapUtils.html#EnsureInMap">EnsureInMap</a></strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; const Pt: TPoint): TPoint; overload; inline;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>function <strong><a  href="OSM.SlippyMapUtils.html#EnsureInMap">EnsureInMap</a></strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; const Rc: TRect): TRect; overload; inline;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>function <strong><a  href="OSM.SlippyMapUtils.html#LongitudeToMapCoord">LongitudeToMapCoord</a></strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; Longitude: Double): Cardinal;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>function <strong><a  href="OSM.SlippyMapUtils.html#LatitudeToMapCoord">LatitudeToMapCoord</a></strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; Latitude: Double): Cardinal;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>function <strong><a  href="OSM.SlippyMapUtils.html#MapCoordToLongitude">MapCoordToLongitude</a></strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; X: Cardinal): Double;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>function <strong><a  href="OSM.SlippyMapUtils.html#MapCoordToLatitude">MapCoordToLatitude</a></strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; Y: Cardinal): Double;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>function <strong><a  href="OSM.SlippyMapUtils.html#MapToGeoCoords">MapToGeoCoords</a></strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; const MapPt: TPoint): <a  href="OSM.SlippyMapUtils.TGeoPoint.html">TGeoPoint</a>; overload; inline;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>function <strong><a  href="OSM.SlippyMapUtils.html#MapToGeoCoords">MapToGeoCoords</a></strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; const MapRect: TRect): <a  href="OSM.SlippyMapUtils.TGeoRect.html">TGeoRect</a>; overload; inline;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>function <strong><a  href="OSM.SlippyMapUtils.html#GeoCoordsToMap">GeoCoordsToMap</a></strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; const GeoCoords: <a  href="OSM.SlippyMapUtils.TGeoPoint.html">TGeoPoint</a>): TPoint; overload; inline;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>function <strong><a  href="OSM.SlippyMapUtils.html#GeoCoordsToMap">GeoCoordsToMap</a></strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; const GeoRect: <a  href="OSM.SlippyMapUtils.TGeoRect.html">TGeoRect</a>): TRect; overload; inline;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>function <strong><a  href="OSM.SlippyMapUtils.html#CalcLinDistanceInMeter">CalcLinDistanceInMeter</a></strong>(const Coord1, Coord2: <a  href="OSM.SlippyMapUtils.TGeoPoint.html">TGeoPoint</a>): Double;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>procedure <strong><a  href="OSM.SlippyMapUtils.html#GetScaleBarParams">GetScaleBarParams</a></strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; out ScalebarWidthInPixel, ScalebarWidthInMeter: Cardinal; out Text: string);</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>function <strong><a  href="OSM.SlippyMapUtils.html#TileToFullSlippyMapFileURL">TileToFullSlippyMapFileURL</a></strong>(const Tile: <a  href="OSM.SlippyMapUtils.TTile.html">TTile</a>): string;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Types"></span><h3 class="summary">Types</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code><strong><a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a></strong> = 0..19;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a  href="OSM.SlippyMapUtils.html#PTile">PTile</a></strong> = &circ;<a  href="OSM.SlippyMapUtils.TTile.html">TTile</a>;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Constants"></span><h3 class="summary">Constants</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code><strong><a  href="OSM.SlippyMapUtils.html#TILE_IMAGE_WIDTH">TILE_IMAGE_WIDTH</a></strong> = 256;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a  href="OSM.SlippyMapUtils.html#TILE_IMAGE_HEIGHT">TILE_IMAGE_HEIGHT</a></strong> = 256;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code><strong><a  href="OSM.SlippyMapUtils.html#TileMetersPerPixelOnEquator">TileMetersPerPixelOnEquator</a></strong>: array [<a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>] of Double =
+  (
+    156412,
+    78206,
+    39103,
+    19551,
+    9776,
+    4888,
+    2444,
+    1222,
+    610.984,
+    305.492,
+    152.746,
+    76.373,
+    38.187,
+    19.093,
+    9.547,
+    4.773,
+    2.387,
+    1.193,
+    0.596,
+    0.298
+  );</code></td>
+</tr>
+</table>
+<span id="PasDoc-Variables"></span><h3 class="summary">Variables</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code><strong><a  href="OSM.SlippyMapUtils.html#TilesCopyright">TilesCopyright</a></strong>: string = '(c) OpenStreetMap contributors';</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a  href="OSM.SlippyMapUtils.html#MapURLPrefix">MapURLPrefix</a></strong>: string = 'http://tile.openstreetmap.org/';</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code><strong><a  href="OSM.SlippyMapUtils.html#MapURLPostfix">MapURLPostfix</a></strong>: string = '';</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a  href="OSM.SlippyMapUtils.html#TileURLPatt">TileURLPatt</a></strong>: string = '%d/%d/%d.png';</code></td>
+</tr>
+</table>
+<h2 class="description">Description</h2>
+<h3 class="detail">Functions and Procedures</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="RectFromPoints"></span><code>function <strong>RectFromPoints</strong>(const TopLeft, BottomRight: TPoint): TRect; inline;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Construct <code>TRect</code> from two <code>TPoint</code>-s</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TileCount"></span><code>function <strong>TileCount</strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>): Cardinal; inline;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Returns count of tiles on <code>Zoom</code> level (= <code>2&circ;Zoom</code>)</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TileValid"></span><code>function <strong>TileValid</strong>(const Tile: <a  href="OSM.SlippyMapUtils.TTile.html">TTile</a>): Boolean; inline;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Checks <code>Tile</code> fields for validity</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TileToStr"></span><code>function <strong>TileToStr</strong>(const Tile: <a  href="OSM.SlippyMapUtils.TTile.html">TTile</a>): string;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Returns standartized string representation of <code>Tile</code></p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TilesEqual"></span><code>function <strong>TilesEqual</strong>(const Tile1, Tile2: <a  href="OSM.SlippyMapUtils.TTile.html">TTile</a>): Boolean; inline;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Compares tiles</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="MapWidth"></span><code>function <strong>MapWidth</strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>): Cardinal; inline;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Returns width of map at zoom level <code>Zoom</code> in pixels</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="MapHeight"></span><code>function <strong>MapHeight</strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>): Cardinal; inline;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Returns height of map at zoom level <code>Zoom</code> in pixels</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="InMap"></span><code>function <strong>InMap</strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; const Pt: TPoint): Boolean; overload; inline;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Checks if point <code>Pt</code> is inside a map at zoom level <code>Zoom</code></p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="InMap"></span><code>function <strong>InMap</strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; const Rc: TRect): Boolean; overload; inline;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Checks if rect <code>Rc</code> is inside a map at zoom level <code>Zoom</code></p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="EnsureInMap"></span><code>function <strong>EnsureInMap</strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; const Pt: TPoint): TPoint; overload; inline;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Ensures point <code>Pt</code> is inside a map at zoom level <code>Zoom</code>, corrects values if necessary </p>
+<h6 class="description_section">Returns</h6>
+<p class="return">Point that is inside a map</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="EnsureInMap"></span><code>function <strong>EnsureInMap</strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; const Rc: TRect): TRect; overload; inline;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Ensures rect <code>Rc</code> is inside a map at zoom level <code>Zoom</code>, corrects values if necessary </p>
+<h6 class="description_section">Returns</h6>
+<p class="return">Rect that is inside a map</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="LongitudeToMapCoord"></span><code>function <strong>LongitudeToMapCoord</strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; Longitude: Double): Cardinal;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Converts geo coord in degrees to map coord in pixels</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="LatitudeToMapCoord"></span><code>function <strong>LatitudeToMapCoord</strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; Latitude: Double): Cardinal;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Converts geo coord in degrees to map coord in pixels</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="MapCoordToLongitude"></span><code>function <strong>MapCoordToLongitude</strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; X: Cardinal): Double;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Converts map coord in pixels to geo coord in degrees</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="MapCoordToLatitude"></span><code>function <strong>MapCoordToLatitude</strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; Y: Cardinal): Double;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Converts map coord in pixels to geo coord in degrees</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="MapToGeoCoords"></span><code>function <strong>MapToGeoCoords</strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; const MapPt: TPoint): <a  href="OSM.SlippyMapUtils.TGeoPoint.html">TGeoPoint</a>; overload; inline;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Converts map point in pixels to geo point in degrees</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="MapToGeoCoords"></span><code>function <strong>MapToGeoCoords</strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; const MapRect: TRect): <a  href="OSM.SlippyMapUtils.TGeoRect.html">TGeoRect</a>; overload; inline;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Converts map rect in pixels to geo rect in degrees</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="GeoCoordsToMap"></span><code>function <strong>GeoCoordsToMap</strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; const GeoCoords: <a  href="OSM.SlippyMapUtils.TGeoPoint.html">TGeoPoint</a>): TPoint; overload; inline;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Converts geo point in degrees to map point in pixels</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="GeoCoordsToMap"></span><code>function <strong>GeoCoordsToMap</strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; const GeoRect: <a  href="OSM.SlippyMapUtils.TGeoRect.html">TGeoRect</a>): TRect; overload; inline;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Converts geo rect in degrees to map rect in pixels</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="CalcLinDistanceInMeter"></span><code>function <strong>CalcLinDistanceInMeter</strong>(const Coord1, Coord2: <a  href="OSM.SlippyMapUtils.TGeoPoint.html">TGeoPoint</a>): Double;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Calculates distance between two geo points in meters</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="GetScaleBarParams"></span><code>procedure <strong>GetScaleBarParams</strong>(Zoom: <a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; out ScalebarWidthInPixel, ScalebarWidthInMeter: Cardinal; out Text: string);</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Calculates parameters of map scalebar according to zoom level <code>Zoom</code></p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TileToFullSlippyMapFileURL"></span><code>function <strong>TileToFullSlippyMapFileURL</strong>(const Tile: <a  href="OSM.SlippyMapUtils.TTile.html">TTile</a>): string;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Returns full URL to an image of tile <code>Tile</code> using global variables <a class="normal" href="OSM.SlippyMapUtils.html#MapURLPrefix">MapURLPrefix</a>, <a class="normal" href="OSM.SlippyMapUtils.html#TileURLPatt">TileURLPatt</a>, <a class="normal" href="OSM.SlippyMapUtils.html#MapURLPostfix">MapURLPostfix</a></p>
+</td></tr>
+</table>
+<h3 class="detail">Types</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TMapZoomLevel"></span><code><strong>TMapZoomLevel</strong> = 0..19;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Map zoom. 19 = Maximum zoom for Mapnik layer</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="PTile"></span><code><strong>PTile</strong> = &circ;<a  href="OSM.SlippyMapUtils.TTile.html">TTile</a>;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<h3 class="detail">Constants</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TILE_IMAGE_WIDTH"></span><code><strong>TILE_IMAGE_WIDTH</strong> = 256;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Width of map tile in pixels</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TILE_IMAGE_HEIGHT"></span><code><strong>TILE_IMAGE_HEIGHT</strong> = 256;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Height of map tile in pixels</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TileMetersPerPixelOnEquator"></span><code><strong>TileMetersPerPixelOnEquator</strong>: array [<a  href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>] of Double =
+  (
+    156412,
+    78206,
+    39103,
+    19551,
+    9776,
+    4888,
+    2444,
+    1222,
+    610.984,
+    305.492,
+    152.746,
+    76.373,
+    38.187,
+    19.093,
+    9.547,
+    4.773,
+    2.387,
+    1.193,
+    0.596,
+    0.298
+  );</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+See <a  href="https://wiki.openstreetmap.org/wiki/Zoom_levels">https://wiki.openstreetmap.org/wiki/Zoom_levels</a></p>
+</td></tr>
+</table>
+<h3 class="detail">Variables</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TilesCopyright"></span><code><strong>TilesCopyright</strong>: string = '(c) OpenStreetMap contributors';</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Copyright text</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="MapURLPrefix"></span><code><strong>MapURLPrefix</strong>: string = 'http://tile.openstreetmap.org/';</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+URL of tile server</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="MapURLPostfix"></span><code><strong>MapURLPostfix</strong>: string = '';</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Part of tile URL that goes after tile path</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TileURLPatt"></span><code><strong>TileURLPatt</strong>: string = '%d/%d/%d.png';</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Pattern of tile URL. Placeholders are for: Zoom, X, Y</p>
+</td></tr>
+</table>
+<h2 class="authors">Author</h2>
+<ul class="authors">
+<li>Fr0sT-Brutal (https://github.com/Fr0sT-Brutal)</li>
+</ul>
+<hr><span class="appinfo"><em>Generated by <a  href="https://github.com/pasdoc/pasdoc/wiki">PasDoc 0.15.0</a>. </em>
+</span>
+</td></tr></table></body></html>

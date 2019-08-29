@@ -1,9 +1,12 @@
 {
   OSM tile images cache.
   Stores tile images for the map, could read/save them from/to local files but
-  doesn't request them from network. See OSM.NetworkRequest unit
+  doesn't request them from network.
+  @seealso(OSM.NetworkRequest)
 
   (c) Fr0sT-Brutal https://github.com/Fr0sT-Brutal/Delphi_OSMMap
+
+  @author(Fr0sT-Brutal (https://github.com/Fr0sT-Brutal))
 }
 unit OSM.TileStorage;
 
@@ -29,19 +32,19 @@ const
   // determine acceptable cache size knowing acceptable memory usage.
   TILE_BITMAP_SIZE = 4*TILE_IMAGE_WIDTH*TILE_IMAGE_HEIGHT;
 
-  // Default pattern of tile file path. Placeholders are for: Zoom, X, Y
+  // Default pattern of tile file path. Placeholders are for: Zoom, X, Y.
   // Define custom patt in TTileStorage.Create to modify tiles disposition
-  // (f.ex., place them all in a single folder with names like tile_%zoom%_%x%_%y%.png)
+  // (f.ex., place them all in a single folder with names like `tile_%zoom%_%x%_%y%.png`)
   DefaultTilePathPatt = '%d'+PathDelim+'%d'+PathDelim+'%d.png';
 
-  {$IFDEF MSWINDOWS} // Only Windows has GDI handles limit
-  GDI_HANDLES_LIMIT = 3000; // Default overall limit is 10k per process, choose reasonable number below this limit
-  GDI_PER_BMP = 1;
-  GDI_PER_PNG = 3;
+  {$IFDEF MSWINDOWS} //~ Only Windows has GDI handles limit
+  GDI_HANDLES_LIMIT = 3000; //< Default overall limit is 10k per process, choose reasonable number below this limit
+  GDI_PER_BMP = 1;          //< Number of GDI handles per `TBitmap`
+  GDI_PER_PNG = 3;          //< Number of GDI handles per `TPngImage`
   {$ENDIF}
 
 type
-  // Abstract object cache class indexed by tiles with fixed capacity organised as queue
+  // Abstract object cache class indexed by tiles with fixed capacity organised as queue.
   // For internal use only
   TTileObjectCache = class
   strict protected
@@ -67,30 +70,32 @@ type
     procedure Clear;
   end;
 
+  // Flags for TTileStorage
   TTileStorageOption = (
-    tsoNoFileCache,        // disable all file cache operations
-    tsoReadOnlyFileCache   // disable write file cache operations
+    tsoNoFileCache,        //< disable all file cache operations
+    tsoReadOnlyFileCache   //< disable write file cache operations
   );
   TTileStorageOptions = set of TTileStorageOption;
 
   // Limits of tile cache in memory
   TCacheLimits = record
-    BmpCount: Cardinal;     // total count of bitmaps, memory occupied = Count*TILE_BITMAP_SIZE
-    PngTotalSize: Cardinal; // total memory occupied by PNG cache
-    PngCount: Cardinal;     // total count of PNG objects
-    StmSize: Cardinal;      // total memory occupied by PNG stream cache
+    BmpCount: Cardinal;     //< Total count of bitmaps, memory occupied = `BmpCount*TILE_BITMAP_SIZE`
+    PngTotalSize: Cardinal; //< Total memory occupied by PNG cache
+    PngCount: Cardinal;     //< Total count of PNG objects
+    StmSize: Cardinal;      //< Total memory occupied by PNG stream cache
   end;
 
-  // Class that encapsulates memory and file cache of tile images
-  // It operates 3-level in-memory cache: TBitmap's, TPngImage's and TMemoryStream's
-  // According to benchmarks:
+  // Class that encapsulates memory and file cache of tile images.
+  // It operates 3-level in-memory cache: TBitmap's, TPngImage's and TMemoryStream's.
+  // According to benchmarks, different actions take following percents of time:
   //   - Load PNG from file to memory  - 30%
   //   - Read PNG from memory to image - 63% (!)
   //   - Convert PNG image to Bitmap   - 6%
   //   - Drawing Bitmap to another one - 0.4%
+  //
   // Alas, each PNG occupies 3 GDI handles (on Windows) and each Bitmap takes
   // about 250 kB of memory and 1 GDI handle.
-  // So we have to find balance between speed and resource consumption
+  // So we have to find balance between speed and resource consumption.
   TTileStorage = class
   strict private
     FBmpCache: TTileObjectCache; // cache for TBitmap's
@@ -104,14 +109,32 @@ type
     function GetFromFileCache(const Tile: TTile): TMemoryStream;
     procedure StoreInFileCache(const Tile: TTile; Ms: TMemoryStream);
   public
+    // Simplified constructor.
+    // Divides memory limit equally between bitmaps, PNGs and streams.
+    // Limits number of bitmaps and PNGs by `GDI_HANDLES_LIMIT` (on Windows)
+    //   @param CacheSize - overall size of all caches. Specific limits will be spread automatically.
+    //   @param TilePathPatt - custom pattern of tile files' paths
     constructor Create(CacheSize: Cardinal; const TilePathPatt: string = DefaultTilePathPatt); overload;
+    // Constructor with detailed cache limits.
+    //   @param CacheLimits - record with detailed cache limits
+    //   @param TilePathPatt - custom pattern of tile files' paths
     constructor Create(const CacheLimits: TCacheLimits; const TilePathPatt: string = DefaultTilePathPatt); overload;
     destructor Destroy; override;
+    // Tries to get bitmap for `Tile`.
+    // If bitmap has been loaded from file, stores it in cache
+    //   @returns Bitmap or @nil if not available locally
     function GetTile(const Tile: TTile): TBitmap;
+    // Adds memory stream `Ms`, PNG and bitmap produced from it to memory and file cache. @br
+    // ! **TileStorage takes ownership on `Ms` so it must not be freed** !
+    //   @param Tile - tile to store
+    //   @param Ms - memory stream containing PNG image
     procedure StoreTile(const Tile: TTile; Ms: TMemoryStream);
+    // Empty all caches
     procedure ClearCache;
 
+    // Storage options
     property Options: TTileStorageOptions read FOptions write FOptions;
+    // Base directory of file cache
     property FileCacheBaseDir: string read FFileCacheBaseDir write FFileCacheBaseDir;
   end;
 
@@ -210,9 +233,6 @@ begin
   FTilePathPatt := TilePathPatt;
 end;
 
-// CacheSize - overall size of all caches. Spread the limits automatically
-// Divide memory limit equally between bitmaps, PNGs and streams
-// Limit bitmaps and PNGs number by GDI_HANDLES_LIMIT
 constructor TTileStorage.Create(CacheSize: Cardinal; const TilePathPatt: string);
 var
   CacheLimits: TCacheLimits;
@@ -277,8 +297,6 @@ begin
   Ms.SaveToFile(Path);
 end;
 
-// Try to get tile bitmap, return nil if not available locally.
-// If bitmap has been loaded from file, store it in cache
 function TTileStorage.GetTile(const Tile: TTile): TBitmap;
 var
   png: TPngImage;
@@ -320,8 +338,6 @@ begin
   FBmpCache.Push(Tile, Result, TILE_BITMAP_SIZE);
 end;
 
-// Add tile stream, PNG and bitmap to memory and file cache
-// ! TileStorage takes ownership on memory stream so it must not be freed !
 procedure TTileStorage.StoreTile(const Tile: TTile; Ms: TMemoryStream);
 var png: TPngImage;
 begin
@@ -339,7 +355,6 @@ begin
   FBmpCache.Push(Tile, PNGtoBitmap(png), TILE_BITMAP_SIZE);
 end;
 
-// Empty all caches
 procedure TTileStorage.ClearCache;
 begin
   FBmpCache.Clear;

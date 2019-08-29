@@ -2,12 +2,14 @@
   OSM map types & functions.
   Ref.: https://wiki.openstreetmap.org/wiki/Slippy_Map
 
-    based on unit by Simon Kroik, 06.2018, kroiksm@gmx.de
-    which is based on UNIT openmap.pas
+    based on unit by Simon Kroik, 06.2018, kroiksm@@gmx.de
+    which is based on unit openmap.pas
     https://github.com/norayr/meridian23/blob/master/openmap/openmap.pas
     New BSD License
 
   (c) Fr0sT-Brutal https://github.com/Fr0sT-Brutal/Delphi_OSMMap
+
+  @author(Fr0sT-Brutal (https://github.com/Fr0sT-Brutal))
 }
 unit OSM.SlippyMapUtils;
 
@@ -21,20 +23,21 @@ uses
   Types, SysUtils, Math;
 
 type
-  TMapZoomLevel = 0..19; // 19 = Maximum zoom for Mapnik layer
+  // Map zoom. 19 = Maximum zoom for Mapnik layer
+  TMapZoomLevel = 0..19;
 
-  // Props of a map tile
+  // Properties of a map tile
   TTile = record
-    Zoom: TMapZoomLevel;
-    ParameterX: Cardinal; // horz number of tile, 0..524288 (=TileCount(MaxZoom))
-    ParameterY: Cardinal; // vert number of tile, 0..524288 (=TileCount(MaxZoom))
+    Zoom: TMapZoomLevel;  // Zoom level
+    ParameterX: Cardinal; // Horz number of tile, 0..524288 (=`TileCount(MaxZoom)`)
+    ParameterY: Cardinal; // Vert number of tile, 0..524288 (=`TileCount(MaxZoom)`)
   end;
   PTile = ^TTile;
 
   // Point on a map defined by longitude and latitude.
-  // Intentionally not using TPointF and TRectF because they use other system of
-  // coordinates (vertical coord increase from top to down, while lat changes from
-  // +85 to -85)
+  // Intentionally not using `TPointF` and `TRectF` because they use other
+  // system of coordinates (vertical coord increase from top to down, while latitude changes
+  // from +85 to -85)
   TGeoPoint = record
     Long: Double;
     Lat: Double;
@@ -50,9 +53,9 @@ type
   end;
 
 const
-  TILE_IMAGE_WIDTH = 256;
-  TILE_IMAGE_HEIGHT = 256;
-  // https://wiki.openstreetmap.org/wiki/Zoom_levels
+  TILE_IMAGE_WIDTH = 256;   // Width of map tile in pixels
+  TILE_IMAGE_HEIGHT = 256;  // Height of map tile in pixels
+  // See https://wiki.openstreetmap.org/wiki/Zoom_levels
   TileMetersPerPixelOnEquator: array [TMapZoomLevel] of Double =
   (
     156412,
@@ -77,7 +80,9 @@ const
     0.298
   );
 
-var // configurable
+//~ configurable globals
+var
+  // Copyright text
   TilesCopyright: string = '(c) OpenStreetMap contributors';
   // URL of tile server
   MapURLPrefix: string = 'http://tile.openstreetmap.org/';
@@ -86,33 +91,59 @@ var // configurable
   // Pattern of tile URL. Placeholders are for: Zoom, X, Y
   TileURLPatt: string = '%d/%d/%d.png';
 
+// Construct `TRect` from two `TPoint`-s
 function RectFromPoints(const TopLeft, BottomRight: TPoint): TRect; inline;
 
+// Returns count of tiles on `Zoom` level (= `2^Zoom`)
 function TileCount(Zoom: TMapZoomLevel): Cardinal; inline;
+// Checks `Tile` fields for validity
 function TileValid(const Tile: TTile): Boolean; inline;
+// Returns standartized string representation of `Tile`
 function TileToStr(const Tile: TTile): string;
+// Compares tiles
 function TilesEqual(const Tile1, Tile2: TTile): Boolean; inline;
 
+// Returns width of map at zoom level `Zoom` in pixels
 function MapWidth(Zoom: TMapZoomLevel): Cardinal; inline;
+// Returns height of map at zoom level `Zoom` in pixels
 function MapHeight(Zoom: TMapZoomLevel): Cardinal; inline;
+// Checks if point `Pt` is inside a map at zoom level `Zoom`
 function InMap(Zoom: TMapZoomLevel; const Pt: TPoint): Boolean; overload; inline;
+// Checks if rect `Rc` is inside a map at zoom level `Zoom`
 function InMap(Zoom: TMapZoomLevel; const Rc: TRect): Boolean; overload; inline;
+// Ensures point `Pt` is inside a map at zoom level `Zoom`, corrects values if necessary
+// @returns Point that is inside a map
 function EnsureInMap(Zoom: TMapZoomLevel; const Pt: TPoint): TPoint; overload; inline;
+// Ensures rect `Rc` is inside a map at zoom level `Zoom`, corrects values if necessary
+// @returns Rect that is inside a map
 function EnsureInMap(Zoom: TMapZoomLevel; const Rc: TRect): TRect; overload; inline;
+
+// Converts geo coord in degrees to map coord in pixels
 function LongitudeToMapCoord(Zoom: TMapZoomLevel; Longitude: Double): Cardinal;
+// Converts geo coord in degrees to map coord in pixels
 function LatitudeToMapCoord(Zoom: TMapZoomLevel; Latitude: Double): Cardinal;
+// Converts map coord in pixels to geo coord in degrees
 function MapCoordToLongitude(Zoom: TMapZoomLevel; X: Cardinal): Double;
+// Converts map coord in pixels to geo coord in degrees
 function MapCoordToLatitude(Zoom: TMapZoomLevel; Y: Cardinal): Double;
+// Converts map point in pixels to geo point in degrees
 function MapToGeoCoords(Zoom: TMapZoomLevel; const MapPt: TPoint): TGeoPoint; overload; inline;
+// Converts map rect in pixels to geo rect in degrees
 function MapToGeoCoords(Zoom: TMapZoomLevel; const MapRect: TRect): TGeoRect; overload; inline;
+// Converts geo point in degrees to map point in pixels
 function GeoCoordsToMap(Zoom: TMapZoomLevel; const GeoCoords: TGeoPoint): TPoint; overload; inline;
+// Converts geo rect in degrees to map rect in pixels
 function GeoCoordsToMap(Zoom: TMapZoomLevel; const GeoRect: TGeoRect): TRect; overload; inline;
 
+// Calculates distance between two geo points in meters
 function CalcLinDistanceInMeter(const Coord1, Coord2: TGeoPoint): Double;
+// Calculates parameters of map scalebar according to zoom level `Zoom`
 procedure GetScaleBarParams(Zoom: TMapZoomLevel;
   out ScalebarWidthInPixel, ScalebarWidthInMeter: Cardinal;
   out Text: string);
 
+// Returns full URL to an image of tile `Tile` using global variables
+// MapURLPrefix, TileURLPatt, MapURLPostfix
 function TileToFullSlippyMapFileURL(const Tile: TTile): string;
 
 implementation
@@ -125,13 +156,11 @@ end;
 
 // Tile utils
 
-// Tile count on <Zoom> level is 2^Zoom
 function TileCount(Zoom: TMapZoomLevel): Cardinal;
 begin
   Result := 1 shl Zoom;
 end;
 
-// Check tile fields for validity
 function TileValid(const Tile: TTile): Boolean;
 begin
   Result :=
@@ -140,13 +169,11 @@ begin
     (Tile.ParameterY < TileCount(Tile.Zoom));
 end;
 
-// Just a standartized string representation
 function TileToStr(const Tile: TTile): string;
 begin
   Result := Format('%d * [%d : %d]', [Tile.Zoom, Tile.ParameterX, Tile.ParameterY]);
 end;
 
-// Compare tiles
 function TilesEqual(const Tile1, Tile2: TTile): Boolean;
 begin
   Result :=
@@ -155,31 +182,26 @@ begin
     (Tile1.ParameterY = Tile2.ParameterY);
 end;
 
-// Width of map of given zoom level in pixels
 function MapWidth(Zoom: TMapZoomLevel): Cardinal;
 begin
   Result := TileCount(Zoom)*TILE_IMAGE_WIDTH;
 end;
 
-// Height of map of given zoom level in pixels
 function MapHeight(Zoom: TMapZoomLevel): Cardinal;
 begin
   Result := TileCount(Zoom)*TILE_IMAGE_HEIGHT;
 end;
 
-// Check if point Pt is inside a map of given zoom level
 function InMap(Zoom: TMapZoomLevel; const Pt: TPoint): Boolean;
 begin
   Result := Rect(0, 0, MapWidth(Zoom), MapHeight(Zoom)).Contains(Pt);
 end;
 
-// Check if rect Rc is inside a map of given zoom level
 function InMap(Zoom: TMapZoomLevel; const Rc: TRect): Boolean;
 begin
   Result := Rect(0, 0, MapWidth(Zoom), MapHeight(Zoom)).Contains(Rc);
 end;
 
-// Ensure point Pt is inside a map of given zoom level, move it if necessary
 function EnsureInMap(Zoom: TMapZoomLevel; const Pt: TPoint): TPoint;
 begin
   Result := Point(
@@ -188,7 +210,6 @@ begin
   );
 end;
 
-// Ensure rect Rc is inside a map of given zoom level, resize it if necessary
 function EnsureInMap(Zoom: TMapZoomLevel; const Rc: TRect): TRect;
 begin
   Result := RectFromPoints(
@@ -237,6 +258,7 @@ begin
   Self.BottomRight := BottomRight;
 end;
 
+// If the region contains given point
 function TGeoRect.Contains(const GeoPoint: TGeoPoint): Boolean;
 begin
   Result :=
@@ -399,8 +421,6 @@ begin
   else
     Text := IntToStr(ScalebarWidthInMeter div 1000) + ' km'
 end;
-
-// Tile path
 
 function TileToFullSlippyMapFileURL(const Tile: TTile): string;
 begin

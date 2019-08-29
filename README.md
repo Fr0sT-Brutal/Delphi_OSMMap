@@ -24,6 +24,8 @@ Project structure
   - `OSM.NetworkRequest` - utils and classes for network requesting of map tiles. Class `TNetworkRequestQueue` implements threaded non-blocking queue of network requests. Unit doesn't contain any real network request engine.
   - `SynapseRequest`, `WinInetRequest` contain concrete implementations of network requesting routines
   - `OSM.MapControl` contains classes `TMapMark` and `TMapMarkList` for managing a set of map points and `TMapControl` itself
+  
+Full docs for all units listed above is available [here](https://fr0st-brutal.github.io/Delphi_OSMMap/)
 
 Third party
 -----------

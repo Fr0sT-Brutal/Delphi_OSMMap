@@ -3,10 +3,12 @@
   Windows-only
 
   (c) Fr0sT-Brutal https://github.com/Fr0sT-Brutal/Delphi_OSMMap
+
+  @author(Fr0sT-Brutal (https://github.com/Fr0sT-Brutal))
 }
 unit WinInetRequest;
 
-{$IFNDEF MSWINDOWS} This unit is Windows-only {$ENDIF}
+{$IFNDEF MSWINDOWS} {$MESSAGE FATAL 'This unit is Windows-only'} {$ENDIF}
 
 {$IFDEF FPC}
   {$MODE Delphi}
@@ -18,14 +20,12 @@ uses
   SysUtils, Classes, Windows, WinInet,
   OSM.NetworkRequest;
 
-// Only GET requests. No auth fields used.
+// Function executing a network request. See description of
+// OSM.NetworkRequest.TBlockingNetworkRequestFunc type.@br
 function NetworkRequest(const RequestProps: THttpRequestProps;
   const ResponseStm: TStream; out ErrMsg: string): Boolean;
 
 implementation
-
-const
-  SEMsg_UnsuppReqType = 'Only GET request type supported';
 
 function NetworkRequest(const RequestProps: THttpRequestProps;
   const ResponseStm: TStream; out ErrMsg: string): Boolean;
@@ -39,8 +39,6 @@ begin
   ErrMsg := ''; Result := False; hInet := nil; hFile := nil;
 
   try try
-    if RequestProps.RequestType <> reqGet then
-      raise Exception.Create(SEMsg_UnsuppReqType);
     // Init WinInet
     hInet := InternetOpen('Foo', INTERNET_OPEN_TYPE_DIRECT, nil, nil, 0);
     if hInet = nil then
