@@ -4,8 +4,8 @@ SETLOCAL
 
 :: set variables
 SET CDir=%~dp0%
-SET PasDoc=D:\Coding\Git\PasDoc\pasdoc\bin\pasdoc.exe
+SET PasDoc=D:\Coding\Git\PasDoc\source\console\pasdoc.exe
 
 :: main stuff here 
 
-CALL %PasDoc% --option-file="%CDir%\pasdoc.opt" "%CDir%\..\Source\*.pas" || PAUSE 
+CALL "%PasDoc%" "@%CDir%\pasdoc.opt" "%CDir%\..\Source\*.pas" || PAUSE 

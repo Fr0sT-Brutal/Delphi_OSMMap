@@ -10,3 +10,5 @@ push
 options
 mapmarks
 zoom
+proxy
+url
