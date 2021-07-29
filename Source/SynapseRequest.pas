@@ -3,6 +3,11 @@
 
     based on code by Simon Kroik, 06.2018, kroiksm@@gmx.de
 
+  For HTTPS-Support:
+    1) USES ssl_openssl;
+    2) copy libeay32.dll
+    3) copy ssleay32.dll
+
   (c) Fr0sT-Brutal https://github.com/Fr0sT-Brutal/Delphi_OSMMap
 
   @author(Simon Kroik (kroiksm@gmx.de))
@@ -17,45 +22,56 @@ uses
   HTTPSend, SynaUtil,
   OSM.NetworkRequest;
 
+const
+  // Capabilities of Synapse engine
+  EngineCapabilities = [htcProxy, htcDirect, htcProxyAuth, htcAuth, htcAuthURL,
+    htcHeaders, htcTimeout
+    {$IF DECLARED(TSSLOpenSSL)} , htcTLS {$ENDIF} ];
+
 // Function executing a network request. See description of
 // OSM.NetworkRequest.TBlockingNetworkRequestFunc type.@br
-// `RequestProps.Additional: Boolean` - SendAsMozilla flag
-function NetworkRequest(const RequestProps: THttpRequestProps;
-  const ResponseStm: TStream; out ErrMsg: string): Boolean;
+function NetworkRequest(RequestProps: THttpRequestProps;
+  ResponseStm: TStream; out ErrMsg: string): Boolean;
 
 implementation
 
 const
   SEMsg_HTTPErr = 'HTTP error: %d %s';
 
-procedure PrepareHTTPSendAsMozilla(AHTTP: THTTPSend);
-begin
-  AHTTP.UserAgent:='Mozilla/5.0 (Windows NT 6.1; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0';
-  AHTTP.Headers.Add('Accept-Language: de,en-US;q=0.7,en;q=0.3');
-  AHTTP.Headers.Add('Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
-end;
-
-//based on Synapse
-//For HTTPS-Support:
-//  1) USES ssl_openssl;
-//  2) copy libeay32.dll
-//  3) copy ssleay32.dll
-function NetworkRequest(const RequestProps: THttpRequestProps;
-  const ResponseStm: TStream; out ErrMsg: string): Boolean;
+function NetworkRequest(RequestProps: THttpRequestProps;
+  ResponseStm: TStream; out ErrMsg: string): Boolean;
 var
   HTTP: THTTPSend;
+  User, Pass, ProxyUser, ProxyPass, ProxyHost, ProxyPort, Dummy: string;
 begin
   ErrMsg := '';
 
   HTTP := THTTPSend.Create;
   try
-    HTTP.UserName := RequestProps.HttpUserName;
-    HTTP.Password := RequestProps.HttpPassword;
+    HTTP.Timeout := ReqTimeout;
+    // Ensure URL requisites have priority over field requisites
+    ParseURL(RequestProps.URL, Dummy, User, Pass, Dummy, Dummy, Dummy, Dummy);
+    if (User <> '') and (Pass <> '') then
+    begin
+      HTTP.UserName := User;
+      HTTP.Password := Pass;
+    end
+    else
+    begin
+      HTTP.UserName := RequestProps.HttpUserName;
+      HTTP.Password := RequestProps.HttpPassword;
+    end;
 
-    if Boolean(RequestProps.Additional) then
-      PrepareHTTPSendAsMozilla(HTTP);
+    if RequestProps.Proxy <> '' then
+    begin
+      ParseURL(RequestProps.Proxy, Dummy, ProxyUser, ProxyPass, ProxyHost, ProxyPort, Dummy, Dummy);
+      HTTP.ProxyHost := ProxyHost;
+      HTTP.ProxyPort := ProxyPort;
+      HTTP.ProxyUser := ProxyUser;
+      HTTP.ProxyPass := ProxyPass;
+    end;
 
-    if Assigned(RequestProps.HeaderLines) then
+    if RequestProps.HeaderLines <> nil then
       HTTP.Headers.AddStrings(RequestProps.HeaderLines);
 
     Result := HTTP.HTTPMethod('GET', RequestProps.URL);
@@ -67,10 +83,10 @@ begin
       Exit;
     end;
     // check HTTP error
-    if HTTP.ResultCode <> 200 then
+    if HTTP.ResultCode >= 400 then
     begin
       ErrMsg := Format(SEMsg_HTTPErr, [HTTP.ResultCode, HTTP.ResultString]);
-      Exit;
+      Exit(False);
     end;
     // OK
     ResponseStm.CopyFrom(HTTP.Document, 0);

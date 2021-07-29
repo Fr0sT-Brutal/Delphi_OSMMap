@@ -20,29 +20,93 @@ uses
   SysUtils, Classes, Windows, WinInet,
   OSM.NetworkRequest;
 
+const
+  // Capabilities of WinInet engine
+  EngineCapabilities = [htcProxy, htcDirect, htcSystemProxy, htcHeaders, htcTimeout, htcTLS];
+
 // Function executing a network request. See description of
 // OSM.NetworkRequest.TBlockingNetworkRequestFunc type.@br
-function NetworkRequest(const RequestProps: THttpRequestProps;
-  const ResponseStm: TStream; out ErrMsg: string): Boolean;
+function NetworkRequest(RequestProps: THttpRequestProps;
+  ResponseStm: TStream; out ErrMsg: string): Boolean;
 
 implementation
 
-function NetworkRequest(const RequestProps: THttpRequestProps;
-  const ResponseStm: TStream; out ErrMsg: string): Boolean;
+// Advanced SysErrorMessage version that handles WinInet errors
+function SysErrorMessageEx(ErrorCode: Cardinal): string;
+var
+  Buffer: PChar;
+  Len: Integer;
+begin
+  // WinInet specific
+  if (ErrorCode >= INTERNET_ERROR_BASE) and (ErrorCode <= INTERNET_ERROR_LAST) then
+    { Obtain the formatted message for the given Win32 ErrorCode from wininet lib.
+      Let the OS initialize the Buffer variable. Need to LocalFree it afterward.
+    }
+    Len := FormatMessage(
+      FORMAT_MESSAGE_FROM_HMODULE or
+      FORMAT_MESSAGE_IGNORE_INSERTS or
+      FORMAT_MESSAGE_ARGUMENT_ARRAY or
+      FORMAT_MESSAGE_ALLOCATE_BUFFER, Pointer(GetModuleHandle('wininet.dll')), ErrorCode, 0, @Buffer, 0, nil)
+  else
+    { Obtain the formatted message for the given Win32 ErrorCode
+      Let the OS initialize the Buffer variable. Need to LocalFree it afterward.
+    }
+    Len := FormatMessage(
+      FORMAT_MESSAGE_FROM_SYSTEM or
+      FORMAT_MESSAGE_IGNORE_INSERTS or
+      FORMAT_MESSAGE_ARGUMENT_ARRAY or
+      FORMAT_MESSAGE_ALLOCATE_BUFFER, nil, ErrorCode, 0, @Buffer, 0, nil);
+
+  try
+    { Remove the undesired line breaks and '.' char }
+    while (Len > 0) and (CharInSet(Buffer[Len - 1], [#0..#32, '.'])) do Dec(Len);
+    { Convert to Delphi string }
+    SetString(Result, Buffer, Len);
+  finally
+    { Free the OS allocated memory block }
+    LocalFree(HLOCAL(Buffer));
+  end;
+end;
+
+function WinInetErr: Exception;
+var errCode: DWORD;
+begin
+  errCode := GetLastError;
+  Result := Exception.CreateFmt('%s [%d]', [SysErrorMessageEx(errCode), errCode]);
+end;
+
+function NetworkRequest(RequestProps: THttpRequestProps;
+  ResponseStm: TStream; out ErrMsg: string): Boolean;
 var
   hInet: HINTERNET;
-  Headers: string;
+  Proxy, Headers: string;
   Buf: array[0..1024-1] of Byte;
-  read: DWORD;
+  dwAccessType, read, opt: DWORD;
   hFile: HINTERNET;
 begin
   ErrMsg := ''; Result := False; hInet := nil; hFile := nil;
 
   try try
     // Init WinInet
-    hInet := InternetOpen('Foo', INTERNET_OPEN_TYPE_DIRECT, nil, nil, 0);
+    Proxy := '';
+    if RequestProps.Proxy <> '' then
+      if RequestProps.Proxy = SystemProxy then
+        dwAccessType := INTERNET_OPEN_TYPE_PRECONFIG
+      else
+      begin
+        dwAccessType := INTERNET_OPEN_TYPE_PROXY;
+        Proxy := RequestProps.Proxy;
+      end
+    else
+      dwAccessType := INTERNET_OPEN_TYPE_DIRECT;
+    hInet := InternetOpen('Foo', dwAccessType, PChar(Proxy), nil, 0);
     if hInet = nil then
-      raise Exception.Create(SysErrorMessage(GetLastError));
+      raise WinInetErr;
+    // Set options
+    opt := ReqTimeout;
+    InternetSetOption(hInet, INTERNET_OPTION_CONNECT_TIMEOUT, @opt, SizeOf(opt));
+    InternetSetOption(hInet, INTERNET_OPTION_RECEIVE_TIMEOUT, @opt, SizeOf(opt));
+    InternetSetOption(hInet, INTERNET_OPTION_SEND_TIMEOUT, @opt, SizeOf(opt));
     // Open address
     if RequestProps.HeaderLines <> nil then
       Headers := RequestProps.HeaderLines.Text;
@@ -50,7 +114,7 @@ begin
                              INTERNET_FLAG_NO_CACHE_WRITE or INTERNET_FLAG_NO_COOKIES or INTERNET_FLAG_NO_UI,
                              0);
     if hFile = nil then
-      raise Exception.Create(SysErrorMessage(GetLastError));
+      raise WinInetErr;
 
     // Read the URL
     while InternetReadFile(hFile, @Buf, SizeOf(Buf), read) do

@@ -18,43 +18,139 @@ interface
 uses
   SysUtils, Classes,
   {$IFDEF FPC}
-  fphttpclient,
+  fphttpclient, URIParser,
   {$ENDIF}
   {$IFDEF DCC}
-  System.Net.HttpClientComponent,
+  System.Net.HttpClient, System.Net.HttpClientComponent, System.Net.URLClient, StrUtils,
   {$ENDIF}
   OSM.NetworkRequest;
 
+const
+  // Capabilities of RTL engine
+  {$IFDEF FPC}
+  EngineCapabilities = [htcProxy, htcDirect, htcProxyAuth, htcAuth, htcAuthURL,
+    htcHeaders, htcTimeout];
+  {$ENDIF}
+  {$IFDEF DCC}
+  // Direct connection is only available on Windows
+  EngineCapabilities = [htcProxy, {$IFDEF MSWINDOWS} htcDirect, {$ENDIF} htcSystemProxy,
+    htcProxyAuth, htcAuth, htcAuthURL, htcHeaders, htcTimeout, htcTLS];
+  {$ENDIF}
+
 // Function executing a network request. See description of
 // OSM.NetworkRequest.TBlockingNetworkRequestFunc type.@br
-function NetworkRequest(const RequestProps: THttpRequestProps;
-  const ResponseStm: TStream; out ErrMsg: string): Boolean;
+function NetworkRequest(RequestProps: THttpRequestProps;
+  ResponseStm: TStream; out ErrMsg: string): Boolean;
 
 implementation
 
-function NetworkRequest(const RequestProps: THttpRequestProps;
-  const ResponseStm: TStream; out ErrMsg: string): Boolean;
+const
+  SEMsg_HTTPErr = 'HTTP error: %d %s';
+  {$IFDEF DCC}
+    {$IFDEF MSWINDOWS}
+    DirectConnection = 'http://direct'; // Magic constant to bypass proxy for Delphi on Windows
+    {$ENDIF}
+  {$ENDIF}
+
+function NetworkRequest(RequestProps: THttpRequestProps;
+  ResponseStm: TStream; out ErrMsg: string): Boolean;
 var
+  uri: TURI;
   {$IFDEF FPC}
-  httpCli: TFPCustomHTTPClient;
+  httpCli: TFPHTTPClient;
   {$ENDIF}
   {$IFDEF DCC}
   httpCli: TNetHTTPClient;
-  httpReq: TNetHTTPRequest;
+  HdrArr: TArray<string>;
+  s, User, Pass: string;
+  Resp: IHttpResponse;
   {$ENDIF}
 begin
   ErrMsg := ''; Result := False;
 
   try try
     {$IFDEF FPC}
-    httpCli := TFPCustomHTTPClient.Create(nil);
-    httpCli.SimpleGet(RequestProps.URL, ResponseStm);
+    httpCli := TFPHTTPClient.Create(nil);
+    httpCli.ConnectTimeout := ReqTimeout;
+    httpCli.IOTimeout := ReqTimeout;
+
+    // Ensure URL requisites have priority over field requisites
+    uri := ParseURI(RequestProps.URL);
+    if (uri.Username <> '') and (uri.Password <> '') then
+    begin
+      httpCli.UserName := uri.Username;
+      httpCli.Password := uri.Password;
+    end
+    else
+    begin
+      httpCli.UserName := RequestProps.HttpUserName;
+      httpCli.Password := RequestProps.HttpPassword;
+    end;
+
+    if RequestProps.HeaderLines <> nil then
+      httpCli.RequestHeaders.Assign(RequestProps.HeaderLines);
+
+    if RequestProps.Proxy <> '' then
+    begin
+      uri := ParseURI(RequestProps.Proxy);
+      httpCli.Proxy.Host := uri.Host;
+      httpCli.Proxy.Port := uri.Port;
+      httpCli.Proxy.UserName := uri.Username;
+      httpCli.Proxy.Password := uri.Password;
+    end;
+
+    httpCli.Get(RequestProps.URL, ResponseStm);
+
+    // check HTTP error
+    if httpCli.ResponseStatusCode >= 400 then
+    begin
+      ErrMsg := Format(SEMsg_HTTPErr, [httpCli.ResponseStatusCode, httpCli.ResponseStatusText]);
+      Exit(False);
+    end;
     {$ENDIF}
     {$IFDEF DCC}
     httpCli := TNetHTTPClient.Create(nil);
-    httpReq := TNetHTTPRequest.Create(httpCli); // to have it destroyed by client
-    httpReq.Client := httpCli;
-    httpReq.Get(RequestProps.URL, ResponseStm);
+    httpCli.ConnectionTimeout := ReqTimeout;
+    httpCli.ResponseTimeout := ReqTimeout;
+
+    // Ensure URL requisites have priority over field requisites
+    uri := TURI.Create(RequestProps.URL);
+    User := IfThen(uri.Username <> '', uri.Username, RequestProps.HttpUserName);
+    Pass := IfThen(uri.Password <> '', uri.Password, RequestProps.HttpPassword);
+    if (User <> '') and (Pass <> '') then
+      httpCli.CredentialsStorage.AddCredential(TCredentialsStorage.TCredential.Create(
+        TAuthTargetType.Server, '', '', User, Pass));
+
+    if RequestProps.HeaderLines <> nil then
+    begin
+      for s in RequestProps.HeaderLines do
+      begin
+        HdrArr := SplitString(s, ':');
+        httpCli.CustomHeaders[HdrArr[0]] := HdrArr[1];
+      end;
+    end;
+
+    // http://docwiki.embarcadero.com/RADStudio/Sydney/en/Using_an_HTTP_Client#Sending_a_Request_Behind_a_Proxy
+    // '' means system, bypassing only allowed for Windows: to bypass the system proxy settings, create proxy settings
+    // for the HTTP Client and specify http://direct as the URL
+    // So:
+    //   - '' => Direct (Windows only)
+    //   - SYSTEM => ''
+    if RequestProps.Proxy = '' then
+      {$IFDEF MSWINDOWS}
+      httpCli.ProxySettings := TProxySettings.Create(DirectConnection)
+      {$ENDIF}
+    else if RequestProps.Proxy <> SystemProxy then
+      httpCli.ProxySettings := TProxySettings.Create(RequestProps.Proxy);
+
+    Resp := httpCli.Get(RequestProps.URL, ResponseStm);
+
+    // check HTTP error
+    if Resp.StatusCode >= 400 then
+    begin
+      ErrMsg := Format(SEMsg_HTTPErr, [Resp.StatusCode, Resp.StatusText]);
+      Exit(False);
+    end;
     {$ENDIF}
 
     Result := ResponseStm.Size > 0;
