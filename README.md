@@ -1,7 +1,7 @@
 ﻿OSM MapControl
 ==============
 
-**Version: 0.4.0**
+**Version: 0.5.0**
 
 Delphi/Lazarus visual component for displaying OpenStreetMap map. Also includes helper classes for storing and downloading map tiles.
 Demo project implements downloading map tiles from network.
@@ -22,7 +22,7 @@ Project structure
   - `OSM.SlippyMapUtils` - util functions, variables and types
   - `OSM.TileStorage` - classes `TTileBitmapCache` implementing cache of map tiles organized as a queue and `TTileStorage` implementing disc storage of map tiles.
   - `OSM.NetworkRequest` - utils and classes for network requesting of map tiles. Class `TNetworkRequestQueue` implements threaded non-blocking queue of network requests. Unit doesn't contain any real network request engine.
-  - `SynapseRequest`, `WinInetRequest` contain concrete implementations of network requesting routines
+  - `SynapseRequest`, `WinInetRequest`, `RTLInetRequest` contain concrete implementations of network requesting routines
   - `OSM.MapControl` contains classes `TMapMark` and `TMapMarkList` for managing a set of map points and `TMapControl` itself
   
 Full docs for all units listed above is available [here](https://fr0st-brutal.github.io/Delphi_OSMMap/)
