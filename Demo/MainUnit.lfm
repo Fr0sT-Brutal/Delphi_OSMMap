@@ -20,7 +20,7 @@ object MainForm: TMainForm
   OnDestroy = FormDestroy
   ParentDoubleBuffered = False
   Position = poScreenCenter
-  LCLVersion = '2.1.0.0'
+  LCLVersion = '2.3.0.0'
   object Splitter1: TSplitter
     Left = 959
     Height = 720
@@ -113,7 +113,6 @@ object MainForm: TMainForm
       Top = 610
       Width = 41
       Caption = 'Label1'
-      ParentColor = False
     end
     object Label2: TLabel
       Left = 20
@@ -121,7 +120,6 @@ object MainForm: TMainForm
       Top = 640
       Width = 41
       Caption = 'Label2'
-      ParentColor = False
     end
     object lblZoom: TLabel
       Left = 9
@@ -135,7 +133,6 @@ object MainForm: TMainForm
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       Layout = tlCenter
-      ParentColor = False
       ParentFont = False
     end
     object btnMouseModePan: TSpeedButton
@@ -217,12 +214,11 @@ object MainForm: TMainForm
       Top = 96
       Width = 79
       Caption = 'Mouse mode'
-      ParentColor = False
     end
     object Button1: TButton
       Left = 30
       Height = 41
-      Top = 159
+      Top = 408
       Width = 221
       Caption = 'Save layer'
       OnClick = Button1Click
@@ -231,28 +227,74 @@ object MainForm: TMainForm
     object Button2: TButton
       Left = 30
       Height = 51
-      Top = 218
+      Top = 467
       Width = 221
       Caption = 'Add 100 random marks'
       OnClick = Button2Click
       TabOrder = 1
     end
-    object Button3: TButton
-      Left = 30
-      Height = 31
-      Top = 460
-      Width = 94
-      Caption = 'Button3'
-      TabOrder = 2
-    end
     object btnTest: TButton
-      Left = 32
+      Left = 30
       Height = 48
-      Top = 288
-      Width = 216
+      Top = 537
+      Width = 221
       Caption = 'Run test suite'
       OnClick = btnTestClick
+      TabOrder = 2
+    end
+    object chbCacheUseFiles: TCheckBox
+      Left = 30
+      Height = 23
+      Top = 288
+      Width = 109
+      Caption = 'Use file cache'
+      Checked = True
+      OnClick = chbCacheUseFilesClick
+      State = cbChecked
+      TabOrder = 5
+    end
+    object chbCacheSaveFiles: TCheckBox
+      Left = 30
+      Height = 23
+      Top = 312
+      Width = 137
+      Caption = 'Save files to cache'
+      Checked = True
+      OnClick = chbCacheSaveFilesClick
+      State = cbChecked
+      TabOrder = 6
+    end
+    object rgProxy: TRadioGroup
+      Left = 30
+      Height = 121
+      Top = 144
+      Width = 217
+      AutoFill = True
+      Caption = ' Proxy '
+      ChildSizing.LeftRightSpacing = 6
+      ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+      ChildSizing.EnlargeVertical = crsHomogenousChildResize
+      ChildSizing.ShrinkHorizontal = crsScaleChilds
+      ChildSizing.ShrinkVertical = crsScaleChilds
+      ChildSizing.Layout = cclLeftToRightThenTopToBottom
+      ChildSizing.ControlsPerLine = 1
+      ClientHeight = 100
+      ClientWidth = 213
+      ItemIndex = 0
+      Items.Strings = (
+        'No proxy'
+        'System default'
+        ''
+      )
       TabOrder = 3
+    end
+    object eProxyAddr: TEdit
+      Left = 62
+      Height = 24
+      Top = 234
+      Width = 177
+      TabOrder = 4
+      TextHint = 'host:port'
     end
   end
   object mLog: TMemo

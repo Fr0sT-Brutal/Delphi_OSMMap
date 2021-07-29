@@ -223,7 +223,7 @@ object MainForm: TMainForm
     end
     object Button1: TButton
       Left = 24
-      Top = 167
+      Top = 303
       Width = 177
       Height = 33
       Caption = 'Save layer'
@@ -232,51 +232,64 @@ object MainForm: TMainForm
     end
     object Button2: TButton
       Left = 24
-      Top = 214
+      Top = 358
       Width = 177
       Height = 41
       Caption = 'Add 100 random marks'
       TabOrder = 1
       OnClick = Button2Click
     end
-    object Button3: TButton
-      Left = 24
-      Top = 368
-      Width = 75
-      Height = 25
-      Caption = 'Button3'
-      TabOrder = 2
-    end
     object btnTest: TButton
       Left = 24
-      Top = 270
+      Top = 414
       Width = 177
       Height = 41
       Caption = 'Run test suite'
-      TabOrder = 3
+      TabOrder = 2
       OnClick = btnTestClick
     end
     object chbCacheUseFiles: TCheckBox
-      Left = 24
-      Top = 112
+      Left = 16
+      Top = 246
       Width = 145
       Height = 17
       Caption = 'Use file cache'
       Checked = True
       State = cbChecked
-      TabOrder = 4
+      TabOrder = 3
       OnClick = chbCacheUseFilesClick
     end
     object chbCacheSaveFiles: TCheckBox
-      Left = 24
-      Top = 136
+      Left = 16
+      Top = 270
       Width = 145
       Height = 17
       Caption = 'Save files to cache'
       Checked = True
       State = cbChecked
-      TabOrder = 5
+      TabOrder = 4
       OnClick = chbCacheSaveFilesClick
+    end
+    object rgProxy: TRadioGroup
+      Left = 7
+      Top = 119
+      Width = 217
+      Height = 121
+      Caption = ' Proxy '
+      ItemIndex = 0
+      Items.Strings = (
+        'No proxy'
+        'System default'
+        '')
+      TabOrder = 5
+    end
+    object eProxyAddr: TEdit
+      Left = 39
+      Top = 209
+      Width = 177
+      Height = 24
+      TabOrder = 6
+      TextHint = 'host:port'
     end
   end
   object mLog: TMemo

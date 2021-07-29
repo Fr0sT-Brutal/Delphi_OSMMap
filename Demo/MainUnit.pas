@@ -68,13 +68,14 @@ type
     Label2: TLabel;
     lblZoom: TLabel;
     Button2: TButton;
-    Button3: TButton;
     btnMouseModePan: TSpeedButton;
     btnMouseModeSel: TSpeedButton;
     Label3: TLabel;
     btnTest: TButton;
     chbCacheUseFiles: TCheckBox;
     chbCacheSaveFiles: TCheckBox;
+    rgProxy: TRadioGroup;
+    eProxyAddr: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
@@ -217,6 +218,7 @@ end;
 { TMainForm }
 
 procedure TMainForm.FormCreate(Sender: TObject);
+var s: string;
 begin
   // Memory/disc cache of tile images
   // You probably won't need it if you have another fast storage (f.e. database)
@@ -225,6 +227,9 @@ begin
   // Queuer of tile image network requests
   // You won't need it if you have another source (f.e. database)
   NetRequest := TNetworkRequestQueue.Create(4, 3, NetworkRequest, NetReqGotTileBgThr);
+  NetRequest.RequestProps.HeaderLines := TStringList.Create;
+  for s in SampleHeaders do
+    NetRequest.RequestProps.HeaderLines.Add(s);
   InitMap;
 end;
 
@@ -274,6 +279,12 @@ begin
   // Tile image unavailable - queue network request
   if TileBmp = nil then
   begin
+    // Network setup
+    case rgProxy.ItemIndex of
+      0: NetRequest.RequestProps.Proxy := '';
+      1: NetRequest.RequestProps.Proxy := SystemProxy;
+      2: NetRequest.RequestProps.Proxy := eProxyAddr.Text;
+    end;
     NetRequest.RequestTile(Tile);
     Log(Format('Queued request from inet %s', [TileToStr(Tile)]));
   end
@@ -340,8 +351,12 @@ begin
   else
   begin
     Log(Format('Got from inet %s', [TileToStr(pData.Tile)]));
-    TileStorage.StoreTile(pData.Tile, pData.Ms);
-    mMap.RefreshTile(pData.Tile.ParameterX, pData.Tile.ParameterY);
+    try
+      TileStorage.StoreTile(pData.Tile, pData.Ms);
+      mMap.RefreshTile(pData.Tile.ParameterX, pData.Tile.ParameterY);
+    except on E: Exception do
+      Log(Format('Tile %s data is not PNG: %s', [TileToStr(pData.Tile), E.Message]));
+    end;
   end;
   Dispose(pData);
 end;
