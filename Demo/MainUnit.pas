@@ -382,12 +382,12 @@ end;
 
 procedure TMainForm.btnZoomInClick(Sender: TObject);
 begin
-  mMap.SetZoom(mMap.Zoom + 1);
+  mMap.SetZoom(mMap.Zoom + 1, mMap.ViewRect.CenterPoint);
 end;
 
 procedure TMainForm.btnZoomOutClick(Sender: TObject);
 begin
-  mMap.SetZoom(mMap.Zoom - 1);
+  mMap.SetZoom(mMap.Zoom - 1, mMap.ViewRect.CenterPoint);
 end;
 
 procedure TMainForm.Button1Click(Sender: TObject);

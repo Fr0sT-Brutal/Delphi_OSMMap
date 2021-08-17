@@ -362,7 +362,7 @@ object MainForm: TMainForm
           Height = 114
           Align = alClient
           Caption = ' Proxy '
-          ItemIndex = 0
+          ItemIndex = 1
           Items.Strings = (
             'No proxy'
             'System default'
