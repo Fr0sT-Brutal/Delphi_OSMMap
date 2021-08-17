@@ -1,44 +1,44 @@
 unit MainUnit;
 
 {$IFDEF FPC}
-{$MODE Delphi}
+  {$MODE Delphi}
 {$ENDIF}
 
 interface
 
 // Check whether compiler has stock HTTP request class
 {$IFDEF FPC}
-{$DEFINE HAS_RTL_HTTP}
+  {$DEFINE HAS_RTL_HTTP}
 {$ENDIF}
 {$IFDEF DCC}
-{$IF CompilerVersion >= 29} // XE8+
-{$DEFINE HAS_RTL_HTTP}
-{$IFEND}
+  {$IF CompilerVersion >= 29} // XE8+
+    {$DEFINE HAS_RTL_HTTP}
+  {$IFEND}
 {$ENDIF}
 
 uses
-{$IFDEF FPC}
+  {$IFDEF FPC}
   LCLIntf, LCLType,
-{$ENDIF}
-{$IFDEF MSWINDOWS}
+  {$ENDIF}
+  {$IFDEF MSWINDOWS}
   Windows,
-{$ENDIF}
+  {$ENDIF}
   Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, ExtCtrls,
   Buttons, StdCtrls, Math, Types,
   OSM.SlippyMapUtils, OSM.MapControl, OSM.TileStorage,
   OSM.NetworkRequest
-  // , SynapseRequest // Use Synapse for HTTP requests
-{$IFDEF HAS_RTL_HTTP}
-    , RTLInetRequest // Use stock RTL classes for HTTP requests
-{$ELSE}
-    , WinInetRequest // Use WinInet (Windows only) for HTTP requests
-{$ENDIF}
-    , TestSuite;
+  //, SynapseRequest // Use Synapse for HTTP requests
+  {$IFDEF HAS_RTL_HTTP}
+  , RTLInetRequest // Use stock RTL classes for HTTP requests
+  {$ELSE}
+  , WinInetRequest // Use WinInet (Windows only) for HTTP requests
+  {$ENDIF}
+  , TestSuite;
 
 const
-{$IF NOT DECLARED(WM_APP)}
+  {$IF NOT DECLARED(WM_APP)}
   WM_APP = $8000;
-{$IFEND}
+  {$IFEND}
   MSG_GOTTILE = WM_APP + 200;
 
 type
@@ -51,7 +51,6 @@ type
     Ms: TMemoryStream;
     Error: string;
   end;
-
   PGotTileData = ^TGotTileData;
 
   { TMainForm }
@@ -97,12 +96,9 @@ type
     procedure btnZoomOutClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure MsgGotTile(var Message: TMessage); message MSG_GOTTILE;
-    procedure NetReqGotTileBgThr(const Tile: TTile; Ms: TMemoryStream;
-      const Error: string);
+    procedure NetReqGotTileBgThr(const Tile: TTile; Ms: TMemoryStream; const Error: string);
     procedure mMapMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-    procedure mMapDrawTile(Sender: TMapControl;
-      TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint;
-      Canvas: TCanvas; var Handled: Boolean);
+    procedure mMapDrawTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas; var Handled: Boolean);
     procedure mMapZoomChanged(Sender: TObject);
     procedure mMapSelectionBox(Sender: TMapControl; const GeoRect: TGeoRect);
     procedure Button2Click(Sender: TObject);
@@ -140,10 +136,11 @@ implementation
 // cannot handle it and disables form view. So using ELSE
 
 {$IFDEF FPC}
-{$R *.lfm}
+  {$R *.lfm}
 {$ELSE}
-{$R *.dfm}
+  {$R *.dfm}
 {$ENDIF}
+
 { TTestSuite }
 
 constructor TMapTestCase.Create(Map: TMapControl; LogProc: TLogProc);
@@ -240,18 +237,15 @@ end;
 { TMainForm }
 
 procedure TMainForm.FormCreate(Sender: TObject);
-var
-  s: string;
+var s: string;
 begin
   // Memory/disc cache of tile images
   // You probably won't need it if you have another fast storage (f.e. database)
-  TileStorage := TTileStorage.Create(50 * 1000 * 1000);
-  TileStorage.FileCacheBaseDir := IncludeTrailingPathDelimiter
-    (ExtractFilePath(Application.ExeName)) + 'Map';
+  TileStorage := TTileStorage.Create(50*1000*1000);
+  TileStorage.FileCacheBaseDir := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) + 'Map';
   // Queuer of tile image network requests
   // You won't need it if you have another source (f.e. database)
-  NetRequest := TNetworkRequestQueue.Create(4, 3, NetworkRequest,
-    NetReqGotTileBgThr);
+  NetRequest := TNetworkRequestQueue.Create(4, 3, NetworkRequest, NetReqGotTileBgThr);
   NetRequest.RequestProps.HeaderLines := TStringList.Create;
   for s in SampleHeaders do
     NetRequest.RequestProps.HeaderLines.Add(s);
@@ -260,7 +254,7 @@ end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  // ...
+  //...
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -272,9 +266,9 @@ end;
 procedure TMainForm.Log(const s: string);
 begin
   mLog.Lines.Add(DateTimeToStr(Now) + ' ' + s);
-{$IF DECLARED(OutputDebugString)}
+  {$IF DECLARED(OutputDebugString)}
   OutputDebugString(PChar(DateTimeToStr(Now) + ' ' + s));
-{$IFEND}
+  {$IFEND}
 end;
 
 // Extracted to separate method to re-init the control after test
@@ -289,9 +283,7 @@ begin
 end;
 
 // Callback from map control to draw a tile image
-procedure TMainForm.mMapDrawTile(Sender: TMapControl;
-  TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas;
-  var Handled: Boolean);
+procedure TMainForm.mMapDrawTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas; var Handled: Boolean);
 var
   Tile: TTile;
   TileBmp: TBitmap;
@@ -308,12 +300,9 @@ begin
   begin
     // Network setup
     case rgProxy.ItemIndex of
-      0:
-        NetRequest.RequestProps.Proxy := '';
-      1:
-        NetRequest.RequestProps.Proxy := SystemProxy;
-      2:
-        NetRequest.RequestProps.Proxy := eProxyAddr.Text;
+      0: NetRequest.RequestProps.Proxy := '';
+      1: NetRequest.RequestProps.Proxy := SystemProxy;
+      2: NetRequest.RequestProps.Proxy := eProxyAddr.Text;
     end;
     NetRequest.RequestTile(Tile);
     Log(Format('Queued request from inet %s', [TileToStr(Tile)]));
@@ -325,8 +314,7 @@ begin
   end;
 end;
 
-procedure TMainForm.mMapMouseMove(Sender: TObject; Shift: TShiftState;
-  X, Y: Integer);
+procedure TMainForm.mMapMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 var
   MapPt: TPoint;
   GeoPt: TGeoPoint;
@@ -341,25 +329,21 @@ end;
 
 procedure TMainForm.mMapZoomChanged(Sender: TObject);
 begin
-  lblZoom.Caption := Format('%d / %d', [TMapControl(Sender).Zoom,
-    High(TMapZoomLevel)]);
+  lblZoom.Caption := Format('%d / %d', [TMapControl(Sender).Zoom, High(TMapZoomLevel)]);
 end;
 
 // Zoom to show selected region
-procedure TMainForm.mMapSelectionBox(Sender: TMapControl;
-  const GeoRect: TGeoRect);
+procedure TMainForm.mMapSelectionBox(Sender: TMapControl; const GeoRect: TGeoRect);
 begin
   Log(Format('Selected region: (%.3f : %.3f; %.3f : %.3f)',
-    [GeoRect.TopLeft.Long, GeoRect.TopLeft.Lat, GeoRect.BottomRight.Long,
-    GeoRect.BottomRight.Lat]));
+    [GeoRect.TopLeft.Long, GeoRect.TopLeft.Lat, GeoRect.BottomRight.Long, GeoRect.BottomRight.Lat]));
 
   Sender.ZoomToArea(GeoRect);
 end;
 
 // Callback from a thread of network requester that request has been done
 // To avoid thread access troubles, re-post all the data to form
-procedure TMainForm.NetReqGotTileBgThr(const Tile: TTile; Ms: TMemoryStream;
-  const Error: string);
+procedure TMainForm.NetReqGotTileBgThr(const Tile: TTile; Ms: TMemoryStream; const Error: string);
 var
   pData: PGotTileData;
 begin
@@ -378,11 +362,10 @@ procedure TMainForm.MsgGotTile(var Message: TMessage);
 var
   pData: PGotTileData;
 begin
-  pData := PGotTileData(Message.LPARAM);
+  pData := PGotTileData(Message.LParam);
   if pData.Error <> '' then
   begin
-    Log(Format('Error getting tile %s: %s', [TileToStr(pData.Tile),
-      pData.Error]));
+    Log(Format('Error getting tile %s: %s', [TileToStr(pData.Tile), pData.Error]));
   end
   else
   begin
@@ -390,10 +373,8 @@ begin
     try
       TileStorage.StoreTile(pData.Tile, pData.Ms);
       mMap.RefreshTile(pData.Tile.ParameterX, pData.Tile.ParameterY);
-    except
-      on E: Exception do
-        Log(Format('Tile %s data is not PNG: %s', [TileToStr(pData.Tile),
-          E.Message]));
+    except on E: Exception do
+      Log(Format('Tile %s data is not PNG: %s', [TileToStr(pData.Tile), E.Message]));
     end;
   end;
   Dispose(pData);
@@ -435,8 +416,7 @@ begin
           imgAbsent := True;
           Continue;
         end;
-        bmp.Canvas.Draw(col * TILE_IMAGE_WIDTH,
-          row * TILE_IMAGE_HEIGHT, bmTile);
+        bmp.Canvas.Draw(col * TILE_IMAGE_WIDTH, row * TILE_IMAGE_HEIGHT, bmTile);
       end;
 
     if imgAbsent then
@@ -454,20 +434,17 @@ end;
 
 procedure TMainForm.Button2Click(Sender: TObject);
 const
-  Colors: array [0 .. 6] of TColor = (clRed, clYellow, clGreen, clBlue, clBlack,
-    clLime, clPurple);
+  Colors: array[0..6] of TColor = (clRed, clYellow, clGreen, clBlue, clBlack, clLime, clPurple);
 var
   i: Integer;
 begin
   Randomize;
   for i := 1 to 100 do
   begin
-    with mMap.MapMarks.Add(TGeoPoint.Create(RandomRange(-180, 180),
-      RandomRange(-85, 85)), 'Mapmark #' + IntToStr(i)) do
+    with mMap.MapMarks.Add(TGeoPoint.Create(RandomRange(-180, 180), RandomRange(-85, 85)), 'Mapmark #' + IntToStr(i)) do
     begin
       CustomProps := [propGlyphStyle, propCaptionStyle];
-      GlyphStyle.Shape := TMapMarkGlyphShape
-        (Random(Ord(High(TMapMarkGlyphShape)) + 1));
+      GlyphStyle.Shape := TMapMarkGlyphShape(Random(Ord(High(TMapMarkGlyphShape)) + 1));
       CaptionStyle.Color := Colors[Random(High(Colors) + 1)];
     end;
   end;
@@ -486,8 +463,7 @@ begin
 end;
 
 procedure TMainForm.btnTestClick(Sender: TObject);
-var
-  suite: TMapTestCase;
+var suite: TMapTestCase;
 begin
   TileStorage.ClearCache;
   suite := TMapTestCase.Create(mMap, Log);
@@ -499,18 +475,17 @@ end;
 
 procedure TMainForm.chbCacheUseFilesClick(Sender: TObject);
 begin
-  if (Sender as TCheckBox).Checked then
-    TileStorage.Options := TileStorage.Options - [tsoNoFileCache]
-  else
-    TileStorage.Options := TileStorage.Options + [tsoNoFileCache];
+  if (Sender as TCheckBox).Checked
+    then TileStorage.Options := TileStorage.Options - [tsoNoFileCache]
+    else TileStorage.Options := TileStorage.Options + [tsoNoFileCache];
 end;
 
 procedure TMainForm.chbCacheSaveFilesClick(Sender: TObject);
 begin
-  if (Sender as TCheckBox).Checked then
-    TileStorage.Options := TileStorage.Options - [tsoReadOnlyFileCache]
-  else
-    TileStorage.Options := TileStorage.Options + [tsoReadOnlyFileCache];
+  if (Sender as TCheckBox).Checked
+    then TileStorage.Options := TileStorage.Options - [tsoReadOnlyFileCache]
+    else TileStorage.Options := TileStorage.Options + [tsoReadOnlyFileCache];
 end;
 
 end.
+
