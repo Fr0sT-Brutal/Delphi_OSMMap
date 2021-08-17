@@ -144,10 +144,12 @@ object MainForm: TMainForm
           Value = 150.000000000000000000
         end
         item
-          Value = 50.000000000000000000
+          SizeStyle = ssAbsolute
+          Value = 120.000000000000000000
         end
         item
-          Value = 50.000000000000000000
+          SizeStyle = ssAbsolute
+          Value = 140.000000000000000000
         end
         item
           SizeStyle = ssAbsolute
@@ -391,7 +393,7 @@ object MainForm: TMainForm
         Left = 1
         Top = 251
         Width = 226
-        Height = 137
+        Height = 120
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 3
@@ -435,9 +437,9 @@ object MainForm: TMainForm
       end
       object Panel7: TPanel
         Left = 1
-        Top = 388
+        Top = 371
         Width = 226
-        Height = 137
+        Height = 140
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 4
@@ -446,7 +448,7 @@ object MainForm: TMainForm
         object Label4: TLabel
           AlignWithMargins = True
           Left = 3
-          Top = 55
+          Top = 52
           Width = 220
           Height = 16
           Align = alTop
@@ -466,7 +468,7 @@ object MainForm: TMainForm
         object editLatitude: TEdit
           AlignWithMargins = True
           Left = 3
-          Top = 77
+          Top = 71
           Width = 220
           Height = 24
           Align = alTop
@@ -480,7 +482,7 @@ object MainForm: TMainForm
         object editLongitude: TEdit
           AlignWithMargins = True
           Left = 3
-          Top = 25
+          Top = 22
           Width = 220
           Height = 24
           Align = alTop
@@ -494,9 +496,9 @@ object MainForm: TMainForm
         object btnGoLatLong: TButton
           AlignWithMargins = True
           Left = 3
-          Top = 107
+          Top = 101
           Width = 220
-          Height = 27
+          Height = 33
           Align = alClient
           Caption = 'Navigate'
           TabOrder = 2
@@ -508,7 +510,7 @@ object MainForm: TMainForm
       end
       object Panel8: TPanel
         Left = 1
-        Top = 525
+        Top = 511
         Width = 226
         Height = 50
         Align = alClient
@@ -531,7 +533,7 @@ object MainForm: TMainForm
         object Label2: TLabel
           AlignWithMargins = True
           Left = 3
-          Top = 25
+          Top = 22
           Width = 220
           Height = 16
           Align = alTop
