@@ -23,7 +23,7 @@ uses
   Windows,
   {$ENDIF}
   Messages, SysUtils, Classes, Graphics, Controls, ExtCtrls, Forms,
-  Math, Types,
+  Math, Types, Generics.Collections,
   OSM.SlippyMapUtils;
 
 const
@@ -83,6 +83,7 @@ type
     GlyphStyle: TMapMarkGlyphStyle;
     CaptionStyle: TMapMarkCaptionStyle;
     CaptionFont: TFont;
+    Layer: Word;
 
     destructor Destroy; override;
   end;
@@ -133,7 +134,7 @@ type
     // Create TMapMark object and initially assign values from owner map's fields
     function NewItem: TMapMark;
     // Simple method to add a mapmark by coords and caption
-    function Add(const GeoCoords: TGeoPoint; const Caption: string): TMapMark; overload;
+    function Add(const GeoCoords: TGeoPoint; const Caption: string; Layer: Word = 0): TMapMark; overload;
     // Add a mapmark with fully customizable properties. `MapMark` should be init-ed by NewItem
     function Add(MapMark: TMapMark): TMapMark; overload;
     procedure Delete(MapMark: TMapMark);
@@ -217,7 +218,7 @@ type
     function SetCacheDimensions: Boolean;
     procedure DrawTileLoading(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas);
     procedure DrawTile(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas);
-    procedure DrawMapMark(Canvas: TCanvas; MapMark: TMapMark);
+    procedure DrawMapMark(Canvas: TCanvas; MapMarksLayers: TDictionary<Word, TBitmap>; MapMark: TMapMark);
     //~ getters/setters
     procedure SetNWPoint(const MapPt: TPoint); overload;
     function GetCenterPoint: TGeoPoint;
@@ -524,7 +525,7 @@ begin
 end;
 
 // Add mapmark with specified coords and caption.
-function TMapMarkList.Add(const GeoCoords: TGeoPoint; const Caption: string): TMapMark;
+function TMapMarkList.Add(const GeoCoords: TGeoPoint; const Caption: string; Layer: Word = 0): TMapMark;
 var MapMark: TMapMark;
 begin
   MapMark := NewItem;
@@ -622,6 +623,8 @@ var
   MapViewGeoRect: TGeoRect;
   Idx: Integer;
   DCClipRectTopLeft: TPoint;
+  MapMarksLayers: TObjectDictionary<Word, TBitmap>;
+  LayerList: Tarray<Word>;
 begin
   // if view area lays within cached image, no update required
   if not ViewInCache then
@@ -632,6 +635,9 @@ begin
 
   // ViewRect is current view area in CacheImage coords
   ViewRect := ToInnerCoords(FCacheImageRect.TopLeft, ViewAreaRect);
+
+  //Create Layers holder
+  MapMarksLayers := TObjectDictionary<Word, TBitmap>.Create([doOwnsValues]);
 
   Canvas := TCanvas.Create; // Prefer canvas methods over bit blitting
   try
@@ -684,12 +690,23 @@ begin
       repeat
         idx := FMapMarkList.Find(MapViewGeoRect, True, idx);
         if idx = -1 then Break;
-        DrawMapMark(Canvas, FMapMarkList.Get(idx));
+        DrawMapMark(Canvas, TDictionary<Word, TBitmap>(MapMarksLayers), FMapMarkList.Get(idx));
       until False;
+
+      //Draw Mapmarks Layers on map in order
+      LayerList := MapMarksLayers.Keys.ToArray;
+      TArray.Sort<Word>(LayerList);
+      for var Layer in LayerList do
+      begin
+        Canvas.Draw(0, 0, MapMarksLayers[Layer]);
+      end;
+
     end;
   finally
     FreeAndNil(Canvas);
+    MapMarksLayers.Free;
   end;
+
 end;
 
 // NB: painting on TWinControl is pretty tricky, doing it ordinary way leads
@@ -1273,7 +1290,7 @@ begin
 end;
 
 // Base method to draw mapmark. Calls callback to do custom actions
-procedure TMapControl.DrawMapMark(Canvas: TCanvas; MapMark: TMapMark);
+procedure TMapControl.DrawMapMark(Canvas: TCanvas; MapMarksLayers: TDictionary<Word, TBitmap>; MapMark: TMapMark);
 var
   Handled: Boolean;
   MMPt: TPoint;
@@ -1281,11 +1298,25 @@ var
   pEffGlStyle: PMapMarkGlyphStyle;
   pEffCapStyle: PMapMarkCaptionStyle;
   CapFont: TFont;
+  LayerBitmap: TBitmap;
 begin
   Handled := False;
   MMPt := ToInnerCoords(ViewAreaRect.TopLeft, GeoCoordsToMap(MapMark.Coord));
   // ! Consider Canvas.ClipRect
   MMPt.Offset(Canvas.ClipRect.TopLeft);
+
+  //replace map canvas with layer
+  if (not MapMarksLayers.TryGetValue(MapMark.Layer, LayerBitmap)) then
+  begin
+    LayerBitmap := TBitmap.Create(Canvas.ClipRect.Width, Canvas.ClipRect.Height);
+    LayerBitmap.Transparent := true;
+    LayerBitmap.TransparentColor := RGB(255,0,255); //TODO: good idea to make it configurable
+    LayerBitmap.TransparentMode := tmFixed;
+    LayerBitmap.Canvas.Brush.Color := LayerBitmap.TransparentColor;
+    LayerBitmap.Canvas.FillRect(Canvas.ClipRect);
+    MapMarksLayers.Add(MapMark.Layer, LayerBitmap);
+  end;
+  Canvas := LayerBitmap.Canvas;
 
   if Assigned(FOnDrawMapMark) then
     FOnDrawMapMark(Self, Canvas, MMPt, MapMark, Handled);
