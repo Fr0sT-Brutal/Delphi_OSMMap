@@ -69,6 +69,7 @@ type
   TMapMarkCustomProp = (propGlyphStyle, propCaptionStyle, propFont);
   TMapMarkCustomProps = set of TMapMarkCustomProp;
 
+  // Number of a layer
   TMapLayer = Byte;
   TMapLayers = set of Byte;
 
@@ -77,11 +78,11 @@ type
   TMapMark = class
   public
     //~ Mapmark data
-    Coord: TGeoPoint;
-    Caption: string;
-    Visible: Boolean;
-    Data: Pointer;
-    Layer: TMapLayer;
+    Coord: TGeoPoint;                    // Coordinates
+    Caption: string;                     // Label
+    Visible: Boolean;                    // Visibility flag
+    Data: Pointer;                       // User data
+    Layer: TMapLayer;                    // Layer number
     //~ Visual style
     CustomProps: TMapMarkCustomProps;
     GlyphStyle: TMapMarkGlyphStyle;
@@ -139,7 +140,7 @@ type
     function Find(const GeoRect: TGeoRect; ConsiderMapMarkSize: Boolean = True; StartIndex: Integer = -1): Integer; overload;
     // Create TMapMark object and initially assign values from owner map's fields
     function NewItem: TMapMark;
-    // Simple method to add a mapmark by coords and caption
+    // Simple method to add a mapmark by coords, caption and layer
     function Add(const GeoCoords: TGeoPoint; const Caption: string; Layer: TMapLayer = 0): TMapMark; overload;
     // Add a mapmark with fully customizable properties. `MapMark` should be init-ed by NewItem
     function Add(MapMark: TMapMark): TMapMark; overload;
@@ -188,7 +189,7 @@ type
   strict private
     FMapSize: TSize;         // current map dims in pixels
     FCacheImage: TBitmap;    // drawn tiles (it could be equal to or larger than view area!)
-    FCopyright,              // lazily created cache images for
+    FCopyright: TBitmap;     // lazily created cache images for
     FScaleLine: TBitmap;     //    scale line and copyright
     FZoom: Integer;          // current zoom; integer for simpler operations
     FCacheImageRect: TRect;  // position of cache image on map in map coords

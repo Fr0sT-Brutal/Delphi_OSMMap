@@ -49,10 +49,10 @@ type
   public
     // `[http://]host:port` Address of HTTP (CONNECT) proxy, protocol is optional.         @br
     // Direct connection if empty. If equals to SystemProxy, OS-wide value is used.        @br
-    // Could contain login in the form `user:pass@host:port`.
+    // Could contain login in the form `user:pass@@host:port`.
     Proxy: string;
     // HTTP URL to access.
-    // Could contain login in the form `proto://user:pass@url` overriding `HttpUserName`
+    // Could contain login in the form `proto://user:pass@@url` overriding `HttpUserName`
     // and `HttpPassword` fields.
     URL: string;
     // Access login name.
