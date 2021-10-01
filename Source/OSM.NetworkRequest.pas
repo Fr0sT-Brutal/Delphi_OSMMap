@@ -52,7 +52,7 @@ type
     // Could contain login in the form `user:pass@@host:port`.
     Proxy: string;
     // HTTP URL to access.
-    // Could contain login in the form `proto://user:pass@@url` overriding `HttpUserName`
+    // Could contain login in the form `proto://user:pass@url` overriding `HttpUserName`
     // and `HttpPassword` fields.
     URL: string;
     // Access login name.
@@ -107,6 +107,8 @@ type
     FMaxThreads: Cardinal;
     FGotTileCb: TGotTileCallbackBgThr;
     FRequestFunc: TBlockingNetworkRequestFunc;
+    FDumbQueueOrder: Boolean;
+
     procedure Lock;
     procedure Unlock;
     procedure AddThread;
@@ -115,9 +117,10 @@ type
     function PopTask(out pTile: PTile; out RequestProps: THttpRequestProps): Boolean;
   public
     // Constructor
-    //   @param(MaxTasksPerThread - if number of tasks becomes more than
-    //     `MaxTasksPerThread*%currentThreadCount%`, add one more thread)
+    //   @param MaxTasksPerThread - if number of tasks becomes more than \
+    //     `MaxTasksPerThread*%currentThreadCount%`, add one more thread
     //   @param MaxThreads - limit of the number of threads
+    //   @param RequestFunc - implementator of network request
     //   @param GotTileCb - method to call when request is completed
     constructor Create(MaxTasksPerThread, MaxThreads: Cardinal;
       RequestFunc: TBlockingNetworkRequestFunc;
@@ -125,9 +128,17 @@ type
     destructor Destroy; override;
 
     // Add request for an image for `Tile` to request queue
-    procedure RequestTile(const Tile: TTile); 
+    procedure RequestTile(const Tile: TTile);
 
+    // Common network request props
     property RequestProps: THttpRequestProps read FRequestProps write FRequestProps;
+    // If set: disable all smart ordering facilities. Queue will retrieve all added tiles
+    // one by one.
+    // If not set (default):
+    //   - When RequestTile adds a tile, all queued items with another zoom level
+    //     are cancelled (use case: user quickly zooms in/out by multiple steps -
+    //     no sense to wait for all of them to download)
+    property DumbQueueOrder: Boolean read FDumbQueueOrder write FDumbQueueOrder;
   end;
 
 const
@@ -311,6 +322,11 @@ begin
     // or in queue
     if IndexOfTile(Tile, TQueueHack(FTaskQueue).List) <> -1 then
       Exit;
+
+    // Cancel all tiles with another zoom level. Only check the current queue head.
+    if not FDumbQueueOrder then
+      while (FTaskQueue.Count > 0) and (PTile(FTaskQueue.Peek).Zoom <> Tile.Zoom) do
+        Dispose(FTaskQueue.Pop);
 
     New(pT);
     pT^ := Tile;
