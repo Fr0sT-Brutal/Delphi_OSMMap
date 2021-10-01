@@ -41,6 +41,8 @@ const
   {$IFEND}
   MSG_GOTTILE = WM_APP + 200;
 
+  MaxLayer = 4;
+
 type
   // Nice trick to avoid registering TMapControl as design-time component
   TScrollBox = class(TMapControl)
@@ -88,6 +90,11 @@ type
     editLongitude: TEdit;
     Label5: TLabel;
     btnGoLatLong: TButton;
+    chbLayer1: TCheckBox;
+    Label6: TLabel;
+    chbLayer2: TCheckBox;
+    chbLayer3: TCheckBox;
+    chbLayer4: TCheckBox;
     procedure btnGoLatLongClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -107,6 +114,7 @@ type
     procedure btnTestClick(Sender: TObject);
     procedure chbCacheUseFilesClick(Sender: TObject);
     procedure chbCacheSaveFilesClick(Sender: TObject);
+    procedure chbLayer1Click(Sender: TObject);
   private
     NetRequest: TNetworkRequestQueue;
     TileStorage: TTileStorage;
@@ -441,7 +449,7 @@ begin
   Randomize;
   for i := 1 to 100 do
   begin
-    with mMap.MapMarks.Add(TGeoPoint.Create(RandomRange(-180, 180), RandomRange(-85, 85)), 'Mapmark #' + IntToStr(i)) do
+    with mMap.MapMarks.Add(TGeoPoint.Create(RandomRange(-180, 180), RandomRange(-85, 85)), 'Mapmark #' + IntToStr(i), Random(MaxLayer) + 1) do
     begin
       CustomProps := [propGlyphStyle, propCaptionStyle];
       GlyphStyle.Shape := TMapMarkGlyphShape(Random(Ord(High(TMapMarkGlyphShape)) + 1));
@@ -485,6 +493,16 @@ begin
   if (Sender as TCheckBox).Checked
     then TileStorage.Options := TileStorage.Options - [tsoReadOnlyFileCache]
     else TileStorage.Options := TileStorage.Options + [tsoReadOnlyFileCache];
+end;
+
+procedure TMainForm.chbLayer1Click(Sender: TObject);
+begin
+  // Change layer visibility defined in ChB.Tag
+  with Sender as TCheckBox do
+    if Checked then
+      mMap.VisibleLayers := mMap.VisibleLayers + [TMapLayer(Tag)]
+    else
+      mMap.VisibleLayers := mMap.VisibleLayers - [TMapLayer(Tag)]
 end;
 
 end.

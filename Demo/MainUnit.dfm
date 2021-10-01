@@ -2,8 +2,8 @@ object MainForm: TMainForm
   Left = 16
   Top = 116
   Caption = 'Test of OSM map control'
-  ClientHeight = 720
-  ClientWidth = 1003
+  ClientHeight = 746
+  ClientWidth = 1051
   Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -19,10 +19,10 @@ object MainForm: TMainForm
   PixelsPerInch = 120
   TextHeight = 16
   object Splitter1: TSplitter
-    Left = 767
+    Left = 815
     Top = 0
     Width = 8
-    Height = 576
+    Height = 602
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -33,8 +33,8 @@ object MainForm: TMainForm
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 767
-    Height = 576
+    Width = 815
+    Height = 602
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -45,18 +45,18 @@ object MainForm: TMainForm
     object mMap: TScrollBox
       Left = 0
       Top = 0
-      Width = 767
-      Height = 576
+      Width = 815
+      Height = 602
       Align = alClient
       TabOrder = 0
       OnMouseMove = mMapMouseMove
     end
   end
   object Panel2: TPanel
-    Left = 775
+    Left = 823
     Top = 0
     Width = 228
-    Height = 576
+    Height = 602
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -93,7 +93,7 @@ object MainForm: TMainForm
       Left = 0
       Top = 0
       Width = 228
-      Height = 576
+      Height = 602
       Align = alClient
       ColumnCollection = <
         item
@@ -145,7 +145,7 @@ object MainForm: TMainForm
         end
         item
           SizeStyle = ssAbsolute
-          Value = 120.000000000000000000
+          Value = 140.000000000000000000
         end
         item
           SizeStyle = ssAbsolute
@@ -156,7 +156,6 @@ object MainForm: TMainForm
           Value = 50.000000000000000000
         end>
       TabOrder = 0
-      ExplicitHeight = 557
       object Panel3: TPanel
         Left = 1
         Top = 1
@@ -165,14 +164,12 @@ object MainForm: TMainForm
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitWidth = 183
-        ExplicitHeight = 40
         object lblZoom: TLabel
           AlignWithMargins = True
           Left = 3
           Top = 3
           Width = 108
-          Height = 44
+          Height = 47
           Align = alClient
           Alignment = taCenter
           AutoSize = False
@@ -184,10 +181,6 @@ object MainForm: TMainForm
           ParentFont = False
           Layout = tlCenter
           WordWrap = True
-          ExplicitLeft = 7
-          ExplicitTop = 13
-          ExplicitWidth = 74
-          ExplicitHeight = 36
         end
         object btnZoomIn: TSpeedButton
           AlignWithMargins = True
@@ -210,9 +203,6 @@ object MainForm: TMainForm
             0EEEEEEE0000EEEEEEEEEEEEEEEEEEEE0000EEEEEEEEEEEEEEEEEEEE0000EEEE
             EEEEEEEEEEEEEEEE0000}
           OnClick = btnZoomInClick
-          ExplicitLeft = 128
-          ExplicitTop = 4
-          ExplicitHeight = 80
         end
         object btnZoomOut: TSpeedButton
           AlignWithMargins = True
@@ -235,9 +225,6 @@ object MainForm: TMainForm
             0EEEEEEE0000EEEEEEEEEEEEEEEEEEEE0000EEEEEEEEEEEEEEEEEEEE0000EEEE
             EEEEEEEEEEEEEEEE0000}
           OnClick = btnZoomOutClick
-          ExplicitLeft = 69
-          ExplicitTop = 4
-          ExplicitHeight = 80
         end
       end
       object Panel4: TPanel
@@ -248,22 +235,17 @@ object MainForm: TMainForm
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 1
-        ExplicitTop = 112
-        ExplicitWidth = 183
-        ExplicitHeight = 41
         object Label3: TLabel
           AlignWithMargins = True
           Left = 3
           Top = 3
           Width = 108
-          Height = 44
+          Height = 47
           Align = alClient
           Alignment = taCenter
           Caption = 'Mouse mode'
           Layout = tlCenter
           WordWrap = True
-          ExplicitWidth = 44
-          ExplicitHeight = 32
         end
         object btnMouseModePan: TSpeedButton
           AlignWithMargins = True
@@ -302,8 +284,6 @@ object MainForm: TMainForm
             C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C09A
             ADC7B2B9C3C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0}
           OnClick = btnMouseModePanClick
-          ExplicitLeft = 120
-          ExplicitHeight = 82
         end
         object btnMouseModeSel: TSpeedButton
           AlignWithMargins = True
@@ -341,8 +321,6 @@ object MainForm: TMainForm
             5EE6805EF0C8BAE6805ED6A392ED8765D6A392C0C0C0C0C0C0C0C0C0C0C0C0C0
             C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0D6A392ED8765D6A392}
           OnClick = btnMouseModeSelClick
-          ExplicitLeft = 64
-          ExplicitHeight = 82
         end
       end
       object Panel5: TPanel
@@ -353,9 +331,6 @@ object MainForm: TMainForm
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 2
-        ExplicitTop = 180
-        ExplicitWidth = 183
-        ExplicitHeight = 87
         object rgProxy: TRadioGroup
           AlignWithMargins = True
           Left = 3
@@ -370,10 +345,6 @@ object MainForm: TMainForm
             'System default'
             'Custom')
           TabOrder = 0
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 183
-          ExplicitHeight = 61
         end
         object eProxyAddr: TEdit
           AlignWithMargins = True
@@ -384,20 +355,23 @@ object MainForm: TMainForm
           Align = alBottom
           TabOrder = 1
           TextHint = 'host:port'
-          ExplicitLeft = 6
-          ExplicitTop = 63
-          ExplicitWidth = 177
         end
       end
       object Panel6: TPanel
         Left = 1
         Top = 251
         Width = 226
-        Height = 120
+        Height = 140
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 3
-        ExplicitHeight = 224
+        object Label6: TLabel
+          Left = 8
+          Top = 112
+          Width = 85
+          Height = 16
+          Caption = 'Visible Layers'
+        end
         object Button1: TButton
           AlignWithMargins = True
           Left = 3
@@ -419,8 +393,6 @@ object MainForm: TMainForm
           Caption = 'Add 100 random marks'
           TabOrder = 1
           OnClick = Button2Click
-          ExplicitLeft = 6
-          ExplicitTop = 27
         end
         object btnTest: TButton
           AlignWithMargins = True
@@ -432,19 +404,64 @@ object MainForm: TMainForm
           Caption = 'Run test suite'
           TabOrder = 2
           OnClick = btnTestClick
-          ExplicitTop = 49
+        end
+        object chbLayer1: TCheckBox
+          Tag = 1
+          Left = 99
+          Top = 111
+          Width = 33
+          Height = 17
+          Caption = '1'
+          Checked = True
+          State = cbChecked
+          TabOrder = 3
+          OnClick = chbLayer1Click
+        end
+        object chbLayer2: TCheckBox
+          Tag = 2
+          Left = 131
+          Top = 111
+          Width = 33
+          Height = 17
+          Caption = '2'
+          Checked = True
+          State = cbChecked
+          TabOrder = 4
+          OnClick = chbLayer1Click
+        end
+        object chbLayer3: TCheckBox
+          Tag = 4
+          Left = 195
+          Top = 111
+          Width = 33
+          Height = 17
+          Caption = '4'
+          Checked = True
+          State = cbChecked
+          TabOrder = 5
+          OnClick = chbLayer1Click
+        end
+        object chbLayer4: TCheckBox
+          Tag = 3
+          Left = 163
+          Top = 111
+          Width = 33
+          Height = 17
+          Caption = '3'
+          Checked = True
+          State = cbChecked
+          TabOrder = 6
+          OnClick = chbLayer1Click
         end
       end
       object Panel7: TPanel
         Left = 1
-        Top = 371
+        Top = 391
         Width = 226
         Height = 140
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 4
-        ExplicitLeft = -1
-        ExplicitTop = 387
         object Label4: TLabel
           AlignWithMargins = True
           Left = 3
@@ -453,7 +470,6 @@ object MainForm: TMainForm
           Height = 16
           Align = alTop
           Caption = 'Latitude'
-          ExplicitWidth = 47
         end
         object Label5: TLabel
           AlignWithMargins = True
@@ -463,7 +479,6 @@ object MainForm: TMainForm
           Height = 16
           Align = alTop
           Caption = 'Longitude'
-          ExplicitWidth = 59
         end
         object editLatitude: TEdit
           AlignWithMargins = True
@@ -475,9 +490,6 @@ object MainForm: TMainForm
           TabOrder = 1
           Text = '-31.953512'
           TextHint = 'Latitude'
-          ExplicitLeft = 6
-          ExplicitTop = 63
-          ExplicitWidth = 177
         end
         object editLongitude: TEdit
           AlignWithMargins = True
@@ -489,37 +501,27 @@ object MainForm: TMainForm
           TabOrder = 0
           Text = '115.857048'
           TextHint = 'Longitude'
-          ExplicitLeft = 6
-          ExplicitTop = 63
-          ExplicitWidth = 177
         end
         object btnGoLatLong: TButton
           AlignWithMargins = True
           Left = 3
           Top = 101
           Width = 220
-          Height = 33
+          Height = 36
           Align = alClient
           Caption = 'Navigate'
           TabOrder = 2
           OnClick = btnGoLatLongClick
-          ExplicitLeft = 6
-          ExplicitTop = 123
-          ExplicitHeight = 33
         end
       end
       object Panel8: TPanel
         Left = 1
-        Top = 511
+        Top = 531
         Width = 226
         Height = 50
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 5
-        ExplicitLeft = 40
-        ExplicitTop = 236
-        ExplicitWidth = 185
-        ExplicitHeight = 41
         object Label1: TLabel
           AlignWithMargins = True
           Left = 3
@@ -528,7 +530,6 @@ object MainForm: TMainForm
           Height = 16
           Align = alTop
           Caption = 'Pixels: %d : %d'
-          ExplicitWidth = 91
         end
         object Label2: TLabel
           AlignWithMargins = True
@@ -538,15 +539,14 @@ object MainForm: TMainForm
           Height = 16
           Align = alTop
           Caption = 'Geo coords: %.3f : %.3f'
-          ExplicitWidth = 136
         end
       end
     end
   end
   object mLog: TMemo
     Left = 0
-    Top = 576
-    Width = 1003
+    Top = 602
+    Width = 1051
     Height = 144
     Align = alBottom
     ScrollBars = ssVertical
