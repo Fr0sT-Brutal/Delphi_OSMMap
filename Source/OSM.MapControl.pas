@@ -23,7 +23,7 @@ uses
   Windows,
   {$ENDIF}
   Messages, SysUtils, Classes, Graphics, Controls, ExtCtrls, Forms,
-  Math, Types,
+  Math, Types, Generics.Collections, Generics.Defaults,
   OSM.SlippyMapUtils;
 
 const
@@ -69,6 +69,9 @@ type
   TMapMarkCustomProp = (propGlyphStyle, propCaptionStyle, propFont);
   TMapMarkCustomProps = set of TMapMarkCustomProp;
 
+  TMapLayer = Byte;
+  TMapLayers = set of Byte;
+
   // Class representing a single mapmark.
   // It is recommended to be created by TMapMarkList.NewItem
   TMapMark = class
@@ -78,6 +81,7 @@ type
     Caption: string;
     Visible: Boolean;
     Data: Pointer;
+    Layer: TMapLayer;
     //~ Visual style
     CustomProps: TMapMarkCustomProps;
     GlyphStyle: TMapMarkGlyphStyle;
@@ -92,14 +96,17 @@ type
   // Notification of an action over a mapmark in a list
   TOnItemNotify = procedure (Sender: TObject; Item: TMapMark; Action: TListNotification) of object;
 
-  // List of mapmarks
+  // List of mapmarks.
+  // Items are sorted by layer number and painted in this order, ascending
   TMapMarkList = class
   strict private
     FMap: TMapControl;
-    FList: TList;
+    FList: TObjectList<TMapMark>;
     FUpdateCount: Integer;
 
     FOnItemNotify: TOnItemNotify;
+  strict protected
+    procedure ListNotify(Sender: TObject; const Item: TMapMark; Action: TCollectionNotification);
   public
     constructor Create(Map: TMapControl);
     destructor Destroy; override;
@@ -133,9 +140,10 @@ type
     // Create TMapMark object and initially assign values from owner map's fields
     function NewItem: TMapMark;
     // Simple method to add a mapmark by coords and caption
-    function Add(const GeoCoords: TGeoPoint; const Caption: string): TMapMark; overload;
+    function Add(const GeoCoords: TGeoPoint; const Caption: string; Layer: TMapLayer = 0): TMapMark; overload;
     // Add a mapmark with fully customizable properties. `MapMark` should be init-ed by NewItem
     function Add(MapMark: TMapMark): TMapMark; overload;
+    // Remove mapmark object
     procedure Delete(MapMark: TMapMark);
     function Count: Integer;
     procedure Clear;
@@ -191,6 +199,7 @@ type
     FSelectionBox: TShape;   // much simpler than drawing on canvas, tracking bounds etc.
     FSelectionBoxBindPoint: TPoint;  // point at which selection starts
     FMouseMode: TMapMouseMode;
+    FVisibleLayers: TMapLayers;
 
     FOnDrawTile: TOnDrawTile;
     FOnDrawTileLoading: TOnDrawTile;
@@ -225,6 +234,7 @@ type
     function GetNWPoint: TGeoPoint;
     procedure SetNWPoint(const GeoCoords: TGeoPoint); overload;
     procedure SetZoomConstraint(Index: Integer; ZoomConstraint: TMapZoomLevel);
+    procedure SetVisibleLayers(Value: TMapLayers);
     //~ helpers
     function ViewAreaRect: TRect;
     class procedure DrawCopyright(const Text: string; DestBmp: TBitmap);
@@ -298,6 +308,8 @@ type
     property MouseMode: TMapMouseMode read FMouseMode write FMouseMode;
     // View area in map coords
     property ViewRect: TRect read ViewAreaRect;
+    // Set of visible layers. You can use LayersAll and LayersNone constants
+    property VisibleLayers: TMapLayers read FVisibleLayers write SetVisibleLayers;
     //~ events/callbacks
     // Callback is called when map tile must be drawn
     property OnDrawTile: TOnDrawTile read FOnDrawTile write FOnDrawTile;
@@ -333,6 +345,10 @@ const
     DX: 3;
     Transparent: True
   );
+  // Constant containing all numbers of layers
+  LayersAll: TMapLayers = [Low(TMapLayer)..High(TMapLayer)];
+  // Constant containing no layers
+  LayersNone: TMapLayers = [];
 
 const
   S_Lbl_Loading = 'Loading [%d : %d]...';
@@ -424,10 +440,18 @@ end;
 
 { TMapMarkList }
 
+// Sort the list by Layer currently
+function ListSortCompare(const Left, Right: TMapMark): Integer;
+begin
+  Result := CompareValue(Left.Layer, Right.Layer);
+end;
+
 constructor TMapMarkList.Create(Map: TMapControl);
 begin
   FMap := Map;
-  FList := TList.Create;
+  // List is always sorted
+  FList := TObjectList<TMapMark>.Create(TComparer<TMapMark>.Construct(ListSortCompare), True);
+  FList.OnNotify := ListNotify;
 end;
 
 destructor TMapMarkList.Destroy;
@@ -456,14 +480,7 @@ begin
 end;
 
 procedure TMapMarkList.Clear;
-var i: Integer;
 begin
-  for i := 0 to FList.Count - 1 do
-  begin
-    if Assigned(FOnItemNotify) then
-      FOnItemNotify(Self, FList[i], lnDeleted);
-    TMapMark(FList[i]).Free;
-  end;
   FList.Clear;
 
   if FUpdateCount = 0 then // redraw map view if update is not held back
@@ -523,23 +540,23 @@ begin
   Result.CaptionStyle := FMap.MapMarkCaptionStyle;
 end;
 
-// Add mapmark with specified coords and caption.
-function TMapMarkList.Add(const GeoCoords: TGeoPoint; const Caption: string): TMapMark;
+function TMapMarkList.Add(const GeoCoords: TGeoPoint; const Caption: string; Layer: TMapLayer): TMapMark;
 var MapMark: TMapMark;
 begin
   MapMark := NewItem;
   MapMark.Coord := GeoCoords;
   MapMark.Caption := Caption;
+  MapMark.Layer := Layer;
   Result := Add(MapMark);
 end;
 
 function TMapMarkList.Add(MapMark: TMapMark): TMapMark;
+var i: Integer;
 begin
   Result := MapMark;
-  FList.Add(Result);
-
-  if Assigned(FOnItemNotify) then
-    FOnItemNotify(Self, Result, lnAdded);
+  // Add the item in sort order
+  FList.BinarySearch(MapMark, i);
+  FList.Insert(i, Result);
 
   if FUpdateCount = 0 then // redraw map view if update is not held back
     FMap.Invalidate;
@@ -548,17 +565,22 @@ end;
 procedure TMapMarkList.Delete(MapMark: TMapMark);
 var i: Integer;
 begin
-  i := FList.IndexOf(MapMark);
-  if i <> -1 then
-  begin
-    if Assigned(FOnItemNotify) then
-      FOnItemNotify(Self, MapMark, lnDeleted);
-    TMapMark(FList[i]).Free;
+  // Binary search is faster
+  if FList.BinarySearch(MapMark, i) then
     FList.Delete(i);
-  end;
 
   if FUpdateCount = 0 then // redraw map view if update is not held back
     FMap.Invalidate;
+end;
+
+procedure TMapMarkList.ListNotify(Sender: TObject; const Item: TMapMark; Action: TCollectionNotification);
+begin
+  if Assigned(FOnItemNotify) then
+    case Action of
+      cnAdded     : FOnItemNotify(Self, Item, lnAdded);
+      cnRemoved   : FOnItemNotify(Self, Item, lnDeleted);
+      cnExtracted : FOnItemNotify(Self, Item, lnExtracted);
+    end;
 end;
 
 { TMapControl }
@@ -586,6 +608,8 @@ begin
 
   FMinZoom := Low(TMapZoomLevel);
   FMaxZoom := High(TMapZoomLevel);
+
+  FVisibleLayers := LayersAll;
 
   MapMarkGlyphStyle := DefaultMapMarkGlyphStyle;
   MapMarkCaptionStyle := DefaultMapMarkCaptionStyle;
@@ -1113,7 +1137,8 @@ end;
 class procedure TMapControl.DrawScale(Zoom: TMapZoomLevel; DestBmp: TBitmap);
 var
   Canv: TCanvas;
-  LetterWidth, ScalebarWidthPixel, ScalebarWidthMeter: Cardinal;
+  ScalebarWidthPixel, ScalebarWidthMeter: Cardinal;
+  LetterWidth: Integer; // Surely unsigned but declared signed just to get rid of warning
   Text: string;
   TextExt: TSize;
   ScalebarRect: TRect;
@@ -1129,7 +1154,7 @@ begin
   TextExt := Canv.TextExtent(Text);
   LetterWidth := Canv.TextWidth('W');
 
-  DestBmp.Width := LetterWidth + TextExt.cx + LetterWidth + ScalebarWidthPixel; // text, space, bar
+  DestBmp.Width := LetterWidth + TextExt.cx + LetterWidth + Integer(ScalebarWidthPixel); // text, space, bar
   DestBmp.Height := 2*LabelMargin + TextExt.cy;
 
   // Frame
@@ -1239,6 +1264,12 @@ begin
     SetZoom(FMaxZoom);
 end;
 
+procedure TMapControl.SetVisibleLayers(Value: TMapLayers);
+begin
+  FVisibleLayers := Value;
+  Refresh;
+end;
+
 procedure TMapControl.ZoomToArea(const GeoRect: TGeoRect);
 var
   zoom, NewZoomH, NewZoomV: TMapZoomLevel;
@@ -1282,11 +1313,15 @@ var
   pEffCapStyle: PMapMarkCaptionStyle;
   CapFont: TFont;
 begin
+  // Check if mapmark is visible and belongs to a visible layer
+  if not (MapMark.Visible and (MapMark.Layer in FVisibleLayers)) then Exit;
+
   Handled := False;
   MMPt := ToInnerCoords(ViewAreaRect.TopLeft, GeoCoordsToMap(MapMark.Coord));
   // ! Consider Canvas.ClipRect
   MMPt.Offset(Canvas.ClipRect.TopLeft);
 
+  // Let the user modify properties or handle drawing completely
   if Assigned(FOnDrawMapMark) then
     FOnDrawMapMark(Self, Canvas, MMPt, MapMark, Handled);
   if Handled then Exit;
