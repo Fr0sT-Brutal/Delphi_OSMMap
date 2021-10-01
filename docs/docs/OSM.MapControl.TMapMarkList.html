@@ -21,7 +21,7 @@
 <code>type TMapMarkList = class(TObject)</code></p>
 <h2 class="description">Description</h2>
 <p>
-List of mapmarks</p>
+List of mapmarks. Items are sorted by layer number and painted in this order, ascending</p>
 <span id="PasDoc-Hierarchy"></span><h2 class="hierarchy">Hierarchy</h2>
 <ul class="hierarchy"><li class="ancestor">TObject</li>
 <li class="thisitem">TMapMarkList</li></ul><h2 class="overview">Overview</h2>
@@ -61,7 +61,7 @@ List of mapmarks</p>
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapMarkList.html#Add">Add</a></strong>(const GeoCoords: <a href="OSM.SlippyMapUtils.TGeoPoint.html">TGeoPoint</a>; const Caption: string): <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; overload;</code></td>
+<td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapMarkList.html#Add">Add</a></strong>(const GeoCoords: <a href="OSM.SlippyMapUtils.TGeoPoint.html">TGeoPoint</a>; const Caption: string; Layer: <a href="OSM.MapControl.html#TMapLayer">TMapLayer</a> = 0): <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; overload;</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
@@ -196,11 +196,11 @@ Create <a class="normal" href="OSM.MapControl.TMapMark.html">TMapMark</a> object
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="Add"></span><code>function <strong>Add</strong>(const GeoCoords: <a href="OSM.SlippyMapUtils.TGeoPoint.html">TGeoPoint</a>; const Caption: string): <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; overload;</code></td>
+<td class="itemcode"><span id="Add"></span><code>function <strong>Add</strong>(const GeoCoords: <a href="OSM.SlippyMapUtils.TGeoPoint.html">TGeoPoint</a>; const Caption: string; Layer: <a href="OSM.MapControl.html#TMapLayer">TMapLayer</a> = 0): <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; overload;</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
-Simple method to add a mapmark by coords and caption</p>
+Simple method to add a mapmark by coords, caption and layer</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -219,7 +219,9 @@ Add a mapmark with fully customizable properties. <code>MapMark</code> should be
 <td class="itemcode"><span id="Delete"></span><code>procedure <strong>Delete</strong>(MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>);</code></td>
 </tr>
 <tr><td colspan="2">
-&nbsp;</td></tr>
+<p>
+Remove mapmark object</p>
+</td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">

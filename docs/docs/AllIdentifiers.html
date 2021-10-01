@@ -100,12 +100,12 @@
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#GeoCoordsToMap">GeoCoordsToMap</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Converts geo rect in degrees to map rect in pixels</p></td>
+<td class="itemdesc"><p>Converts geo point in degrees to map point in pixels</p></td>
 </tr>
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#GeoCoordsToMap">GeoCoordsToMap</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Converts geo point in degrees to map point in pixels</p></td>
+<td class="itemdesc"><p>Converts geo rect in degrees to map rect in pixels</p></td>
 </tr>
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#GetScaleBarParams">GetScaleBarParams</a></td>
@@ -120,12 +120,12 @@
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#InMap">InMap</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Checks if rect <code>Rc</code> is inside a map at zoom level <code>Zoom</code></p></td>
+<td class="itemdesc"><p>Checks if point <code>Pt</code> is inside a map at zoom level <code>Zoom</code></p></td>
 </tr>
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#InMap">InMap</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Checks if point <code>Pt</code> is inside a map at zoom level <code>Zoom</code></p></td>
+<td class="itemdesc"><p>Checks if rect <code>Rc</code> is inside a map at zoom level <code>Zoom</code></p></td>
 </tr>
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#LabelMargin">LabelMargin</a></td>
@@ -136,6 +136,16 @@
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#LatitudeToMapCoord">LatitudeToMapCoord</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Converts geo coord in degrees to map coord in pixels</p></td>
+</tr>
+<tr class="list">
+<td class="itemname"><a class="bold" href="OSM.MapControl.html#LayersAll">LayersAll</a></td>
+<td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
+<td class="itemdesc"><p>Constant containing all numbers of layers</p></td>
+</tr>
+<tr class="list2">
+<td class="itemname"><a class="bold" href="OSM.MapControl.html#LayersNone">LayersNone</a></td>
+<td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
+<td class="itemdesc"><p>Constant containing no layers</p></td>
 </tr>
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#LongitudeToMapCoord">LongitudeToMapCoord</a></td>
@@ -160,12 +170,12 @@
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MapToGeoCoords">MapToGeoCoords</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Converts map point in pixels to geo point in degrees</p></td>
+<td class="itemdesc"><p>Converts map rect in pixels to geo rect in degrees</p></td>
 </tr>
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MapToGeoCoords">MapToGeoCoords</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Converts map rect in pixels to geo rect in degrees</p></td>
+<td class="itemdesc"><p>Converts map point in pixels to geo point in degrees</p></td>
 </tr>
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MapURLPostfix">MapURLPostfix</a></td>
@@ -333,6 +343,16 @@
 <td class="itemdesc"><p>Control displaying a map or its visible part.</p></td>
 </tr>
 <tr class="list2">
+<td class="itemname"><a class="bold" href="OSM.MapControl.html#TMapLayer">TMapLayer</a></td>
+<td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
+<td class="itemdesc"><p>Number of a layer</p></td>
+</tr>
+<tr class="list">
+<td class="itemname"><a class="bold" href="OSM.MapControl.html#TMapLayers">TMapLayers</a></td>
+<td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
+<td class="itemdesc"><p>&nbsp;</p></td>
+</tr>
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.MapControl.TMapMark.html">TMapMark</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
 <td class="itemdesc"><p>Class representing a single mapmark.</p></td>
@@ -365,7 +385,7 @@
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.MapControl.TMapMarkList.html">TMapMarkList</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
-<td class="itemdesc"><p>List of mapmarks</p></td>
+<td class="itemdesc"><p>List of mapmarks.</p></td>
 </tr>
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#TMapMouseMode">TMapMouseMode</a></td>

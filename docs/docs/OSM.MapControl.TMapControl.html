@@ -159,21 +159,25 @@ Control displaying a map or its visible part.</p>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnDrawTile">OnDrawTile</a></strong>: <a href="OSM.MapControl.html#TOnDrawTile">TOnDrawTile</a> read FOnDrawTile write FOnDrawTile;</code></td>
+<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#VisibleLayers">VisibleLayers</a></strong>: <a href="OSM.MapControl.html#TMapLayers">TMapLayers</a> read FVisibleLayers write SetVisibleLayers;</code></td>
 </tr>
 <tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnDrawTile">OnDrawTile</a></strong>: <a href="OSM.MapControl.html#TOnDrawTile">TOnDrawTile</a> read FOnDrawTile write FOnDrawTile;</code></td>
+</tr>
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnDrawTileLoading">OnDrawTileLoading</a></strong>: <a href="OSM.MapControl.html#TOnDrawTile">TOnDrawTile</a> read FOnDrawTileLoading write FOnDrawTileLoading;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnZoomChanged">OnZoomChanged</a></strong>: TNotifyEvent read FOnZoomChanged write FOnZoomChanged;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnDrawMapMark">OnDrawMapMark</a></strong>: <a href="OSM.MapControl.html#TOnDrawMapMark">TOnDrawMapMark</a> read FOnDrawMapMark write FOnDrawMapMark;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnSelectionBox">OnSelectionBox</a></strong>: <a href="OSM.MapControl.html#TOnSelectionBox">TOnSelectionBox</a> read FOnSelectionBox write FOnSelectionBox;</code></td>
 </tr>
@@ -493,6 +497,16 @@ Mode of handling left mouse button press</p>
 <tr><td colspan="2">
 <p>
 View area in map coords</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="VisibleLayers"></span><code>property <strong>VisibleLayers</strong>: <a href="OSM.MapControl.html#TMapLayers">TMapLayers</a> read FVisibleLayers write SetVisibleLayers;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Set of visible layers. You can use <a class="normal" href="OSM.MapControl.html#LayersAll">LayersAll</a> and <a class="normal" href="OSM.MapControl.html#LayersNone">LayersNone</a> constants</p>
 </td></tr>
 </table>
 <table class="detail wide_list">

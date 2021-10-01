@@ -46,7 +46,7 @@ Visual control displaying a map. Data for the map (tile images) must be supplied
 </tr>
 <tr class="list2">
 <td class="itemname">Class&nbsp;<a class="bold" href="OSM.MapControl.TMapMarkList.html"><code>TMapMarkList</code></a></td>
-<td class="itemdesc">List of mapmarks</td>
+<td class="itemdesc">List of mapmarks.</td>
 </tr>
 <tr class="list">
 <td class="itemname">Class&nbsp;<a class="bold" href="OSM.MapControl.TMapControl.html"><code>TMapControl</code></a></td>
@@ -84,6 +84,12 @@ Visual control displaying a map. Data for the map (tile images) must be supplied
 </tr>
 <tr class="list">
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#TMapMarkCustomProps">TMapMarkCustomProps</a></strong> = set of <a href="OSM.MapControl.html#TMapMarkCustomProp">TMapMarkCustomProp</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TMapLayer">TMapLayer</a></strong> = Byte;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TMapLayers">TMapLayers</a></strong> = set of Byte;</code></td>
 </tr>
 <tr class="list2">
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnItemNotify">TOnItemNotify</a></strong> = procedure (Sender: TObject; Item: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; Action: TListNotification) of object;</code></td>
@@ -142,6 +148,12 @@ Visual control displaying a map. Data for the map (tile images) must be supplied
     DX: 3;
     Transparent: True
   );</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#LayersAll">LayersAll</a></strong>: <a href="OSM.MapControl.html#TMapLayers">TMapLayers</a> = [Low(<a href="OSM.MapControl.html#TMapLayer">TMapLayer</a>)..High(<a href="OSM.MapControl.html#TMapLayer">TMapLayer</a>)];</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#LayersNone">LayersNone</a></strong>: <a href="OSM.MapControl.html#TMapLayers">TMapLayers</a> = [];</code></td>
 </tr>
 <tr class="list">
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#S_Lbl_Loading">S_Lbl_Loading</a></strong> = 'Loading [%d : %d]...';</code></td>
@@ -231,6 +243,22 @@ Flags to indicate which properties must be taken from MapMark object when drawin
 <table class="detail wide_list">
 <tr class="list">
 <td class="itemcode"><span id="TMapMarkCustomProps"></span><code><strong>TMapMarkCustomProps</strong> = set of <a href="OSM.MapControl.html#TMapMarkCustomProp">TMapMarkCustomProp</a>;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TMapLayer"></span><code><strong>TMapLayer</strong> = Byte;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Number of a layer</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TMapLayers"></span><code><strong>TMapLayers</strong> = set of Byte;</code></td>
 </tr>
 <tr><td colspan="1">
 &nbsp;</td></tr>
@@ -391,6 +419,24 @@ Default style of mapmark glyph. <a class="normal" href="OSM.MapControl.TMapContr
 <tr><td colspan="1">
 <p>
 Default style of mapmark caption. <a class="normal" href="OSM.MapControl.TMapControl.html#MapMarkGlyphStyle">TMapControl.MapMarkGlyphStyle</a> is init-ed with this value</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="LayersAll"></span><code><strong>LayersAll</strong>: <a href="OSM.MapControl.html#TMapLayers">TMapLayers</a> = [Low(<a href="OSM.MapControl.html#TMapLayer">TMapLayer</a>)..High(<a href="OSM.MapControl.html#TMapLayer">TMapLayer</a>)];</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Constant containing all numbers of layers</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="LayersNone"></span><code><strong>LayersNone</strong>: <a href="OSM.MapControl.html#TMapLayers">TMapLayers</a> = [];</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Constant containing no layers</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
