@@ -16,7 +16,7 @@ unit OSM.NetworkRequest;
 interface
 
 uses
-  SysUtils, Classes, Contnrs, SyncObjs,
+  SysUtils, Classes, Contnrs, SyncObjs, Types,
   OSM.SlippyMapUtils;
 
 const
@@ -108,6 +108,7 @@ type
     FGotTileCb: TGotTileCallbackBgThr;
     FRequestFunc: TBlockingNetworkRequestFunc;
     FDumbQueueOrder: Boolean;
+    FCurrTileNumbersRect: TRect; // rect of current view set in tile numbers
 
     procedure Lock;
     procedure Unlock;
@@ -129,6 +130,10 @@ type
 
     // Add request for an image for `Tile` to request queue
     procedure RequestTile(const Tile: TTile);
+    // Set current view rect in absolute map coords.
+    // If smart ordering facilities are enabled, tiles inside current view have
+    // priority when extracted from request queue.
+    procedure SetCurrentViewRect(const ViewRect: TRect);
 
     // Common network request props
     property RequestProps: THttpRequestProps read FRequestProps write FRequestProps;
@@ -138,6 +143,8 @@ type
     //   - When RequestTile adds a tile, all queued items with another zoom level
     //     are cancelled (use case: user quickly zooms in/out by multiple steps -
     //     no sense to wait for all of them to download)
+    //   - If current view area is set via SetCurrentViewRect, the tiles inside this
+    //     rect are downloaded first (priority of visible area)
     property DumbQueueOrder: Boolean read FDumbQueueOrder write FDumbQueueOrder;
   end;
 
@@ -226,6 +233,7 @@ begin
     if (ReqProps.Proxy <> '') and (Pos(HTTPProxyProto, ReqProps.Proxy) = 0) then
       ReqProps.Proxy := HTTPProxyProto + ReqProps.Proxy;
     ms := TMemoryStream.Create;
+
     if not FRequestFunc(ReqProps, ms, sErrMsg) then
       FreeAndNil(ms)
     else
@@ -297,7 +305,7 @@ begin
   FCS.Leave;
 end;
 
-// Search for tile in list
+// Search for tile by value in TList
 function IndexOfTile(const Tile: TTile; List: TList): Integer;
 begin
   for Result := 0 to List.Count - 1 do
@@ -349,6 +357,24 @@ begin
   end;
 end;
 
+procedure TNetworkRequestQueue.SetCurrentViewRect(const ViewRect: TRect);
+begin
+  Lock;
+  try
+    // Coord rect aligned to tile sizes
+    FCurrTileNumbersRect := ToTileBoundary(ViewRect);
+    // Convert coords to tile numbers
+    FCurrTileNumbersRect := Rect(
+      FCurrTileNumbersRect.Left div TILE_IMAGE_WIDTH,
+      FCurrTileNumbersRect.Top div TILE_IMAGE_HEIGHT,
+      FCurrTileNumbersRect.Right div TILE_IMAGE_WIDTH,
+      FCurrTileNumbersRect.Bottom div TILE_IMAGE_HEIGHT
+    );
+  finally
+    Unlock;
+  end;
+end;
+
 // Create new thread and add to list
 procedure TNetworkRequestQueue.AddThread;
 var thr: TNetworkRequestThread;
@@ -370,25 +396,53 @@ end;
 //   @param RequestProps - personal copy of request properties that a thread must dispose
 //   @returns @True if a task was returned, @False if queue is empty
 function TNetworkRequestQueue.PopTask(out pTile: PTile; out RequestProps: THttpRequestProps): Boolean;
+
+  // Search for tiles in list and return the 1st one that falls into given rect of tile numbers
+  // (!) Numbers, not coords (!)
+  function ExtractTileInView(List: TList; const ViewTileNumbersRect: TRect): OSM.SlippyMapUtils.PTile;
+  var idx: Integer;
+  begin
+    // Queue's list has Tail at index 0 and Head at index Count so loop accodringly
+    // to keep order of queued items.
+    for idx := List.Count - 1 downto 0 do
+    begin
+      Result := OSM.SlippyMapUtils.PTile(List[idx]);
+      if ViewTileNumbersRect.Contains(Point(Result.ParameterX, Result.ParameterY)) then
+      begin
+        List.Delete(idx);
+        Exit;
+      end;
+    end;
+    Result := nil;
+  end;
+
 begin
   // Fast check
   if not FNotEmpty then
     Exit(False);
 
+  pTile := nil;
+  RequestProps := nil;
+
   Lock;
   try
     if FTaskQueue.Count > 0 then
     begin
-      pTile := FTaskQueue.Pop;
-      FCurrentTasks.Add(pTile);
-    end
-    else
-      pTile := nil;
+      // First try to extract tiles currenly in view if smart ordering is enabled
+      // and current view is set
+      if not FDumbQueueOrder and (FCurrTileNumbersRect.Right <> 0) and (FCurrTileNumbersRect.Bottom <> 0) then
+        pTile := ExtractTileInView(TQueueHack(FTaskQueue).List, FCurrTileNumbersRect);
+      // Not found yet - just extract head
+      if pTile = nil then
+        pTile := FTaskQueue.Pop;
+    end;
     Result := pTile <> nil;
     if Result then
-      RequestProps := FRequestProps.Clone
-    else
-      RequestProps := nil;
+    begin
+      FCurrentTasks.Add(pTile);
+      RequestProps := FRequestProps.Clone;
+    end;
+
     FNotEmpty := (FTaskQueue.Count > 0);
   finally
     Unlock;

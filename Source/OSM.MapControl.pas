@@ -324,7 +324,7 @@ type
     property OnSelectionBox: TOnSelectionBox read FOnSelectionBox write FOnSelectionBox;
   end;
 
-// Like Client<=>Screen
+//~ Like Client<=>Screen
 
 // Convert absolute map coords to a point inside a viewport having given top-left point
 function ToInnerCoords(const StartPt, Pt: TPoint): TPoint; overload; inline;

@@ -312,7 +312,12 @@ begin
       1: NetRequest.RequestProps.Proxy := SystemProxy;
       2: NetRequest.RequestProps.Proxy := eProxyAddr.Text;
     end;
+    // Set current view area of the map so that tiles inside it will be downloaded first.
+    // This could be done in map's OnScroll event as well
+    NetRequest.SetCurrentViewRect(Sender.ViewRect);
     NetRequest.RequestTile(Tile);
+    // ! Demo logging. Adds visual glitch when doing fast panning so disable it
+    // to get smooth performance.
     Log(Format('Queued request from inet %s', [TileToStr(Tile)]));
   end
   else
