@@ -103,6 +103,17 @@ function TileToStr(const Tile: TTile): string;
 // Compares tiles
 function TilesEqual(const Tile1, Tile2: TTile): Boolean; inline;
 
+// Floor horizontal map coord to tile size
+function ToTileWidthLesser(Width: Cardinal): Cardinal; inline;
+// Floor vertical map coord to tile size
+function ToTileHeightLesser(Height: Cardinal): Cardinal; inline;
+// Ceil horizontal map coord to tile size
+function ToTileWidthGreater(Width: Cardinal): Cardinal; inline;
+// Ceil vertical map coord to tile size
+function ToTileHeightGreater(Height: Cardinal): Cardinal; inline;
+// Align absolute map rect to tile boundaries
+function ToTileBoundary(const Rect: TRect): TRect;
+
 // Returns width of map at zoom level `Zoom` in pixels
 function MapWidth(Zoom: TMapZoomLevel): Cardinal; inline;
 // Returns height of map at zoom level `Zoom` in pixels
@@ -180,6 +191,46 @@ begin
     (Tile1.Zoom = Tile2.Zoom) and
     (Tile1.ParameterX = Tile2.ParameterX) and
     (Tile1.ParameterY = Tile2.ParameterY);
+end;
+
+// Floor value to tile size
+
+function ToTileWidthLesser(Width: Cardinal): Cardinal; inline;
+begin
+  Result := (Width div TILE_IMAGE_WIDTH)*TILE_IMAGE_WIDTH;
+end;
+
+function ToTileHeightLesser(Height: Cardinal): Cardinal; inline;
+begin
+  Result := (Height div TILE_IMAGE_HEIGHT)*TILE_IMAGE_HEIGHT;
+end;
+
+// Ceil value to tile size
+
+function ToTileWidthGreater(Width: Cardinal): Cardinal; inline;
+begin
+  Result := ToTileWidthLesser(Width);
+  if Width mod TILE_IMAGE_WIDTH > 0 then
+    Inc(Result, TILE_IMAGE_WIDTH);
+end;
+
+function ToTileHeightGreater(Height: Cardinal): Cardinal; inline;
+begin
+  Result := ToTileHeightLesser(Height);
+  if Height mod TILE_IMAGE_HEIGHT > 0 then
+    Inc(Result, TILE_IMAGE_HEIGHT);
+end;
+
+function ToTileBoundary(const Rect: TRect): TRect;
+begin
+  Result := TRect.Create(
+    // move view rect to the border of tiles (to lesser value)
+    ToTileWidthLesser(Rect.Left),
+    ToTileHeightLesser(Rect.Top),
+    // resize view rect to the border of tiles (to greater value)
+    ToTileWidthGreater(Rect.Right),
+    ToTileHeightGreater(Rect.Bottom)
+  );
 end;
 
 function MapWidth(Zoom: TMapZoomLevel): Cardinal;

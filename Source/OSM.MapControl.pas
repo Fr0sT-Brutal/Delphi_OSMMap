@@ -324,9 +324,15 @@ type
     property OnSelectionBox: TOnSelectionBox read FOnSelectionBox write FOnSelectionBox;
   end;
 
+// Like Client<=>Screen
+
+// Convert absolute map coords to a point inside a viewport having given top-left point
 function ToInnerCoords(const StartPt, Pt: TPoint): TPoint; overload; inline;
+// Convert a point inside a viewport having given top-left point to absolute map coords
 function ToOuterCoords(const StartPt, Pt: TPoint): TPoint; overload; inline;
+// Convert absolute map rect to a rect inside a viewport having given top-left point
 function ToInnerCoords(const StartPt: TPoint; const Rect: TRect): TRect; overload; inline;
+// Convert a rect inside a viewport having given top-left point to absolute map rect
 function ToOuterCoords(const StartPt: TPoint; const Rect: TRect): TRect; overload; inline;
 
 const
@@ -392,34 +398,6 @@ begin
     ToOuterCoords(StartPt, Rect.TopLeft),
     ToOuterCoords(StartPt, Rect.BottomRight)
   );
-end;
-
-// Floor value to tile size
-
-function ToTileWidthLesser(Width: Cardinal): Cardinal; inline;
-begin
-  Result := (Width div TILE_IMAGE_WIDTH)*TILE_IMAGE_WIDTH;
-end;
-
-function ToTileHeightLesser(Height: Cardinal): Cardinal; inline;
-begin
-  Result := (Height div TILE_IMAGE_HEIGHT)*TILE_IMAGE_HEIGHT;
-end;
-
-// Ceil value to tile size
-
-function ToTileWidthGreater(Width: Cardinal): Cardinal; inline;
-begin
-  Result := ToTileWidthLesser(Width);
-  if Width mod TILE_IMAGE_WIDTH > 0 then
-    Inc(Result, TILE_IMAGE_WIDTH);
-end;
-
-function ToTileHeightGreater(Height: Cardinal): Cardinal; inline;
-begin
-  Result := ToTileHeightLesser(Height);
-  if Height mod TILE_IMAGE_HEIGHT > 0 then
-    Inc(Result, TILE_IMAGE_HEIGHT);
 end;
 
 // Draw triangle on canvas
@@ -1025,13 +1003,7 @@ var
   ViewRect: TRect;
   MarginH, MarginV: Cardinal;
 begin
-  ViewRect := ViewAreaRect;
-  // move view rect to the border of tiles (to lesser value)
-  ViewRect.Left := ToTileWidthLesser(ViewRect.Left);
-  ViewRect.Top := ToTileHeightLesser(ViewRect.Top);
-  // resize view rect to the border of tiles (to greater value)
-  ViewRect.Right := ToTileWidthGreater(ViewRect.Right);
-  ViewRect.Bottom := ToTileHeightGreater(ViewRect.Bottom);
+  ViewRect := ToTileBoundary(ViewAreaRect);
 
   // reposition new cache rect to cover tile-aligned view area
   // calc margins
