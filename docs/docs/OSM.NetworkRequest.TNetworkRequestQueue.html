@@ -39,6 +39,10 @@ Queuer of network requests. Under the hood uses multiple background threads to e
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>procedure <strong><a href="OSM.NetworkRequest.TNetworkRequestQueue.html#RequestTile">RequestTile</a></strong>(const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>);</code></td>
 </tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="OSM.NetworkRequest.TNetworkRequestQueue.html#SetCurrentViewRect">SetCurrentViewRect</a></strong>(const ViewRect: TRect);</code></td>
+</tr>
 </table>
 <span id="PasDoc-Properties"></span><h3 class="summary">Properties</h3>
 <table class="summary wide_list">
@@ -92,6 +96,16 @@ Constructor    </p>
 Add request for an image for <code>Tile</code> to request queue</p>
 </td></tr>
 </table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="SetCurrentViewRect"></span><code>procedure <strong>SetCurrentViewRect</strong>(const ViewRect: TRect);</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Set current view rect in absolute map coords. If smart ordering facilities are enabled, tiles inside current view have priority when extracted from request queue.</p>
+</td></tr>
+</table>
 <h3 class="detail">Properties</h3>
 <table class="detail wide_list">
 <tr class="list">
@@ -114,6 +128,7 @@ If set: disable all smart ordering facilities. Queue will retrieve all added til
 
 <ul class="paragraph_spacing">
   <li><p>When <a class="normal" href="OSM.NetworkRequest.TNetworkRequestQueue.html#RequestTile">RequestTile</a> adds a tile, all queued items with another zoom level are cancelled (use case: user quickly zooms in/out by multiple steps - no sense to wait for all of them to download)</p></li>
+  <li><p>If current view area is set via <a class="normal" href="OSM.NetworkRequest.TNetworkRequestQueue.html#SetCurrentViewRect">SetCurrentViewRect</a>, the tiles inside this rect are downloaded first (priority of visible area)</p></li>
 </ul>
 
 <p></p>

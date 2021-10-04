@@ -60,54 +60,69 @@ OSM map types &amp; functions. Ref.: <a href="https://wiki.openstreetmap.org/wik
 <td class="itemcode"><code>function <strong><a href="OSM.SlippyMapUtils.html#TilesEqual">TilesEqual</a></strong>(const Tile1, Tile2: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>): Boolean; inline;</code></td>
 </tr>
 <tr class="list2">
+<td class="itemcode"><code>function <strong><a href="OSM.SlippyMapUtils.html#ToTileWidthLesser">ToTileWidthLesser</a></strong>(Width: Cardinal): Cardinal; inline;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>function <strong><a href="OSM.SlippyMapUtils.html#ToTileHeightLesser">ToTileHeightLesser</a></strong>(Height: Cardinal): Cardinal; inline;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>function <strong><a href="OSM.SlippyMapUtils.html#ToTileWidthGreater">ToTileWidthGreater</a></strong>(Width: Cardinal): Cardinal; inline;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>function <strong><a href="OSM.SlippyMapUtils.html#ToTileHeightGreater">ToTileHeightGreater</a></strong>(Height: Cardinal): Cardinal; inline;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>function <strong><a href="OSM.SlippyMapUtils.html#ToTileBoundary">ToTileBoundary</a></strong>(const Rect: TRect): TRect;</code></td>
+</tr>
+<tr class="list">
 <td class="itemcode"><code>function <strong><a href="OSM.SlippyMapUtils.html#MapWidth">MapWidth</a></strong>(Zoom: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>): Cardinal; inline;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemcode"><code>function <strong><a href="OSM.SlippyMapUtils.html#MapHeight">MapHeight</a></strong>(Zoom: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>): Cardinal; inline;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemcode"><code>function <strong><a href="OSM.SlippyMapUtils.html#InMap">InMap</a></strong>(Zoom: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; const Pt: TPoint): Boolean; overload; inline;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemcode"><code>function <strong><a href="OSM.SlippyMapUtils.html#InMap">InMap</a></strong>(Zoom: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; const Rc: TRect): Boolean; overload; inline;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemcode"><code>function <strong><a href="OSM.SlippyMapUtils.html#EnsureInMap">EnsureInMap</a></strong>(Zoom: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; const Pt: TPoint): TPoint; overload; inline;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemcode"><code>function <strong><a href="OSM.SlippyMapUtils.html#EnsureInMap">EnsureInMap</a></strong>(Zoom: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; const Rc: TRect): TRect; overload; inline;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemcode"><code>function <strong><a href="OSM.SlippyMapUtils.html#LongitudeToMapCoord">LongitudeToMapCoord</a></strong>(Zoom: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; Longitude: Double): Cardinal;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemcode"><code>function <strong><a href="OSM.SlippyMapUtils.html#LatitudeToMapCoord">LatitudeToMapCoord</a></strong>(Zoom: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; Latitude: Double): Cardinal;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemcode"><code>function <strong><a href="OSM.SlippyMapUtils.html#MapCoordToLongitude">MapCoordToLongitude</a></strong>(Zoom: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; X: Cardinal): Double;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemcode"><code>function <strong><a href="OSM.SlippyMapUtils.html#MapCoordToLatitude">MapCoordToLatitude</a></strong>(Zoom: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; Y: Cardinal): Double;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemcode"><code>function <strong><a href="OSM.SlippyMapUtils.html#MapToGeoCoords">MapToGeoCoords</a></strong>(Zoom: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; const MapPt: TPoint): <a href="OSM.SlippyMapUtils.TGeoPoint.html">TGeoPoint</a>; overload; inline;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemcode"><code>function <strong><a href="OSM.SlippyMapUtils.html#MapToGeoCoords">MapToGeoCoords</a></strong>(Zoom: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; const MapRect: TRect): <a href="OSM.SlippyMapUtils.TGeoRect.html">TGeoRect</a>; overload; inline;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemcode"><code>function <strong><a href="OSM.SlippyMapUtils.html#GeoCoordsToMap">GeoCoordsToMap</a></strong>(Zoom: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; const GeoCoords: <a href="OSM.SlippyMapUtils.TGeoPoint.html">TGeoPoint</a>): TPoint; overload; inline;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemcode"><code>function <strong><a href="OSM.SlippyMapUtils.html#GeoCoordsToMap">GeoCoordsToMap</a></strong>(Zoom: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; const GeoRect: <a href="OSM.SlippyMapUtils.TGeoRect.html">TGeoRect</a>): TRect; overload; inline;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemcode"><code>function <strong><a href="OSM.SlippyMapUtils.html#CalcLinDistanceInMeter">CalcLinDistanceInMeter</a></strong>(const Coord1, Coord2: <a href="OSM.SlippyMapUtils.TGeoPoint.html">TGeoPoint</a>): Double;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemcode"><code>procedure <strong><a href="OSM.SlippyMapUtils.html#GetScaleBarParams">GetScaleBarParams</a></strong>(Zoom: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; out ScalebarWidthInPixel, ScalebarWidthInMeter: Cardinal; out Text: string);</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemcode"><code>function <strong><a href="OSM.SlippyMapUtils.html#TileToFullSlippyMapFileURL">TileToFullSlippyMapFileURL</a></strong>(const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>): string;</code></td>
 </tr>
 </table>
@@ -214,6 +229,51 @@ Returns standartized string representation of <code>Tile</code></p>
 <tr><td colspan="1">
 <p>
 Compares tiles</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="ToTileWidthLesser"></span><code>function <strong>ToTileWidthLesser</strong>(Width: Cardinal): Cardinal; inline;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Floor horizontal map coord to tile size</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="ToTileHeightLesser"></span><code>function <strong>ToTileHeightLesser</strong>(Height: Cardinal): Cardinal; inline;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Floor vertical map coord to tile size</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="ToTileWidthGreater"></span><code>function <strong>ToTileWidthGreater</strong>(Width: Cardinal): Cardinal; inline;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Ceil horizontal map coord to tile size</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="ToTileHeightGreater"></span><code>function <strong>ToTileHeightGreater</strong>(Height: Cardinal): Cardinal; inline;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Ceil vertical map coord to tile size</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="ToTileBoundary"></span><code>function <strong>ToTileBoundary</strong>(const Rect: TRect): TRect;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Align absolute map rect to tile boundaries</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
