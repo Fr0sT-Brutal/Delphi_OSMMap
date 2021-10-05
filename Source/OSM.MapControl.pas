@@ -564,6 +564,9 @@ end;
 
 { TMapControl }
 
+const
+  UnassignedZoom = Low(TMapZoomLevel) - 1;
+
 constructor TMapControl.Create(AOwner: TComponent);
 begin
   inherited;
@@ -596,8 +599,8 @@ begin
   MapMarkCaptionFont.Assign(Self.Font);
 
   // Assign outbound value to ensure the zoom will be changed
-  FZoom := -1;
-  SetZoom(Low(TMapZoomLevel));
+  FZoom := UnassignedZoom;
+  SetZoom(FMinZoom);
 end;
 
 destructor TMapControl.Destroy;
@@ -855,9 +858,9 @@ begin
   if Value = FZoom then Exit;
 
   // save bind point if zoom is valid (zoom value is used to calc geo coords)
-  if FZoom in [Low(TMapZoomLevel)..High(TMapZoomLevel)]
+  if FZoom <> UnassignedZoom
     then BindCoords := MapToGeoCoords(MapBindPt)
-    else BindCoords := OSM.SlippyMapUtils.MapToGeoCoords(Low(TMapZoomLevel), Point(0, 0));
+    else BindCoords := OSM.SlippyMapUtils.MapToGeoCoords(FMinZoom, Point(0, 0));
 
   ViewBindPt := MapToView(MapBindPt); // save bind point in view coords, we'll reposition to it after zoom
   FZoom := Value;
