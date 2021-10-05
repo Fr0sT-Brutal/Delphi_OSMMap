@@ -23,7 +23,7 @@ uses
   Types, SysUtils, Math;
 
 type
-  // Map zoom. 19 = Maximum zoom for Mapnik layer
+  // Map zoom. 19 = Maximum zoom among all tile providers
   TMapZoomLevel = 0..19;
 
   // Properties of a map tile
@@ -79,17 +79,6 @@ const
     0.596,
     0.298
   );
-
-//~ configurable globals
-var
-  // Copyright text
-  TilesCopyright: string = '(c) OpenStreetMap contributors';
-  // URL of tile server
-  MapURLPrefix: string = 'http://tile.openstreetmap.org/';
-  // Part of tile URL that goes after tile path
-  MapURLPostfix: string = '';
-  // Pattern of tile URL. Placeholders are for: Zoom, X, Y
-  TileURLPatt: string = '%d/%d/%d.png';
 
 // Construct `TRect` from two `TPoint`-s
 function RectFromPoints(const TopLeft, BottomRight: TPoint): TRect; inline;
@@ -152,10 +141,6 @@ function CalcLinDistanceInMeter(const Coord1, Coord2: TGeoPoint): Double;
 procedure GetScaleBarParams(Zoom: TMapZoomLevel;
   out ScalebarWidthInPixel, ScalebarWidthInMeter: Cardinal;
   out Text: string);
-
-// Returns full URL to an image of tile `Tile` using global variables
-// MapURLPrefix, TileURLPatt, MapURLPostfix
-function TileToFullSlippyMapFileURL(const Tile: TTile): string;
 
 implementation
 
@@ -471,14 +456,6 @@ begin
     Text := IntToStr(ScalebarWidthInMeter) + ' m'
   else
     Text := IntToStr(ScalebarWidthInMeter div 1000) + ' km'
-end;
-
-function TileToFullSlippyMapFileURL(const Tile: TTile): string;
-begin
-  Result :=
-    MapURLPrefix +
-    Format(TileURLPatt, [Tile.Zoom, Tile.ParameterX, Tile.ParameterY]) +
-    MapURLPostfix;
 end;
 
 end.
