@@ -33,9 +33,6 @@ const
   // For value 8 it counts 16.7 Mb
   CacheImageDefTilesH = 8;
   CacheImageDefTilesV = 8;
-  // Default W and H of cache image in pixels
-  CacheImageDefWidth = CacheImageDefTilesH*TILE_IMAGE_WIDTH;
-  CacheImageDefHeight = CacheImageDefTilesV*TILE_IMAGE_HEIGHT;
   // Margin that is added to cache image to hold view area, in number of tiles
   CacheMarginSize = 2;
   // Size of margin for labels on map, in pixels
@@ -909,8 +906,8 @@ begin
   CtrlSize.cy := ToTileHeightGreater(ClientHeight);
 
   // cache dims = Max(control+margins, Min(map, default+margins))
-  CacheSize.cx := Min(FMapSize.cx, CacheImageDefWidth + CacheMarginSize*TILE_IMAGE_WIDTH);
-  CacheSize.cy := Min(FMapSize.cy, CacheImageDefHeight + CacheMarginSize*TILE_IMAGE_HEIGHT);
+  CacheSize.cx := Min(FMapSize.cx, CacheImageDefTilesH*TILE_IMAGE_WIDTH + CacheMarginSize*TILE_IMAGE_WIDTH);
+  CacheSize.cy := Min(FMapSize.cy, CacheImageDefTilesV*TILE_IMAGE_HEIGHT + CacheMarginSize*TILE_IMAGE_HEIGHT);
 
   CacheSize.cx := Max(CacheSize.cx, CtrlSize.cx + CacheMarginSize*TILE_IMAGE_WIDTH);
   CacheSize.cy := Max(CacheSize.cy, CtrlSize.cy + CacheMarginSize*TILE_IMAGE_HEIGHT);
