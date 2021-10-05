@@ -13,7 +13,7 @@
   @author(Simon Kroik (kroiksm@gmx.de))
   @author(Fr0sT-Brutal (https://github.com/Fr0sT-Brutal))
 }
-unit SynapseRequest;
+unit OSM.NetworkRequest.Synapse;
 
 interface
 

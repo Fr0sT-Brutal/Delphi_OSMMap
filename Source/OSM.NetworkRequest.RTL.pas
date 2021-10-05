@@ -7,7 +7,7 @@
 
   (c) Fr0sT-Brutal https://github.com/Fr0sT-Brutal/Delphi_OSMMap
 }
-unit RTLInetRequest;
+unit OSM.NetworkRequest.RTL;
 
 {$IFDEF FPC}
   {$MODE Delphi}

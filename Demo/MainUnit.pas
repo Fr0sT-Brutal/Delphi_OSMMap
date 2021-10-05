@@ -27,11 +27,11 @@ uses
   Buttons, StdCtrls, Math, Types,
   OSM.SlippyMapUtils, OSM.MapControl, OSM.TileStorage,
   OSM.NetworkRequest
-  //, SynapseRequest // Use Synapse for HTTP requests
+  //, OSM.NetworkRequest.Synapse // Use Synapse for HTTP requests
   {$IFDEF HAS_RTL_HTTP}
-  , RTLInetRequest // Use stock RTL classes for HTTP requests
+  , OSM.NetworkRequest.RTL // Use stock RTL classes for HTTP requests
   {$ELSE}
-  , WinInetRequest // Use WinInet (Windows only) for HTTP requests
+  , OSM.NetworkRequest.WinInet // Use WinInet (Windows only) for HTTP requests
   {$ENDIF}
   , TestSuite;
 

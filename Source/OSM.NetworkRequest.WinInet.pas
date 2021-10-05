@@ -6,7 +6,7 @@
 
   @author(Fr0sT-Brutal (https://github.com/Fr0sT-Brutal))
 }
-unit WinInetRequest;
+unit OSM.NetworkRequest.WinInet;
 
 {$IFNDEF MSWINDOWS} {$MESSAGE FATAL 'This unit is Windows-only'} {$ENDIF}
 
