@@ -26,18 +26,6 @@ uses
   Math, Types, Generics.Collections, Generics.Defaults,
   OSM.SlippyMapUtils;
 
-const
-  // Default W and H of cache image in number of tiles.
-  // Memory occupation of an image:
-  //   (4 bytes per pixel) * `TilesH` * `TilesV` * (65536 pixels in single tile) @br
-  // For value 8 it counts 16.7 Mb
-  CacheImageDefTilesH = 8;
-  CacheImageDefTilesV = 8;
-  // Margin that is added to cache image to hold view area, in number of tiles
-  CacheMarginSize = 2;
-  // Size of margin for labels on map, in pixels
-  LabelMargin = 2;
-
 type
   // Shape of mapmark glyph
   TMapMarkGlyphShape = (gshCircle, gshSquare, gshTriangle);
@@ -199,6 +187,11 @@ type
     FMouseMode: TMapMouseMode;
     FVisibleLayers: TMapLayers;
 
+    FCacheImageTilesH,               // properties of cache image
+    FCacheImageTilesV,
+    FCacheMarginSize: Cardinal;
+    FLabelMargin: Cardinal;
+
     FOnDrawTile: TOnDrawTile;
     FOnDrawTileLoading: TOnDrawTile;
     FOnZoomChanged: TNotifyEvent;
@@ -233,10 +226,11 @@ type
     procedure SetNWPoint(const GeoCoords: TGeoPoint); overload;
     procedure SetZoomConstraint(Index: Integer; ZoomConstraint: TMapZoomLevel);
     procedure SetVisibleLayers(Value: TMapLayers);
+    procedure SetLabelMargin(Value: Cardinal);
     //~ helpers
     function ViewAreaRect: TRect;
     class procedure DrawCopyright(const Text: string; DestBmp: TBitmap);
-    class procedure DrawScale(Zoom: TMapZoomLevel; DestBmp: TBitmap);
+    class procedure DrawScale(Zoom: TMapZoomLevel; LabelMargin: Cardinal; DestBmp: TBitmap);
   public
     // Default glyph style of mapmarks. New items will be init-ed with this value
     MapMarkGlyphStyle: TMapMarkGlyphStyle;
@@ -277,8 +271,6 @@ type
     // Absolutely move the view area
     procedure ScrollMapTo(Horz, Vert: Integer);
     // Set zoom level to new value and reposition to given point
-    //   @param Value - new zoom value
-    //   @param MapBindPt - point in map coords that must keep its position within view
     procedure SetZoom(Value: Integer; const MapBindPt: TPoint); overload;
     // Simple zoom change with binding to top-left corner
     procedure SetZoom(Value: Integer); overload;
@@ -286,6 +278,9 @@ type
     procedure ZoomToArea(const GeoRect: TGeoRect);
     // Zoom to fill view area as much as possible
     procedure ZoomToFit;
+
+    // Set properties of cache image and rebuild it
+    procedure SetCacheImageProperties(TilesHorz, TilesVert, MarginSize: Cardinal);
 
     //~ properties
     // Current zoom level
@@ -304,6 +299,8 @@ type
     property MapMarks: TMapMarkList read FMapMarkList;
     // Mode of handling left mouse button press
     property MouseMode: TMapMouseMode read FMouseMode write FMouseMode;
+    // Size of margin for labels on map, in pixels
+    property LabelMargin: Cardinal read FLabelMargin write SetLabelMargin;
     // View area in map coords
     property ViewRect: TRect read ViewAreaRect;
     // Set of visible layers. You can use LayersAll and LayersNone constants
@@ -333,6 +330,17 @@ function ToInnerCoords(const StartPt: TPoint; const Rect: TRect): TRect; overloa
 function ToOuterCoords(const StartPt: TPoint; const Rect: TRect): TRect; overload; inline;
 
 const
+  // Default Width (Horizontal dimension) and Height (Vertical dimension) of cache image
+  // in number of tiles. Cache is init-ed with these values but could be changed later.@br
+  // Memory occupation of an image:
+  //   (4 bytes per pixel) * `TilesH` * `TilesV` * (65536 pixels in single tile) @br
+  // For value 8 it counts 16.7 Mb
+  DefaultCacheImageTilesHorz = 8;
+  DefaultCacheImageTilesVert = 8;
+  // Default margin that is added to cache image to hold view area, in number of tiles
+  DefaultCacheMarginSize = 2;
+  // Default size of margin for labels on map, in pixels
+  DefaultLabelMargin = 2;
   // Default style of mapmark glyph.
   // TMapControl.MapMarkGlyphStyle is init-ed with this value
   DefaultMapMarkGlyphStyle: TMapMarkGlyphStyle = (
@@ -575,6 +583,10 @@ begin
   Self.AutoScroll := True;
 
   FCacheImage := TBitmap.Create;
+  // Set default cache props
+  FCacheImageTilesH := DefaultCacheImageTilesHorz;
+  FCacheImageTilesV := DefaultCacheImageTilesVert;
+  FCacheMarginSize := DefaultCacheMarginSize;
 
   FSelectionBox := TShape.Create(Self);
   FSelectionBox.Visible := False;
@@ -589,6 +601,7 @@ begin
   FMaxZoom := High(TMapZoomLevel);
 
   FVisibleLayers := LayersAll;
+  FLabelMargin := DefaultLabelMargin;
 
   MapMarkGlyphStyle := DefaultMapMarkGlyphStyle;
   MapMarkCaptionStyle := DefaultMapMarkCaptionStyle;
@@ -845,6 +858,9 @@ end;
 
 // *** new methods ***
 
+// Set zoom level to new value and reposition to given point
+//   @param Value - new zoom value
+//   @param MapBindPt - point in map coords that must keep its position within view
 procedure TMapControl.SetZoom(Value: Integer; const MapBindPt: TPoint);
 var
   CurrBindPt, NewViewNW, ViewBindPt: TPoint;
@@ -871,7 +887,7 @@ begin
   begin
     if FScaleLine = nil then
       FScaleLine := TBitmap.Create;
-    DrawScale(FZoom, FScaleLine);
+    DrawScale(FZoom, FLabelMargin, FScaleLine);
   end;
 
   // move viewport
@@ -906,11 +922,11 @@ begin
   CtrlSize.cy := ToTileHeightGreater(ClientHeight);
 
   // cache dims = Max(control+margins, Min(map, default+margins))
-  CacheSize.cx := Min(FMapSize.cx, CacheImageDefTilesH*TILE_IMAGE_WIDTH + CacheMarginSize*TILE_IMAGE_WIDTH);
-  CacheSize.cy := Min(FMapSize.cy, CacheImageDefTilesV*TILE_IMAGE_HEIGHT + CacheMarginSize*TILE_IMAGE_HEIGHT);
+  CacheSize.cx := Min(FMapSize.cx, FCacheImageTilesH*TILE_IMAGE_WIDTH + FCacheMarginSize*TILE_IMAGE_WIDTH);
+  CacheSize.cy := Min(FMapSize.cy, FCacheImageTilesV*TILE_IMAGE_HEIGHT + FCacheMarginSize*TILE_IMAGE_HEIGHT);
 
-  CacheSize.cx := Max(CacheSize.cx, CtrlSize.cx + CacheMarginSize*TILE_IMAGE_WIDTH);
-  CacheSize.cy := Max(CacheSize.cy, CtrlSize.cy + CacheMarginSize*TILE_IMAGE_HEIGHT);
+  CacheSize.cx := Max(CacheSize.cx, CtrlSize.cx + FCacheMarginSize*TILE_IMAGE_WIDTH);
+  CacheSize.cy := Max(CacheSize.cy, CtrlSize.cy + FCacheMarginSize*TILE_IMAGE_HEIGHT);
 
   Result := (FCacheImageRect.Width <> CacheSize.cx) or (FCacheImageRect.Height <> CacheSize.cy);
   if not Result then Exit;
@@ -1107,7 +1123,7 @@ begin
 end;
 
 // Draw scale line on bitmap and set its size. Happens every zoom change.
-class procedure TMapControl.DrawScale(Zoom: TMapZoomLevel; DestBmp: TBitmap);
+class procedure TMapControl.DrawScale(Zoom: TMapZoomLevel; LabelMargin: Cardinal; DestBmp: TBitmap);
 var
   Canv: TCanvas;
   ScalebarWidthPixel, ScalebarWidthMeter: Cardinal;
@@ -1243,6 +1259,12 @@ begin
   Refresh;
 end;
 
+procedure TMapControl.SetLabelMargin(Value: Cardinal);
+begin
+  FLabelMargin := Value;
+  Refresh;
+end;
+
 procedure TMapControl.ZoomToArea(const GeoRect: TGeoRect);
 var
   zoom, NewZoomH, NewZoomV: TMapZoomLevel;
@@ -1274,6 +1296,19 @@ end;
 procedure TMapControl.ZoomToFit;
 begin
   ZoomToArea(MapToGeoCoords(TRect.Create(Point(0, 0), FMapSize.cx, FMapSize.cy)));
+end;
+
+// Set properties of cache image and rebuild it
+//   @param TilesHorz - width (Horizontal dimension) of cache image, in number of tiles
+//   @param TilesVert - height (Vertical dimension) of cache image, in number of tiles
+//   @param MarginSize - margin that is added to cache image to hold view area, in number of tiles
+procedure TMapControl.SetCacheImageProperties(TilesHorz, TilesVert, MarginSize: Cardinal);
+begin
+  FCacheImageTilesH := TilesHorz;
+  FCacheImageTilesV := TilesVert;
+  FCacheMarginSize := MarginSize;
+  // Update with new values
+  SetCacheDimensions;
 end;
 
 // Base method to draw mapmark. Calls callback to do custom actions
