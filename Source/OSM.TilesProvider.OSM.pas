@@ -1,3 +1,11 @@
+{
+  OpenStreetMap tile image provider.
+
+  (c) Fr0sT-Brutal https://github.com/Fr0sT-Brutal/Delphi_OSMMap
+
+  @author(Fr0sT-Brutal (https://github.com/Fr0sT-Brutal))
+  @author(Martin (https://github.com/array81))
+}
 unit OSM.TilesProvider.OSM;
 
 interface
