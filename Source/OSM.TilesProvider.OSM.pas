@@ -7,7 +7,7 @@ uses
   OSM.SlippyMapUtils, OSM.TilesProvider;
 
 type
-  TOSMProvider = class(TTilesProvider)
+  TOSMTilesProvider = class(TTilesProvider)
   public
     // Pattern of tile URL. Placeholders are for: Zoom, X, Y
     TileURLPatt: string;
@@ -25,7 +25,7 @@ const
 
 implementation
 
-constructor TOSMProvider.Create;
+constructor TOSMTilesProvider.Create;
 begin
   MinZoomLevel := Low(TMapZoomLevel);
   MaxZoomLevel := 19;
@@ -36,7 +36,7 @@ begin
   TileURLPatt := DefTileURLPatt;
 end;
 
-function TOSMProvider.GetTileURL(const Tile: TTile): string;
+function TOSMTilesProvider.GetTileURL(const Tile: TTile): string;
 begin
   Result := Format(TileURLPatt, [Tile.Zoom, Tile.ParameterX, Tile.ParameterY]);
 end;
