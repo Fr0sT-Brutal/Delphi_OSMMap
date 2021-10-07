@@ -211,9 +211,11 @@ type
     procedure UpdateCache;
     procedure MoveCache;
     function SetCacheDimensions: Boolean;
+    function DrawTileImage(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas): Boolean;
     procedure DrawTileLoading(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas);
     procedure DrawTile(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas);
     procedure DrawMapMark(Canvas: TCanvas; MapMark: TMapMark);
+    procedure DrawMapMarks(Canvas: TCanvas; const Rect: TRect);
     //~ getters/setters
     procedure SetNWPoint(const MapPt: TPoint); overload;
     function GetCenterPoint: TGeoPoint;
@@ -655,8 +657,6 @@ procedure TMapControl.PaintWindow(DC: HDC);
 var
   ViewRect: TRect;
   Canvas: TCanvas;
-  MapViewGeoRect: TGeoRect;
-  Idx: Integer;
   DCClipRectTopLeft: TPoint;
 begin
   // if view area lays within cached image, no update required
@@ -714,19 +714,7 @@ begin
       );
     end;
 
-    // Draw mapmarks
-    if FMapMarkList.Count > 0 then
-    begin
-      idx := -1;
-      // Determine rect of map in view (map could be smaller than view!)
-      MapViewGeoRect := MapToGeoCoords(EnsureInMap(FZoom, ViewAreaRect));
-      // Draw marks within rect
-      repeat
-        idx := FMapMarkList.Find(MapViewGeoRect, True, idx);
-        if idx = -1 then Break;
-        DrawMapMark(Canvas, FMapMarkList.Get(idx));
-      until False;
-    end;
+    DrawMapMarks(Canvas, ViewAreaRect);
   finally
     FreeAndNil(Canvas);
   end;
@@ -1076,12 +1064,12 @@ begin
   Refresh;
 end;
 
-// Draw single tile (TileHorzNum;TileVertNum) to canvas Canvas at point TopLeft
-procedure TMapControl.DrawTile(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas);
-var
-  Handled: Boolean;
-  TileBmp: TBitmap;
+// Draw single tile image (TileHorzNum;TileVertNum) to canvas Canvas at point TopLeft.
+// Return success flag.
+function TMapControl.DrawTileImage(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas): Boolean;
+var TileBmp: TBitmap;
 begin
+  Result := False;
   // try to get tile bitmap
   if Assigned(FOnGetTile) then
   begin
@@ -1089,27 +1077,14 @@ begin
     if TileBmp <> nil then
     begin
       Canvas.Draw(TopLeft.X, TopLeft.Y, TileBmp);
-      Exit;
+      Exit(True);
     end;
   end;
   // check if user wants custom draw
   if Assigned(FOnDrawTile) then
   begin
-    Handled := False;
-    FOnDrawTile(Self, TileHorzNum, TileVertNum, TopLeft, Canvas, Handled);
-    if Handled then
-      Exit;
+    FOnDrawTile(Self, TileHorzNum, TileVertNum, TopLeft, Canvas, Result);
   end;
-  // not handled - draw "loading"
-  if Assigned(FOnDrawTileLoading) then
-  begin
-    Handled := False;
-    FOnDrawTileLoading(Self, TileHorzNum, TileVertNum, TopLeft, Canvas, Handled);
-    if Handled then
-      Exit;
-  end;
-  // default "loading" draw
-  DrawTileLoading(TileHorzNum, TileVertNum, TopLeft, Canvas);
 end;
 
 // Draw single tile (TileHorzNum;TileVertNum) loading to canvas Canvas at point TopLeft
@@ -1133,6 +1108,26 @@ begin
     TileRect.Left + (TileRect.Width - TextExt.cx) div 2,
     TileRect.Top + (TileRect.Height - TextExt.cy) div 2,
     txt);
+end;
+
+// Draw single tile (TileHorzNum;TileVertNum) to canvas Canvas at point TopLeft.
+// If tile image is unavailable, draw "loading"
+procedure TMapControl.DrawTile(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas);
+var Handled: Boolean;
+begin
+  if DrawTileImage(TileHorzNum, TileVertNum, TopLeft, Canvas) then
+    Exit; // image is drawn
+
+  // not handled - draw "loading"
+  if Assigned(FOnDrawTileLoading) then
+  begin
+    Handled := False;
+    FOnDrawTileLoading(Self, TileHorzNum, TileVertNum, TopLeft, Canvas, Handled);
+    if Handled then
+      Exit;
+  end;
+  // default "loading" draw
+  DrawTileLoading(TileHorzNum, TileVertNum, TopLeft, Canvas);
 end;
 
 // Draw copyright label on bitmap and set its size. Happens only once.
@@ -1424,6 +1419,26 @@ begin
     end;
 
     Canvas.TextOut(MMPt.X, MMPt.Y, MapMark.Caption);
+  end;
+end;
+
+// Method to draw all mapmarks inside a rect
+procedure TMapControl.DrawMapMarks(Canvas: TCanvas; const Rect: TRect);
+var
+  GeoRect: TGeoRect;
+  Idx: Integer;
+begin
+  if FMapMarkList.Count > 0 then
+  begin
+    idx := -1;
+    // Determine rect of map in view (map could be smaller than view!)
+    GeoRect := MapToGeoCoords(EnsureInMap(FZoom, Rect));
+    // Draw marks within rect
+    repeat
+      idx := FMapMarkList.Find(GeoRect, True, idx);
+      if idx = -1 then Break;
+      DrawMapMark(Canvas, FMapMarkList.Get(idx));
+    until False;
   end;
 end;
 
