@@ -145,24 +145,19 @@ type
   // Mode of handling of plain left mouse button press
   TMapMouseMode = (mmDrag, mmSelect);
 
+  // Callback to get an image of a single tile having number (`TileHorzNum`;`TileVertNum`).
+  // Must return bitmap of a tile or @nil if it's not available at the moment
+  TOnGetTile = function (Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal): TBitmap of object;
+
   // Callback to draw an image of a single tile having number (`TileHorzNum`;`TileVertNum`)
   // at point `TopLeft` on canvas `Canvas`.
-  // Callback must set `Handled` to @true, otherwise default actions will be done.
+  // Must set `Handled` to @true, otherwise default actions will be done.
   // This type is common for both TMapControl.OnDrawTile and TMapControl.OnDrawTileLoading callbacks.
-  //
-  // _Note for TMapControl.OnDrawTile:_@br
-  // If `Handled` is not set to @true, TMapControl.DrawTileLoading method is called for this tile.
-  // Usually you have to assign this callback only.
-  //
-  // _Note for TMapControl.OnDrawTileLoading:_@br
-  // The handler is called only for empty tiles allowing a user to draw his own label
   TOnDrawTile = procedure (Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal;
     const TopLeft: TPoint; Canvas: TCanvas; var Handled: Boolean) of object;
 
   // Callback to custom draw a mapmark. It is called before default drawing.
   // If `Handled` is not set to @true, default drawing will be done.
-  // User could draw a mapmark fully or just change some props and let default
-  // drawing do its job
   TOnDrawMapMark = procedure (Sender: TMapControl; Canvas: TCanvas; const Point: TPoint;
     MapMark: TMapMark; var Handled: Boolean) of object;
 
@@ -192,6 +187,7 @@ type
     FCacheMarginSize: Cardinal;
     FLabelMargin: Cardinal;
 
+    FOnGetTile: TOnGetTile;
     FOnDrawTile: TOnDrawTile;
     FOnDrawTileLoading: TOnDrawTile;
     FOnZoomChanged: TNotifyEvent;
@@ -306,15 +302,39 @@ type
     // Set of visible layers. You can use LayersAll and LayersNone constants
     property VisibleLayers: TMapLayers read FVisibleLayers write SetVisibleLayers;
     //~ events/callbacks
-    // Callback is called when map tile must be drawn
+    // Callback to get an image of a single tile having number (`TileHorzNum`;`TileVertNum`).
+    // Must return bitmap of a tile or @nil if it's not available at the moment. @br
+    // Called when map tile must be drawn. Usually you have to assign this callback only.
+    // @name could replace OnDrawTile and exists for simplicity - you don't
+    // have to paint tile image every time, the map will do it internally.
+    // It could also be assigned together with OnDrawTile which will only be called
+    // if @name doesn't return a result.
+    property OnGetTile: TOnGetTile read FOnGetTile write FOnGetTile;
+    // Callback to draw an image of a single tile having number (`TileHorzNum`;`TileVertNum`)
+    // at point `TopLeft` on canvas `Canvas`.
+    // Must set `Handled` to @true, otherwise default actions will be done. @br
+    // Called when map tile must be drawn.
+    // @name could replace OnGetTile but provides more flexibility - handler fully
+    // controls painting which allows adding watermarks, layers and so on.
+    // It could also be assigned together with OnGetTile and will only be called
+    // if OnGetTile doesn't return a result.
+    //
+    // If `Handled` is not set to @true, default drawing is called for the tile.
     property OnDrawTile: TOnDrawTile read FOnDrawTile write FOnDrawTile;
-    // Callback is called when map tile with loading state must be drawn
+    // Callback to draw a loading state of a single tile having number (`TileHorzNum`;`TileVertNum`)
+    // at point `TopLeft` on canvas `Canvas`.
+    // Must set `Handled` to @true, otherwise default actions will be done.
+    // Called when map tile with loading state must be drawn
+    // @name is called only for empty tiles allowing a user to draw his own label
     property OnDrawTileLoading: TOnDrawTile read FOnDrawTileLoading write FOnDrawTileLoading;
-    // Callback is called when zoom level is changed
+    // Called when zoom level is changed
     property OnZoomChanged: TNotifyEvent read FOnZoomChanged write FOnZoomChanged;
-    // Callback is called when mapmark must be drawn
+    // Callback to custom draw a mapmark. It is called before default drawing.
+    // If `Handled` is not set to @true, default drawing will be done.
+    // User could draw a mapmark fully or just change some props and let default
+    // drawing do its job
     property OnDrawMapMark: TOnDrawMapMark read FOnDrawMapMark write FOnDrawMapMark;
-    // Callback is called when selection with mouse was made
+    // Called when selection with mouse was made
     property OnSelectionBox: TOnSelectionBox read FOnSelectionBox write FOnSelectionBox;
   end;
 
@@ -1058,8 +1078,20 @@ end;
 
 // Draw single tile (TileHorzNum;TileVertNum) to canvas Canvas at point TopLeft
 procedure TMapControl.DrawTile(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas);
-var Handled: Boolean;
+var
+  Handled: Boolean;
+  TileBmp: TBitmap;
 begin
+  // try to get tile bitmap
+  if Assigned(FOnGetTile) then
+  begin
+    TileBmp := FOnGetTile(Self, TileHorzNum, TileVertNum);
+    if TileBmp <> nil then
+    begin
+      Canvas.Draw(TopLeft.X, TopLeft.Y, TileBmp);
+      Exit;
+    end;
+  end;
   // check if user wants custom draw
   if Assigned(FOnDrawTile) then
   begin
@@ -1076,7 +1108,7 @@ begin
     if Handled then
       Exit;
   end;
-  // default draw
+  // default "loading" draw
   DrawTileLoading(TileHorzNum, TileVertNum, TopLeft, Canvas);
 end;
 
