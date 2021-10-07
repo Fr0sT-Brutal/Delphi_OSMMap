@@ -95,16 +95,18 @@ type
     chbLayer2: TCheckBox;
     chbLayer3: TCheckBox;
     chbLayer4: TCheckBox;
+    Button3: TButton;
     procedure btnGoLatLongClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure btnZoomInClick(Sender: TObject);
     procedure btnZoomOutClick(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
     procedure MsgGotTile(var Message: TMessage); message MSG_GOTTILE;
     procedure NetReqGotTileBgThr(const Tile: TTile; Ms: TMemoryStream; const Error: string);
     procedure mMapMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    function mMapGetTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal): TBitmap;
     procedure mMapDrawTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas; var Handled: Boolean);
     procedure mMapZoomChanged(Sender: TObject);
     procedure mMapSelectionBox(Sender: TMapControl; const GeoRect: TGeoRect);
@@ -115,6 +117,7 @@ type
     procedure chbCacheUseFilesClick(Sender: TObject);
     procedure chbCacheSaveFilesClick(Sender: TObject);
     procedure chbLayer1Click(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
     NetRequest: TNetworkRequestQueue;
     TileStorage: TTileStorage;
@@ -290,21 +293,19 @@ begin
   mMap.MapMarkCaptionFont.Style := [fsItalic, fsBold];
 end;
 
-// Callback from map control to draw a tile image
-procedure TMainForm.mMapDrawTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas; var Handled: Boolean);
+function TMainForm.mMapGetTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal): TBitmap;
 var
   Tile: TTile;
-  TileBmp: TBitmap;
 begin
   Tile.Zoom := Sender.Zoom;
   Tile.ParameterX := TileHorzNum;
   Tile.ParameterY := TileVertNum;
 
   // Query tile from storage
-  TileBmp := TileStorage.GetTile(Tile);
+  Result := TileStorage.GetTile(Tile);
 
   // Tile image unavailable - queue network request
-  if TileBmp = nil then
+  if Result = nil then
   begin
     // Network setup
     case rgProxy.ItemIndex of
@@ -319,10 +320,20 @@ begin
     // ! Demo logging. Adds visual glitch when doing fast panning so disable it
     // to get smooth performance.
     Log(Format('Queued request from inet %s', [TileToStr(Tile)]));
-  end
-  else
+  end;
+end;
+
+// Callback from map control to draw a tile image
+// ! This method is here for demo purposes only - it will only be called for
+// currently unavailable tiles that likely are queued for download.
+procedure TMainForm.mMapDrawTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas; var Handled: Boolean);
+var TileBmp: TBitmap;
+begin
+  TileBmp := mMapGetTile(Sender, TileHorzNum, TileVertNum);
+  if TileBmp <> nil then
   begin
     Canvas.Draw(TopLeft.X, TopLeft.Y, TileBmp);
+    // Canvas.Draw(TopLeft.X, TopLeft.Y, WatermarkBmp); - draw watermark, or some layer, etc
     Handled := True;
   end;
 end;
@@ -403,46 +414,13 @@ begin
   mMap.SetZoom(mMap.Zoom - 1, mMap.ViewRect.CenterPoint);
 end;
 
-procedure TMainForm.Button1Click(Sender: TObject);
-var
-  bmp, bmTile: TBitmap;
-  col, row: Integer;
-  Tile: TTile;
-  imgAbsent: Boolean;
+procedure TMainForm.Button3Click(Sender: TObject);
+var bmp: TBitmap;
 begin
-  bmp := TBitmap.Create;
-  bmp.Height := TileCount(mMap.Zoom) * TILE_IMAGE_HEIGHT;
-  bmp.Width := TileCount(mMap.Zoom) * TILE_IMAGE_WIDTH;
-
-  try
-    imgAbsent := False;
-    for col := 0 to TileCount(mMap.Zoom) - 1 do
-      for row := 0 to TileCount(mMap.Zoom) - 1 do
-      begin
-        Tile.Zoom := mMap.Zoom;
-        Tile.ParameterX := col;
-        Tile.ParameterY := row;
-        bmTile := TileStorage.GetTile(Tile);
-        if bmTile = nil then
-        begin
-          NetRequest.RequestTile(Tile);
-          imgAbsent := True;
-          Continue;
-        end;
-        bmp.Canvas.Draw(col * TILE_IMAGE_WIDTH, row * TILE_IMAGE_HEIGHT, bmTile);
-      end;
-
-    if imgAbsent then
-    begin
-      ShowMessage('Some images were absent');
-      Exit;
-    end;
-
-    bmp.SaveToFile('Map' + IntToStr(mMap.Zoom) + '.bmp');
-    ShowMessage('Saved to Map' + IntToStr(mMap.Zoom) + '.bmp');
-  finally
-    FreeAndNil(bmp);
-  end;
+  bmp := mMap.SaveToBitmap([], False);
+  bmp.SaveToFile('Map' + IntToStr(mMap.Zoom) + '.bmp');
+  ShowMessage('Saved to Map' + IntToStr(mMap.Zoom) + '.bmp');
+  FreeAndNil(bmp);
 end;
 
 procedure TMainForm.Button2Click(Sender: TObject);
@@ -508,6 +486,15 @@ begin
       mMap.VisibleLayers := mMap.VisibleLayers + [TMapLayer(Tag)]
     else
       mMap.VisibleLayers := mMap.VisibleLayers - [TMapLayer(Tag)]
+end;
+
+procedure TMainForm.Button1Click(Sender: TObject);
+var bmp: TBitmap;
+begin
+  bmp := mMap.SaveToBitmap(mMap.ViewRect, [], True);
+  bmp.SaveToFile('View.bmp');
+  ShowMessage('Saved to View.bmp');
+  FreeAndNil(bmp);
 end;
 
 end.

@@ -145,7 +145,7 @@ object MainForm: TMainForm
         end
         item
           SizeStyle = ssAbsolute
-          Value = 140.000000000000000000
+          Value = 160.000000000000000000
         end
         item
           SizeStyle = ssAbsolute
@@ -361,13 +361,13 @@ object MainForm: TMainForm
         Left = 1
         Top = 251
         Width = 226
-        Height = 140
+        Height = 160
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 3
         object Label6: TLabel
-          Left = 8
-          Top = 112
+          Left = 3
+          Top = 144
           Width = 85
           Height = 16
           Caption = 'Visible Layers'
@@ -375,18 +375,18 @@ object MainForm: TMainForm
         object Button1: TButton
           AlignWithMargins = True
           Left = 3
-          Top = 3
+          Top = 39
           Width = 220
           Height = 30
           Align = alTop
-          Caption = 'Save layer'
+          Caption = 'Save current view'
           TabOrder = 0
           OnClick = Button1Click
         end
         object Button2: TButton
           AlignWithMargins = True
           Left = 3
-          Top = 39
+          Top = 75
           Width = 220
           Height = 30
           Align = alTop
@@ -397,7 +397,7 @@ object MainForm: TMainForm
         object btnTest: TButton
           AlignWithMargins = True
           Left = 3
-          Top = 75
+          Top = 111
           Width = 220
           Height = 30
           Align = alTop
@@ -407,8 +407,8 @@ object MainForm: TMainForm
         end
         object chbLayer1: TCheckBox
           Tag = 1
-          Left = 99
-          Top = 111
+          Left = 97
+          Top = 144
           Width = 33
           Height = 17
           Caption = '1'
@@ -419,8 +419,8 @@ object MainForm: TMainForm
         end
         object chbLayer2: TCheckBox
           Tag = 2
-          Left = 131
-          Top = 111
+          Left = 129
+          Top = 144
           Width = 33
           Height = 17
           Caption = '2'
@@ -431,8 +431,8 @@ object MainForm: TMainForm
         end
         object chbLayer3: TCheckBox
           Tag = 4
-          Left = 195
-          Top = 111
+          Left = 193
+          Top = 144
           Width = 33
           Height = 17
           Caption = '4'
@@ -443,8 +443,8 @@ object MainForm: TMainForm
         end
         object chbLayer4: TCheckBox
           Tag = 3
-          Left = 163
-          Top = 111
+          Left = 161
+          Top = 144
           Width = 33
           Height = 17
           Caption = '3'
@@ -453,10 +453,21 @@ object MainForm: TMainForm
           TabOrder = 6
           OnClick = chbLayer1Click
         end
+        object Button3: TButton
+          AlignWithMargins = True
+          Left = 3
+          Top = 3
+          Width = 220
+          Height = 30
+          Align = alTop
+          Caption = 'Save whole map'
+          TabOrder = 7
+          OnClick = Button3Click
+        end
       end
       object Panel7: TPanel
         Left = 1
-        Top = 391
+        Top = 411
         Width = 226
         Height = 140
         Align = alClient
@@ -516,7 +527,7 @@ object MainForm: TMainForm
       end
       object Panel8: TPanel
         Left = 1
-        Top = 531
+        Top = 551
         Width = 226
         Height = 50
         Align = alClient
