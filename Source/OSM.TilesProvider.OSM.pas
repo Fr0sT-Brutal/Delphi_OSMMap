@@ -16,6 +16,12 @@ uses
 
 type
   TOSMTilesProvider = class(TTilesProvider)
+  const
+    //~ global defaults
+    // Default copyright text
+    DefTilesCopyright = '(c) OpenStreetMap contributors';
+    // Default pattern of tile URL. Placeholders are for: Zoom, X, Y
+    DefTileURLPatt = 'http://tile.openstreetmap.org/%d/%d/%d.png';
   public
     // Pattern of tile URL. Placeholders are for: Zoom, X, Y
     TileURLPatt: string;
@@ -23,13 +29,6 @@ type
     constructor Create;
     function GetTileURL(const Tile: TTile): string; override;
   end;
-
-//~ global defaults
-const
-  // Copyright text
-  DefTilesCopyright = '(c) OpenStreetMap contributors';
-  // Pattern of tile URL. Placeholders are for: Zoom, X, Y
-  DefTileURLPatt = 'http://tile.openstreetmap.org/%d/%d/%d.png';
 
 implementation
 
