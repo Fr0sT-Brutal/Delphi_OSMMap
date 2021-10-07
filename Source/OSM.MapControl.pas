@@ -662,6 +662,10 @@ begin
       ViewRect
     );
 
+    // NB: unsigned FLabelMargin produces lots of warnings when mixed with other
+    // signed values (even TSize members... what the hell is negative size??).
+    // Thus cast it to signed.
+
     // init copyright bitmap if not inited yet and draw it in bottom-right corner
     if not (moDontDrawCopyright in FMapOptions) then
     begin
@@ -673,8 +677,8 @@ begin
         DrawCopyright(TilesCopyright, FCopyright);
       end;
       Canvas.Draw(
-        DCClipRectTopLeft.X + ViewRect.Width - FCopyright.Width - LabelMargin,
-        DCClipRectTopLeft.Y + ViewRect.Height - FCopyright.Height - LabelMargin,
+        DCClipRectTopLeft.X + ViewRect.Width - FCopyright.Width - Integer(FLabelMargin),
+        DCClipRectTopLeft.Y + ViewRect.Height - FCopyright.Height - Integer(FLabelMargin),
         FCopyright
       );
     end;
@@ -684,8 +688,8 @@ begin
     if not (moDontDrawScale in FMapOptions) then
     begin
       Canvas.Draw(
-        DCClipRectTopLeft.X + LabelMargin,
-        DCClipRectTopLeft.Y + ViewRect.Height - FScaleLine.Height - LabelMargin,
+        DCClipRectTopLeft.X + Integer(FLabelMargin),
+        DCClipRectTopLeft.Y + ViewRect.Height - FScaleLine.Height - Integer(FLabelMargin),
         FScaleLine
       );
     end;
@@ -925,8 +929,9 @@ begin
   CacheSize.cx := Min(FMapSize.cx, FCacheImageTilesH*TILE_IMAGE_WIDTH + FCacheMarginSize*TILE_IMAGE_WIDTH);
   CacheSize.cy := Min(FMapSize.cy, FCacheImageTilesV*TILE_IMAGE_HEIGHT + FCacheMarginSize*TILE_IMAGE_HEIGHT);
 
-  CacheSize.cx := Max(CacheSize.cx, CtrlSize.cx + FCacheMarginSize*TILE_IMAGE_WIDTH);
-  CacheSize.cy := Max(CacheSize.cy, CtrlSize.cy + FCacheMarginSize*TILE_IMAGE_HEIGHT);
+  // Cast to signed to get rid of warning
+  CacheSize.cx := Max(CacheSize.cx, CtrlSize.cx + Integer(FCacheMarginSize)*TILE_IMAGE_WIDTH);
+  CacheSize.cy := Max(CacheSize.cy, CtrlSize.cy + Integer(FCacheMarginSize)*TILE_IMAGE_HEIGHT);
 
   Result := (FCacheImageRect.Width <> CacheSize.cx) or (FCacheImageRect.Height <> CacheSize.cy);
   if not Result then Exit;
@@ -1144,7 +1149,7 @@ begin
   LetterWidth := Canv.TextWidth('W');
 
   DestBmp.Width := LetterWidth + TextExt.cx + LetterWidth + Integer(ScalebarWidthPixel); // text, space, bar
-  DestBmp.Height := 2*LabelMargin + TextExt.cy;
+  DestBmp.Height := 2*Integer(LabelMargin) + TextExt.cy;
 
   // Frame
   Canv.Brush.Color := clWhite;

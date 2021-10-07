@@ -349,8 +349,9 @@ begin
         FThreads.Delete(i);
       end;
 
-    if (FTaskQueue.Count > FMaxTasksPerThread*FThreads.Count) and
-      (FThreads.Count < FMaxThreads) then
+    // Cast to signed to get rid of warning
+    if (FTaskQueue.Count > Integer(FMaxTasksPerThread)*FThreads.Count) and
+      (FThreads.Count < Integer(FMaxThreads)) then
       AddThread;
   finally
     Unlock;
