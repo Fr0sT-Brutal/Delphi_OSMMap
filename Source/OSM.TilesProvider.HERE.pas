@@ -36,7 +36,7 @@ implementation
 constructor THERETilesProvider.Create;
 begin
   MinZoomLevel := Low(TMapZoomLevel);
-  MaxZoomLevel := 19; {}
+  MaxZoomLevel := 20;
 //  TileFormat.Format := 'png';
 //  TileFormat.Width := 256;
 //  TileFormat.Height := 256;
