@@ -281,6 +281,18 @@ type
     // Set properties of cache image and rebuild it
     procedure SetCacheImageProperties(TilesHorz, TilesVert, MarginSize: Cardinal);
 
+    // Export map fragment as bitmap.
+    // @raises Exception if a tile is unavailable
+    //   @param SaveRect - rect in map coords to export
+    //   @param DrawOptions - drawing options
+    //   @param DrawMapMarks - draw mapmarks or not
+    function SaveToBitmap(const SaveRect: TRect; DrawOptions: TMapOptions; DrawMapMarks: Boolean): TBitmap; overload;
+    // Export whole map as bitmap.
+    // @raises Exception if a tile is unavailable
+    //   @param DrawOptions - drawing options
+    //   @param DrawMapMarks - draw mapmarks or not
+    function SaveToBitmap(DrawOptions: TMapOptions; DrawMapMarks: Boolean): TBitmap; overload;
+
     //~ properties
     // Current zoom level
     property Zoom: Integer read FZoom;
@@ -1448,6 +1460,58 @@ begin
       FScaleLine
     );
   end;
+end;
+
+function TMapControl.SaveToBitmap(const SaveRect: TRect; DrawOptions: TMapOptions; DrawMapMarks: Boolean): TBitmap;
+var
+  TileAlignedSaveRect, DestRect: TRect;
+  HorzCount, VertCount, horz, vert, HorzStartNum, VertStartNum: Integer;
+  Clipped: TBitmap;
+begin
+  // To avoid complication, paint to tilesize-aligned canvas
+  // SaveRect could be larger than map, reduce it then
+  TileAlignedSaveRect := EnsureInMap(FZoom, ToTileBoundary(SaveRect));
+
+  Result := TBitmap.Create;
+  Result.SetSize(TileAlignedSaveRect.Width, TileAlignedSaveRect.Height);
+
+  HorzCount := TileAlignedSaveRect.Width div TILE_IMAGE_WIDTH;
+  VertCount := TileAlignedSaveRect.Height div TILE_IMAGE_HEIGHT;
+  HorzStartNum := TileAlignedSaveRect.Left div TILE_IMAGE_WIDTH;
+  VertStartNum := TileAlignedSaveRect.Top div TILE_IMAGE_HEIGHT;
+
+  // Draw tiles. If any tile is unavailable, throw exception.
+  for horz := 0 to HorzCount - 1 do
+    for vert := 0 to VertCount - 1 do
+      if not DrawTileImage(HorzStartNum + horz, VertStartNum + vert,
+        Point(horz*TILE_IMAGE_WIDTH, vert*TILE_IMAGE_HEIGHT), Result.Canvas) then
+      begin
+        FreeAndNil(Result);
+        raise Exception.CreateFmt('Tile image unavailable: %d * [%d : %d]',
+          [FZoom, horz*TILE_IMAGE_WIDTH, vert*TILE_IMAGE_HEIGHT]);
+      end;
+
+  // SaveRect is not aligned to tile size - clip the resulting image by copying
+  // needed rect to top-left corner and cutting the dimensions
+  if SaveRect <> TileAlignedSaveRect then
+  begin
+    // Get save area rect relative to tile-aligned rect
+    DestRect := ToInnerCoords(TileAlignedSaveRect.TopLeft, SaveRect);
+    Result.Canvas.CopyRect(
+      Rect(0, 0, DestRect.Width, DestRect.Height),
+      Result.Canvas, DestRect);
+    Result.SetSize(DestRect.Width, DestRect.Height);
+  end;
+
+  if DrawMapMarks then
+    Self.DrawMapMarks(Result.Canvas, SaveRect);
+
+  DrawLabels(Result.Canvas, TRect.Create(Point(0, 0), Result.Width, Result.Height), DrawOptions);
+end;
+
+function TMapControl.SaveToBitmap(DrawOptions: TMapOptions; DrawMapMarks: Boolean): TBitmap;
+begin
+  Result := SaveToBitmap(Rect(0, 0, FMapSize.cx, FMapSize.cy), DrawOptions, DrawMapMarks);
 end;
 
 end.
