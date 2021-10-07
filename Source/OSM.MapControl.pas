@@ -216,6 +216,7 @@ type
     procedure DrawTile(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas);
     procedure DrawMapMark(Canvas: TCanvas; MapMark: TMapMark);
     procedure DrawMapMarks(Canvas: TCanvas; const Rect: TRect);
+    procedure DrawLabels(Canvas: TCanvas; const Rect: TRect; DrawOptions: TMapOptions);
     //~ getters/setters
     procedure SetNWPoint(const MapPt: TPoint); overload;
     function GetCenterPoint: TGeoPoint;
@@ -657,7 +658,7 @@ procedure TMapControl.PaintWindow(DC: HDC);
 var
   ViewRect: TRect;
   Canvas: TCanvas;
-  DCClipRectTopLeft: TPoint;
+  DCClipViewRect: TRect;
 begin
   // if view area lays within cached image, no update required
   if not ViewInCache then
@@ -672,49 +673,20 @@ begin
   Canvas := TCanvas.Create; // Prefer canvas methods over bit blitting
   try
     Canvas.Handle := DC;
-    // Top-left point of view area in DC coords
-    DCClipRectTopLeft := Canvas.ClipRect.TopLeft;
+    // View rect in DC coords
+    DCClipViewRect := TRect.Create(Canvas.ClipRect.TopLeft, ViewRect.Width, ViewRect.Height);
 
     // draw cache (map background)
     Canvas.CopyRect(
-      TRect.Create(DCClipRectTopLeft, ViewRect.Width, ViewRect.Height),
+      DCClipViewRect,
       FCacheImage.Canvas,
       ViewRect
     );
 
-    // NB: unsigned FLabelMargin produces lots of warnings when mixed with other
-    // signed values (even TSize members... what the hell is negative size??).
-    // Thus cast it to signed.
+    // Draw mapmarks inside view (map could be smaller than view!)
+    DrawMapMarks(Canvas, EnsureInMap(FZoom, ViewAreaRect));
 
-    // init copyright bitmap if not inited yet and draw it in bottom-right corner
-    if not (moDontDrawCopyright in FMapOptions) then
-    begin
-      if FCopyright = nil then
-      begin
-        FCopyright := TBitmap.Create;
-        FCopyright.Transparent := True;
-        FCopyright.TransparentColor := clWhite;
-        DrawCopyright(TilesCopyright, FCopyright);
-      end;
-      Canvas.Draw(
-        DCClipRectTopLeft.X + ViewRect.Width - FCopyright.Width - Integer(FLabelMargin),
-        DCClipRectTopLeft.Y + ViewRect.Height - FCopyright.Height - Integer(FLabelMargin),
-        FCopyright
-      );
-    end;
-
-    // scaleline bitmap must've been inited already in SetZoom
-    // draw it in bottom-left corner
-    if not (moDontDrawScale in FMapOptions) then
-    begin
-      Canvas.Draw(
-        DCClipRectTopLeft.X + Integer(FLabelMargin),
-        DCClipRectTopLeft.Y + ViewRect.Height - FScaleLine.Height - Integer(FLabelMargin),
-        FScaleLine
-      );
-    end;
-
-    DrawMapMarks(Canvas, ViewAreaRect);
+    DrawLabels(Canvas, DCClipViewRect, FMapOptions);
   finally
     FreeAndNil(Canvas);
   end;
@@ -1431,14 +1403,50 @@ begin
   if FMapMarkList.Count > 0 then
   begin
     idx := -1;
-    // Determine rect of map in view (map could be smaller than view!)
-    GeoRect := MapToGeoCoords(EnsureInMap(FZoom, Rect));
-    // Draw marks within rect
+    GeoRect := MapToGeoCoords(Rect);
+    // Draw marks within geo rect
     repeat
       idx := FMapMarkList.Find(GeoRect, True, idx);
       if idx = -1 then Break;
       DrawMapMark(Canvas, FMapMarkList.Get(idx));
     until False;
+  end;
+end;
+
+// Method to draw copyright and scale labels.
+//   Rect is view area in DC coords
+procedure TMapControl.DrawLabels(Canvas: TCanvas; const Rect: TRect; DrawOptions: TMapOptions);
+begin
+  // NB: unsigned FLabelMargin produces lots of warnings when mixed with other
+  // signed values (even TSize members... what the hell is negative size??).
+  // Thus cast it to signed.
+
+  // init copyright bitmap if not inited yet and draw it in bottom-right corner
+  if not (moDontDrawCopyright in DrawOptions) then
+  begin
+    if FCopyright = nil then
+    begin
+      FCopyright := TBitmap.Create;
+      FCopyright.Transparent := True;
+      FCopyright.TransparentColor := clWhite;
+      DrawCopyright(TilesCopyright, FCopyright);
+    end;
+    Canvas.Draw(
+      Rect.Right - FCopyright.Width - Integer(FLabelMargin),
+      Rect.Bottom - FCopyright.Height - Integer(FLabelMargin),
+      FCopyright
+    );
+  end;
+
+  // scaleline bitmap must've been inited already in SetZoom
+  // draw it in bottom-left corner
+  if not (moDontDrawScale in DrawOptions) then
+  begin
+    Canvas.Draw(
+      Rect.Top + Integer(FLabelMargin),
+      Rect.Bottom - FScaleLine.Height - Integer(FLabelMargin),
+      FScaleLine
+    );
   end;
 end;
 
