@@ -104,34 +104,31 @@ Visual control displaying a map. Data for the map (tile images) must be supplied
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#TMapMouseMode">TMapMouseMode</a></strong> = (...);</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnDrawTile">TOnDrawTile</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas; var Handled: Boolean) of object;</code></td>
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnGetTile">TOnGetTile</a></strong> = function (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; TileHorzNum, TileVertNum: Cardinal): TBitmap of object;</code></td>
 </tr>
 <tr class="list">
-<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnDrawMapMark">TOnDrawMapMark</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; Canvas: TCanvas; const Point: TPoint; MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; var Handled: Boolean) of object;</code></td>
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnDrawTile">TOnDrawTile</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas; var Handled: Boolean) of object;</code></td>
 </tr>
 <tr class="list2">
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnDrawMapMark">TOnDrawMapMark</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; Canvas: TCanvas; const Point: TPoint; MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; var Handled: Boolean) of object;</code></td>
+</tr>
+<tr class="list">
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnSelectionBox">TOnSelectionBox</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; const GeoRect: <a href="OSM.SlippyMapUtils.TGeoRect.html">TGeoRect</a>) of object;</code></td>
 </tr>
 </table>
 <span id="PasDoc-Constants"></span><h3 class="summary">Constants</h3>
 <table class="summary wide_list">
 <tr class="list">
-<td class="itemcode"><code><strong><a href="OSM.MapControl.html#CacheImageDefTilesH">CacheImageDefTilesH</a></strong> = 8;</code></td>
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#DefaultCacheImageTilesHorz">DefaultCacheImageTilesHorz</a></strong> = 8;</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code><strong><a href="OSM.MapControl.html#CacheImageDefTilesV">CacheImageDefTilesV</a></strong> = 8;</code></td>
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#DefaultCacheImageTilesVert">DefaultCacheImageTilesVert</a></strong> = 8;</code></td>
 </tr>
 <tr class="list">
-<td class="itemcode"><code><strong><a href="OSM.MapControl.html#CacheImageDefWidth">CacheImageDefWidth</a></strong> = <a href="OSM.MapControl.html#CacheImageDefTilesH">CacheImageDefTilesH</a>*<a href="OSM.SlippyMapUtils.html#TILE_IMAGE_WIDTH">TILE_IMAGE_WIDTH</a>;</code></td>
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#DefaultCacheMarginSize">DefaultCacheMarginSize</a></strong> = 2;</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code><strong><a href="OSM.MapControl.html#CacheImageDefHeight">CacheImageDefHeight</a></strong> = <a href="OSM.MapControl.html#CacheImageDefTilesV">CacheImageDefTilesV</a>*<a href="OSM.SlippyMapUtils.html#TILE_IMAGE_HEIGHT">TILE_IMAGE_HEIGHT</a>;</code></td>
-</tr>
-<tr class="list">
-<td class="itemcode"><code><strong><a href="OSM.MapControl.html#CacheMarginSize">CacheMarginSize</a></strong> = 2;</code></td>
-</tr>
-<tr class="list2">
-<td class="itemcode"><code><strong><a href="OSM.MapControl.html#LabelMargin">LabelMargin</a></strong> = 2;</code></td>
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#DefaultLabelMargin">DefaultLabelMargin</a></strong> = 2;</code></td>
 </tr>
 <tr class="list">
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#DefaultMapMarkGlyphStyle">DefaultMapMarkGlyphStyle</a></strong>: <a href="OSM.MapControl.TMapMarkGlyphStyle.html">TMapMarkGlyphStyle</a> = (
@@ -321,15 +318,20 @@ Mode of handling of plain left mouse button press</p>
 </table>
 <table class="detail wide_list">
 <tr class="list">
+<td class="itemcode"><span id="TOnGetTile"></span><code><strong>TOnGetTile</strong> = function (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; TileHorzNum, TileVertNum: Cardinal): TBitmap of object;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Callback to get an image of a single tile having number (<code>TileHorzNum</code>;<code>TileVertNum</code>). Must return bitmap of a tile or <code>Nil</code> if it's not available at the moment</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
 <td class="itemcode"><span id="TOnDrawTile"></span><code><strong>TOnDrawTile</strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas; var Handled: Boolean) of object;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
-Callback to draw an image of a single tile having number (<code>TileHorzNum</code>;<code>TileVertNum</code>) at point <code>TopLeft</code> on canvas <code>Canvas</code>. Callback must set <code>Handled</code> to <code>True</code>, otherwise default actions will be done. This type is common for both <a class="normal" href="OSM.MapControl.TMapControl.html#OnDrawTile">TMapControl.OnDrawTile</a> and <a class="normal" href="OSM.MapControl.TMapControl.html#OnDrawTileLoading">TMapControl.OnDrawTileLoading</a> callbacks.
-
-<p><em>Note for <a class="normal" href="OSM.MapControl.TMapControl.html#OnDrawTile">TMapControl.OnDrawTile</a>:</em><br> If <code>Handled</code> is not set to <code>True</code>, TMapControl.DrawTileLoading method is called for this tile. Usually you have to assign this callback only.
-
-<p><em>Note for <a class="normal" href="OSM.MapControl.TMapControl.html#OnDrawTileLoading">TMapControl.OnDrawTileLoading</a>:</em><br> The handler is called only for empty tiles allowing a user to draw his own label</p>
+Callback to draw an image of a single tile having number (<code>TileHorzNum</code>;<code>TileVertNum</code>) at point <code>TopLeft</code> on canvas <code>Canvas</code>. Must set <code>Handled</code> to <code>True</code>, otherwise default actions will be done. This type is common for both <a class="normal" href="OSM.MapControl.TMapControl.html#OnDrawTile">TMapControl.OnDrawTile</a> and <a class="normal" href="OSM.MapControl.TMapControl.html#OnDrawTileLoading">TMapControl.OnDrawTileLoading</a> callbacks.</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -338,7 +340,7 @@ Callback to draw an image of a single tile having number (<code>TileHorzNum</cod
 </tr>
 <tr><td colspan="1">
 <p>
-Callback to custom draw a mapmark. It is called before default drawing. If <code>Handled</code> is not set to <code>True</code>, default drawing will be done. User could draw a mapmark fully or just change some props and let default drawing do its job</p>
+Callback to custom draw a mapmark. It is called before default drawing. If <code>Handled</code> is not set to <code>True</code>, default drawing will be done.</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -353,52 +355,36 @@ Callback to react on selection by mouse</p>
 <h3 class="detail">Constants</h3>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="CacheImageDefTilesH"></span><code><strong>CacheImageDefTilesH</strong> = 8;</code></td>
+<td class="itemcode"><span id="DefaultCacheImageTilesHorz"></span><code><strong>DefaultCacheImageTilesHorz</strong> = 8;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
-Default W and H of cache image in number of tiles. Memory occupation of an image: (4 bytes per pixel) * <code>TilesH</code> * <code>TilesV</code> * (65536 pixels in single tile) <br> For value 8 it counts 16.7 Mb</p>
+Default Width (Horizontal dimension) and Height (Vertical dimension) of cache image in number of tiles. Cache is init-ed with these values but could be changed later.<br> Memory occupation of an image: (4 bytes per pixel) * <code>TilesH</code> * <code>TilesV</code> * (65536 pixels in single tile) <br> For value 8 it counts 16.7 Mb</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="CacheImageDefTilesV"></span><code><strong>CacheImageDefTilesV</strong> = 8;</code></td>
+<td class="itemcode"><span id="DefaultCacheImageTilesVert"></span><code><strong>DefaultCacheImageTilesVert</strong> = 8;</code></td>
 </tr>
 <tr><td colspan="1">
 &nbsp;</td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="CacheImageDefWidth"></span><code><strong>CacheImageDefWidth</strong> = <a href="OSM.MapControl.html#CacheImageDefTilesH">CacheImageDefTilesH</a>*<a href="OSM.SlippyMapUtils.html#TILE_IMAGE_WIDTH">TILE_IMAGE_WIDTH</a>;</code></td>
+<td class="itemcode"><span id="DefaultCacheMarginSize"></span><code><strong>DefaultCacheMarginSize</strong> = 2;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
-Default W and H of cache image in pixels</p>
+Default margin that is added to cache image to hold view area, in number of tiles</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="CacheImageDefHeight"></span><code><strong>CacheImageDefHeight</strong> = <a href="OSM.MapControl.html#CacheImageDefTilesV">CacheImageDefTilesV</a>*<a href="OSM.SlippyMapUtils.html#TILE_IMAGE_HEIGHT">TILE_IMAGE_HEIGHT</a>;</code></td>
-</tr>
-<tr><td colspan="1">
-&nbsp;</td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="itemcode"><span id="CacheMarginSize"></span><code><strong>CacheMarginSize</strong> = 2;</code></td>
+<td class="itemcode"><span id="DefaultLabelMargin"></span><code><strong>DefaultLabelMargin</strong> = 2;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
-Margin that is added to cache image to hold view area, in number of tiles</p>
-</td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="itemcode"><span id="LabelMargin"></span><code><strong>LabelMargin</strong> = 2;</code></td>
-</tr>
-<tr><td colspan="1">
-<p>
-Size of margin for labels on map, in pixels</p>
+Default size of margin for labels on map, in pixels</p>
 </td></tr>
 </table>
 <table class="detail wide_list">

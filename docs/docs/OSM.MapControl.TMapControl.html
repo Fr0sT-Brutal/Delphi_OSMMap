@@ -118,6 +118,18 @@ Control displaying a map or its visible part.</p>
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>procedure <strong><a href="OSM.MapControl.TMapControl.html#ZoomToFit">ZoomToFit</a></strong>;</code></td>
 </tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="OSM.MapControl.TMapControl.html#SetCacheImageProperties">SetCacheImageProperties</a></strong>(TilesHorz, TilesVert, MarginSize: Cardinal);</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapControl.html#SaveToBitmap">SaveToBitmap</a></strong>(const SaveRect: TRect; DrawOptions: <a href="OSM.MapControl.html#TMapOptions">TMapOptions</a>; DrawMapMarks: Boolean): TBitmap; overload;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapControl.html#SaveToBitmap">SaveToBitmap</a></strong>(DrawOptions: <a href="OSM.MapControl.html#TMapOptions">TMapOptions</a>; DrawMapMarks: Boolean): TBitmap; overload;</code></td>
+</tr>
 </table>
 <span id="PasDoc-Properties"></span><h3 class="summary">Properties</h3>
 <table class="summary wide_list">
@@ -155,11 +167,19 @@ Control displaying a map or its visible part.</p>
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#ViewRect">ViewRect</a></strong>: TRect read ViewAreaRect;</code></td>
+<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#LabelMargin">LabelMargin</a></strong>: Cardinal read FLabelMargin write SetLabelMargin;</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#ViewRect">ViewRect</a></strong>: TRect read ViewAreaRect;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#VisibleLayers">VisibleLayers</a></strong>: <a href="OSM.MapControl.html#TMapLayers">TMapLayers</a> read FVisibleLayers write SetVisibleLayers;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnGetTile">OnGetTile</a></strong>: <a href="OSM.MapControl.html#TOnGetTile">TOnGetTile</a> read FOnGetTile write FOnGetTile;</code></td>
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
@@ -368,14 +388,7 @@ Absolutely move the view area</p>
 </tr>
 <tr><td colspan="2">
 <p>
-Set zoom level to new value and reposition to given point  </p>
-<h6 class="description_section">Parameters</h6>
-<dl class="parameters">
-<dt>Value</dt>
-<dd>- new zoom value</dd>
-<dt>MapBindPt</dt>
-<dd>- point in map coords that must keep its position within view</dd>
-</dl>
+Set zoom level to new value and reposition to given point</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -406,6 +419,62 @@ Zoom to show given region <code>GeoRect</code></p>
 <tr><td colspan="2">
 <p>
 Zoom to fill view area as much as possible</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="SetCacheImageProperties"></span><code>procedure <strong>SetCacheImageProperties</strong>(TilesHorz, TilesVert, MarginSize: Cardinal);</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Set properties of cache image and rebuild it</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="SaveToBitmap"></span><code>function <strong>SaveToBitmap</strong>(const SaveRect: TRect; DrawOptions: <a href="OSM.MapControl.html#TMapOptions">TMapOptions</a>; DrawMapMarks: Boolean): TBitmap; overload;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Export map fragment as bitmap.    </p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>SaveRect</dt>
+<dd>- rect in map coords to export</dd>
+<dt>DrawOptions</dt>
+<dd>- drawing options</dd>
+<dt>DrawMapMarks</dt>
+<dd>- draw mapmarks or not</dd>
+</dl>
+<h6 class="description_section">Exceptions raised</h6>
+<dl class="exceptions_raised">
+<dt><code>Exception</code></dt>
+<dd>if a tile is unavailable</dd>
+</dl>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="SaveToBitmap"></span><code>function <strong>SaveToBitmap</strong>(DrawOptions: <a href="OSM.MapControl.html#TMapOptions">TMapOptions</a>; DrawMapMarks: Boolean): TBitmap; overload;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Export whole map as bitmap.   </p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>DrawOptions</dt>
+<dd>- drawing options</dd>
+<dt>DrawMapMarks</dt>
+<dd>- draw mapmarks or not</dd>
+</dl>
+<h6 class="description_section">Exceptions raised</h6>
+<dl class="exceptions_raised">
+<dt><code>Exception</code></dt>
+<dd>if a tile is unavailable</dd>
+</dl>
 </td></tr>
 </table>
 <h3 class="detail">Properties</h3>
@@ -492,6 +561,16 @@ Mode of handling left mouse button press</p>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="LabelMargin"></span><code>property <strong>LabelMargin</strong>: Cardinal read FLabelMargin write SetLabelMargin;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Size of margin for labels on map, in pixels</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><span id="ViewRect"></span><code>property <strong>ViewRect</strong>: TRect read ViewAreaRect;</code></td>
 </tr>
 <tr><td colspan="2">
@@ -512,11 +591,23 @@ Set of visible layers. You can use <a class="normal" href="OSM.MapControl.html#L
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="OnGetTile"></span><code>property <strong>OnGetTile</strong>: <a href="OSM.MapControl.html#TOnGetTile">TOnGetTile</a> read FOnGetTile write FOnGetTile;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Callback to get an image of a single tile having number (<code>TileHorzNum</code>;<code>TileVertNum</code>). Must return bitmap of a tile or <code>Nil</code> if it's not available at the moment. <br> Called when map tile must be drawn. Usually you have to assign this callback only. <code>OnGetTile</code> could replace <a class="normal" href="OSM.MapControl.TMapControl.html#OnDrawTile">OnDrawTile</a> and exists for simplicity - you don't have to paint tile image every time, the map will do it internally. It could also be assigned together with <a class="normal" href="OSM.MapControl.TMapControl.html#OnDrawTile">OnDrawTile</a> which will only be called if <code>OnGetTile</code> doesn't return a result.</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><span id="OnDrawTile"></span><code>property <strong>OnDrawTile</strong>: <a href="OSM.MapControl.html#TOnDrawTile">TOnDrawTile</a> read FOnDrawTile write FOnDrawTile;</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
-Callback is called when map tile must be drawn</p>
+Callback to draw an image of a single tile having number (<code>TileHorzNum</code>;<code>TileVertNum</code>) at point <code>TopLeft</code> on canvas <code>Canvas</code>. Must set <code>Handled</code> to <code>True</code>, otherwise default actions will be done. <br> Called when map tile must be drawn. <code>OnDrawTile</code> could replace <a class="normal" href="OSM.MapControl.TMapControl.html#OnGetTile">OnGetTile</a> but provides more flexibility - handler fully controls painting which allows adding watermarks, layers and so on. It could also be assigned together with <a class="normal" href="OSM.MapControl.TMapControl.html#OnGetTile">OnGetTile</a> and will only be called if <a class="normal" href="OSM.MapControl.TMapControl.html#OnGetTile">OnGetTile</a> doesn't return a result.
+
+<p>If <code>Handled</code> is not set to <code>True</code>, default drawing is called for the tile.</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -526,7 +617,7 @@ Callback is called when map tile must be drawn</p>
 </tr>
 <tr><td colspan="2">
 <p>
-Callback is called when map tile with loading state must be drawn</p>
+Callback to draw a loading state of a single tile having number (<code>TileHorzNum</code>;<code>TileVertNum</code>) at point <code>TopLeft</code> on canvas <code>Canvas</code>. Must set <code>Handled</code> to <code>True</code>, otherwise default actions will be done. Called when map tile with loading state must be drawn <code>OnDrawTileLoading</code> is called only for empty tiles allowing a user to draw his own label</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -536,7 +627,7 @@ Callback is called when map tile with loading state must be drawn</p>
 </tr>
 <tr><td colspan="2">
 <p>
-Callback is called when zoom level is changed</p>
+Called when zoom level is changed</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -546,7 +637,7 @@ Callback is called when zoom level is changed</p>
 </tr>
 <tr><td colspan="2">
 <p>
-Callback is called when mapmark must be drawn</p>
+Callback to custom draw a mapmark. It is called before default drawing. If <code>Handled</code> is not set to <code>True</code>, default drawing will be done. User could draw a mapmark fully or just change some props and let default drawing do its job</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -556,7 +647,7 @@ Callback is called when mapmark must be drawn</p>
 </tr>
 <tr><td colspan="2">
 <p>
-Callback is called when selection with mouse was made</p>
+Called when selection with mouse was made</p>
 </td></tr>
 </table>
 <hr><span class="appinfo"><em>Generated by <a href="https://github.com/pasdoc/pasdoc/wiki">PasDoc 0.15.0</a>. </em>
