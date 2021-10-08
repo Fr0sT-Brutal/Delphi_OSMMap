@@ -339,7 +339,7 @@ type
     // Callback to draw a loading state of a single tile having number (`TileHorzNum`;`TileVertNum`)
     // at point `TopLeft` on canvas `Canvas`.
     // Must set `Handled` to @true, otherwise default actions will be done.
-    // Called when map tile with loading state must be drawn
+    // Called when map tile with loading state must be drawn. @br
     // @name is called only for empty tiles allowing a user to draw his own label
     property OnDrawTileLoading: TOnDrawTile read FOnDrawTileLoading write FOnDrawTileLoading;
     // Called when zoom level is changed
