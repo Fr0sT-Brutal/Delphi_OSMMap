@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>OSM Map control: SynapseRequest</title>
+<title>OSM Map control: OSM.NetworkRequest.WinInet</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="generator" content="PasDoc 0.15.0">
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -10,39 +10,27 @@
 <body>
 <table class="container"><tr><td class="navigation">
 <h2><a href="index.html" class="navigation">OSM Map control</a></h2><p><a href="AllUnits.html" class="navigation">Units</a></p><p><a href="ClassHierarchy.html" class="navigation">Class Hierarchy</a></p><p><a href="AllClasses.html" class="navigation">Classes, Interfaces, Objects and Records</a></p><p><a href="AllTypes.html" class="navigation">Types</a></p><p><a href="AllVariables.html" class="navigation">Variables</a></p><p><a href="AllConstants.html" class="navigation">Constants</a></p><p><a href="AllFunctions.html" class="navigation">Functions and Procedures</a></p><p><a href="AllIdentifiers.html" class="navigation">Identifiers</a></p></td><td class="content">
-<h1 class="unit">Unit SynapseRequest</h1>
+<h1 class="unit">Unit OSM.NetworkRequest.WinInet</h1>
 <div class="sections">
 <div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section">Classes, Interfaces, Objects and Records</div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div><div class="one_section">Types</div><div class="one_section"><a class="section" href="#PasDoc-Constants">Constants</a></div><div class="one_section">Variables</div></div>
 <span id="PasDoc-Description"></span><h2 class="description">Description</h2>
 <p>
-Implements blocking HTTP request with Synapse framework.
+Implements blocking HTTP request with WinInet. Windows-only
 
-<p>based on code by Simon Kroik, 06.2018, kroiksm@gmx.de
+<p>(c) Fr0sT-Brutal <a href="https://github.com/Fr0sT-Brutal/Delphi_OSMMap">https://github.com/Fr0sT-Brutal/Delphi_OSMMap</a>
 
-<p>For HTTPS-Support: </p>
-
-<ol class="paragraph_spacing">
-  <li value="1"><p>USES ssl_openssl;</p></li>
-  <li value="2"><p>copy libeay32.dll</p></li>
-  <li value="3"><p>copy ssleay32.dll</p></li>
-</ol>
-
-<p> (c) Fr0sT-Brutal <a href="https://github.com/Fr0sT-Brutal/Delphi_OSMMap">https://github.com/Fr0sT-Brutal/Delphi_OSMMap</a>
-
-<p> </p>
+<p></p>
 <span id="PasDoc-Uses"></span><h2 class="overview">Overview</h2>
 <span id="PasDoc-FuncsProcs"></span><h3 class="summary">Functions and Procedures</h3>
 <table class="summary wide_list">
 <tr class="list">
-<td class="itemcode"><code>function <strong><a href="SynapseRequest.html#NetworkRequest">NetworkRequest</a></strong>(RequestProps: <a href="OSM.NetworkRequest.THttpRequestProps.html">THttpRequestProps</a>; ResponseStm: TStream; out ErrMsg: string): Boolean;</code></td>
+<td class="itemcode"><code>function <strong><a href="OSM.NetworkRequest.WinInet.html#NetworkRequest">NetworkRequest</a></strong>(RequestProps: <a href="OSM.NetworkRequest.THttpRequestProps.html">THttpRequestProps</a>; ResponseStm: TStream; out ErrMsg: string): Boolean;</code></td>
 </tr>
 </table>
 <span id="PasDoc-Constants"></span><h3 class="summary">Constants</h3>
 <table class="summary wide_list">
 <tr class="list">
-<td class="itemcode"><code><strong><a href="SynapseRequest.html#EngineCapabilities">EngineCapabilities</a></strong> = [<a href="OSM.NetworkRequest.html#htcProxy">htcProxy</a>, <a href="OSM.NetworkRequest.html#htcDirect">htcDirect</a>, <a href="OSM.NetworkRequest.html#htcProxyAuth">htcProxyAuth</a>, <a href="OSM.NetworkRequest.html#htcAuth">htcAuth</a>, <a href="OSM.NetworkRequest.html#htcAuthURL">htcAuthURL</a>,
-    <a href="OSM.NetworkRequest.html#htcHeaders">htcHeaders</a>, <a href="OSM.NetworkRequest.html#htcTimeout">htcTimeout</a>
-     , <a href="OSM.NetworkRequest.html#htcTLS">htcTLS</a>  ];</code></td>
+<td class="itemcode"><code><strong><a href="OSM.NetworkRequest.WinInet.html#EngineCapabilities">EngineCapabilities</a></strong> = [<a href="OSM.NetworkRequest.html#htcProxy">htcProxy</a>, <a href="OSM.NetworkRequest.html#htcDirect">htcDirect</a>, <a href="OSM.NetworkRequest.html#htcSystemProxy">htcSystemProxy</a>, <a href="OSM.NetworkRequest.html#htcHeaders">htcHeaders</a>, <a href="OSM.NetworkRequest.html#htcTimeout">htcTimeout</a>, <a href="OSM.NetworkRequest.html#htcTLS">htcTLS</a>];</code></td>
 </tr>
 </table>
 <h2 class="description">Description</h2>
@@ -59,18 +47,15 @@ Function executing a network request. See description of <a class="normal" href=
 <h3 class="detail">Constants</h3>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="EngineCapabilities"></span><code><strong>EngineCapabilities</strong> = [<a href="OSM.NetworkRequest.html#htcProxy">htcProxy</a>, <a href="OSM.NetworkRequest.html#htcDirect">htcDirect</a>, <a href="OSM.NetworkRequest.html#htcProxyAuth">htcProxyAuth</a>, <a href="OSM.NetworkRequest.html#htcAuth">htcAuth</a>, <a href="OSM.NetworkRequest.html#htcAuthURL">htcAuthURL</a>,
-    <a href="OSM.NetworkRequest.html#htcHeaders">htcHeaders</a>, <a href="OSM.NetworkRequest.html#htcTimeout">htcTimeout</a>
-     , <a href="OSM.NetworkRequest.html#htcTLS">htcTLS</a>  ];</code></td>
+<td class="itemcode"><span id="EngineCapabilities"></span><code><strong>EngineCapabilities</strong> = [<a href="OSM.NetworkRequest.html#htcProxy">htcProxy</a>, <a href="OSM.NetworkRequest.html#htcDirect">htcDirect</a>, <a href="OSM.NetworkRequest.html#htcSystemProxy">htcSystemProxy</a>, <a href="OSM.NetworkRequest.html#htcHeaders">htcHeaders</a>, <a href="OSM.NetworkRequest.html#htcTimeout">htcTimeout</a>, <a href="OSM.NetworkRequest.html#htcTLS">htcTLS</a>];</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
-Capabilities of Synapse engine</p>
+Capabilities of WinInet engine</p>
 </td></tr>
 </table>
-<h2 class="authors">Authors</h2>
+<h2 class="authors">Author</h2>
 <ul class="authors">
-<li>Simon Kroik (<a href="mailto:kroiksm@gmx.de">kroiksm@gmx.de</a>)</li>
 <li>Fr0sT-Brutal (https://github.com/Fr0sT-Brutal)</li>
 </ul>
 <hr><span class="appinfo"><em>Generated by <a href="https://github.com/pasdoc/pasdoc/wiki">PasDoc 0.15.0</a>. </em>
