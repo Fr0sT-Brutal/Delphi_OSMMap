@@ -1,3 +1,13 @@
+0.9.0
+=====
+
+- Added ability to use map tile provider other than OSM. Added HERE provider. Added property `Properties` to access provider-specific properties.
+
+`[BREAKING]`
+
+- OSM.NetworkRequest.pas, uses `TileProvider` object. `TNetworkRequestQueue.Create`, 3rd parameter is `TTilesProvider` and `GotTile` callback must be set via `OnGotTileBgThr` property
+- OSM.MapControl.pas, uses `TileProvider` object. New `TMapControl.TilesProvider` property
+
 0.8.0
 =====
 
