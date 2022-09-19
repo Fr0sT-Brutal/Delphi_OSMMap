@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>OSM Map control: OSM.TilesProvider: Class TTilesProvider</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="PasDoc 0.16.0">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<div class="container"><div class="navigation">
+<h2><a href="index.html">OSM Map control</a></h2><ul><li><a href="AllUnits.html">Units</a></li><li><a href="ClassHierarchy.html">Class Hierarchy</a></li><li><a href="AllClasses.html">Classes, Interfaces, Objects and Records</a></li><li><a href="AllTypes.html">Types</a></li><li><a href="AllVariables.html">Variables</a></li><li><a href="AllConstants.html">Constants</a></li><li><a href="AllFunctions.html">Functions and Procedures</a></li><li><a href="AllIdentifiers.html">Identifiers</a></li></ul></div><div class="content">
+<span id="TTilesProvider"></span><h1 class="cio">Class TTilesProvider</h1>
+<div class="sections">
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section"><a class="section" href="#PasDoc-Hierarchy">Hierarchy</a></div><div class="one_section"><a class="section" href="#PasDoc-Fields">Fields</a></div><div class="one_section"><a class="section" href="#PasDoc-Methods">Methods</a></div><div class="one_section"><a class="section" href="#PasDoc-Properties">Properties</a></div></div>
+<span id="PasDoc-Description"></span><h2 class="unit">Unit</h2>
+<p class="unitlink">
+<a href="OSM.TilesProvider.html">OSM.TilesProvider</a></p>
+<h2 class="declaration">Declaration</h2>
+<p class="declaration">
+<code>type TTilesProvider = class(TObject)</code></p>
+<h2 class="description">Description</h2>
+<p>
+Abstract base class for tile image provider. Real implementations must inherit from it, assign <a class="normal" href="OSM.TilesProvider.TTilesProvider.html#Properties">properties</a> and override methods.</p>
+<span id="PasDoc-Hierarchy"></span><h2 class="hierarchy">Hierarchy</h2>
+<ul class="hierarchy"><li class="ancestor">TObject</li>
+<li class="thisitem">TTilesProvider</li></ul><h2 class="overview">Overview</h2>
+<span id="PasDoc-Fields"></span><h3 class="summary">Fields</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="OSM.TilesProvider.TTilesProvider.html#MinZoomLevel">MinZoomLevel</a></strong>: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="OSM.TilesProvider.TTilesProvider.html#MaxZoomLevel">MaxZoomLevel</a></strong>: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="OSM.TilesProvider.TTilesProvider.html#TilesCopyright">TilesCopyright</a></strong>: string;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="OSM.TilesProvider.TTilesProvider.html#APIKey">APIKey</a></strong>: string;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Methods"></span><h3 class="summary">Methods</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>function <strong><a href="OSM.TilesProvider.TTilesProvider.html#GetTileURL">GetTileURL</a></strong>(const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>): string; virtual; abstract;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Properties"></span><h3 class="summary">Properties</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>property <strong><a href="OSM.TilesProvider.TTilesProvider.html#Properties">Properties</a></strong>[const Index: string]: string read GetProperty write SetProperty;</code></td>
+</tr>
+</table>
+<h2 class="description">Description</h2>
+<h3 class="detail">Fields</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="MinZoomLevel"></span><code><strong>MinZoomLevel</strong>: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Minimal zoom level. Usually <code>0</code></p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="MaxZoomLevel"></span><code><strong>MaxZoomLevel</strong>: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Maximal zoom level</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="TilesCopyright"></span><code><strong>TilesCopyright</strong>: string;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Tile copyright that will be painted in the corner of the map</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="APIKey"></span><code><strong>APIKey</strong>: string;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+[opt] API key for requesting tiles</p>
+</td></tr>
+</table>
+<h3 class="detail">Methods</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="GetTileURL"></span><code>function <strong>GetTileURL</strong>(const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>): string; virtual; abstract;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Method to get URL of specified tile</p>
+</td></tr>
+</table>
+<h3 class="detail">Properties</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Properties"></span><code>property <strong>Properties</strong>[const Index: string]: string read GetProperty write SetProperty;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Generic storage for provider-specific <code>properties</code>. Raises exception in base class, should be implemented in descendants</p>
+</td></tr>
+</table>
+<hr><span class="appinfo"><em>Generated by <a href="https://pasdoc.github.io/">PasDoc 0.16.0</a>. </em>
+</span>
+</div></div></body></html>

@@ -3,16 +3,16 @@
 <head>
 <title>OSM Map control: OSM.SlippyMapUtils</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="generator" content="PasDoc 0.15.0">
+<meta name="generator" content="PasDoc 0.16.0">
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <link rel="StyleSheet" type="text/css" href="pasdoc.css">
 </head>
 <body>
-<table class="container"><tr><td class="navigation">
-<h2><a href="index.html" class="navigation">OSM Map control</a></h2><p><a href="AllUnits.html" class="navigation">Units</a></p><p><a href="ClassHierarchy.html" class="navigation">Class Hierarchy</a></p><p><a href="AllClasses.html" class="navigation">Classes, Interfaces, Objects and Records</a></p><p><a href="AllTypes.html" class="navigation">Types</a></p><p><a href="AllVariables.html" class="navigation">Variables</a></p><p><a href="AllConstants.html" class="navigation">Constants</a></p><p><a href="AllFunctions.html" class="navigation">Functions and Procedures</a></p><p><a href="AllIdentifiers.html" class="navigation">Identifiers</a></p></td><td class="content">
+<div class="container"><div class="navigation">
+<h2><a href="index.html">OSM Map control</a></h2><ul><li><a href="AllUnits.html">Units</a></li><li><a href="ClassHierarchy.html">Class Hierarchy</a></li><li><a href="AllClasses.html">Classes, Interfaces, Objects and Records</a></li><li><a href="AllTypes.html">Types</a></li><li><a href="AllVariables.html">Variables</a></li><li><a href="AllConstants.html">Constants</a></li><li><a href="AllFunctions.html">Functions and Procedures</a></li><li><a href="AllIdentifiers.html">Identifiers</a></li></ul></div><div class="content">
 <h1 class="unit">Unit OSM.SlippyMapUtils</h1>
 <div class="sections">
-<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div><div class="one_section"><a class="section" href="#PasDoc-Types">Types</a></div><div class="one_section"><a class="section" href="#PasDoc-Constants">Constants</a></div><div class="one_section"><a class="section" href="#PasDoc-Variables">Variables</a></div></div>
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div><div class="one_section"><a class="section" href="#PasDoc-Types">Types</a></div><div class="one_section"><a class="section" href="#PasDoc-Constants">Constants</a></div><div class="one_section">Variables</div></div>
 <span id="PasDoc-Description"></span><h2 class="description">Description</h2>
 <p>
 OSM map types &amp; functions. Ref.: <a href="https://wiki.openstreetmap.org/wiki/Slippy_Map">https://wiki.openstreetmap.org/wiki/Slippy_Map</a>
@@ -122,14 +122,11 @@ OSM map types &amp; functions. Ref.: <a href="https://wiki.openstreetmap.org/wik
 <tr class="list2">
 <td class="itemcode"><code>procedure <strong><a href="OSM.SlippyMapUtils.html#GetScaleBarParams">GetScaleBarParams</a></strong>(Zoom: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>; out ScalebarWidthInPixel, ScalebarWidthInMeter: Cardinal; out Text: string);</code></td>
 </tr>
-<tr class="list">
-<td class="itemcode"><code>function <strong><a href="OSM.SlippyMapUtils.html#TileToFullSlippyMapFileURL">TileToFullSlippyMapFileURL</a></strong>(const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>): string;</code></td>
-</tr>
 </table>
 <span id="PasDoc-Types"></span><h3 class="summary">Types</h3>
 <table class="summary wide_list">
 <tr class="list">
-<td class="itemcode"><code><strong><a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a></strong> = 0..19;</code></td>
+<td class="itemcode"><code><strong><a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a></strong> = 0..20;</code></td>
 </tr>
 <tr class="list2">
 <td class="itemcode"><code><strong><a href="OSM.SlippyMapUtils.html#PTile">PTile</a></strong> = &circ;<a href="OSM.SlippyMapUtils.TTile.html">TTile</a>;</code></td>
@@ -165,23 +162,9 @@ OSM map types &amp; functions. Ref.: <a href="https://wiki.openstreetmap.org/wik
     2.387,
     1.193,
     0.596,
-    0.298
+    0.298,
+    0.149
   );</code></td>
-</tr>
-</table>
-<span id="PasDoc-Variables"></span><h3 class="summary">Variables</h3>
-<table class="summary wide_list">
-<tr class="list">
-<td class="itemcode"><code><strong><a href="OSM.SlippyMapUtils.html#TilesCopyright">TilesCopyright</a></strong>: string = '(c) OpenStreetMap contributors';</code></td>
-</tr>
-<tr class="list2">
-<td class="itemcode"><code><strong><a href="OSM.SlippyMapUtils.html#MapURLPrefix">MapURLPrefix</a></strong>: string = 'http://tile.openstreetmap.org/';</code></td>
-</tr>
-<tr class="list">
-<td class="itemcode"><code><strong><a href="OSM.SlippyMapUtils.html#MapURLPostfix">MapURLPostfix</a></strong>: string = '';</code></td>
-</tr>
-<tr class="list2">
-<td class="itemcode"><code><strong><a href="OSM.SlippyMapUtils.html#TileURLPatt">TileURLPatt</a></strong>: string = '%d/%d/%d.png';</code></td>
 </tr>
 </table>
 <h2 class="description">Description</h2>
@@ -422,23 +405,14 @@ Calculates distance between two geo points in meters</p>
 Calculates parameters of map scalebar according to zoom level <code>Zoom</code></p>
 </td></tr>
 </table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="itemcode"><span id="TileToFullSlippyMapFileURL"></span><code>function <strong>TileToFullSlippyMapFileURL</strong>(const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>): string;</code></td>
-</tr>
-<tr><td colspan="1">
-<p>
-Returns full URL to an image of tile <code>Tile</code> using global variables <a class="normal" href="OSM.SlippyMapUtils.html#MapURLPrefix">MapURLPrefix</a>, <a class="normal" href="OSM.SlippyMapUtils.html#TileURLPatt">TileURLPatt</a>, <a class="normal" href="OSM.SlippyMapUtils.html#MapURLPostfix">MapURLPostfix</a></p>
-</td></tr>
-</table>
 <h3 class="detail">Types</h3>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="TMapZoomLevel"></span><code><strong>TMapZoomLevel</strong> = 0..19;</code></td>
+<td class="itemcode"><span id="TMapZoomLevel"></span><code><strong>TMapZoomLevel</strong> = 0..20;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
-Map zoom. 19 = Maximum zoom for Mapnik layer</p>
+Map zoom. 20 = Maximum zoom among all tile providers</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -490,55 +464,19 @@ Height of map tile in pixels</p>
     2.387,
     1.193,
     0.596,
-    0.298
+    0.298,
+    0.149
   );</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
-See <a href="https://wiki.openstreetmap.org/wiki/Zoom_levels">https://wiki.openstreetmap.org/wiki/Zoom_levels</a></p>
-</td></tr>
-</table>
-<h3 class="detail">Variables</h3>
-<table class="detail wide_list">
-<tr class="list">
-<td class="itemcode"><span id="TilesCopyright"></span><code><strong>TilesCopyright</strong>: string = '(c) OpenStreetMap contributors';</code></td>
-</tr>
-<tr><td colspan="1">
-<p>
-Copyright text</p>
-</td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="itemcode"><span id="MapURLPrefix"></span><code><strong>MapURLPrefix</strong>: string = 'http://tile.openstreetmap.org/';</code></td>
-</tr>
-<tr><td colspan="1">
-<p>
-URL of tile server</p>
-</td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="itemcode"><span id="MapURLPostfix"></span><code><strong>MapURLPostfix</strong>: string = '';</code></td>
-</tr>
-<tr><td colspan="1">
-<p>
-Part of tile URL that goes after tile path</p>
-</td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="itemcode"><span id="TileURLPatt"></span><code><strong>TileURLPatt</strong>: string = '%d/%d/%d.png';</code></td>
-</tr>
-<tr><td colspan="1">
-<p>
-Pattern of tile URL. Placeholders are for: Zoom, X, Y</p>
+See <a href="https://wiki.openstreetmap.org/wiki/Zoom_levels">https://wiki.openstreetmap.org/wiki/Zoom_levels</a> Level Degree Area m / pixel &tilde;Scale # Tiles 0 360 whole world 156,412 1:500 million 1 1 180 78,206 1:250 million 4 2 90 39,103 1:150 million 16 3 45 19,551 1:70 million 64 4 22.5 9,776 1:35 million 256 5 11.25 4,888 1:15 million 1,024 6 5.625 2,444 1:10 million 4,096 7 2.813 1,222 1:4 million 16,384 8 1.406 610.984 1:2 million 65,536 9 0.703 wide area 305.492 1:1 million 262,144 10 0.352 152.746 1:500,000 1,048,576 11 0.176 area 76.373 1:250,000 4,194,304 12 0.088 38.187 1:150,000 16,777,216 13 0.044 village/town 19.093 1:70,000 67,108,864 14 0.022 9.547 1:35,000 268,435,456 15 0.011 4.773 1:15,000 1,073,741,824 16 0.005 small road 2.387 1:8,000 4,294,967,296 17 0.003 1.193 1:4,000 17,179,869,184 18 0.001 0.596 1:2,000 68,719,476,736 19 0.0005 0.298 1:1,000 274,877,906,944 20 0.00025 mid-sized bldng 0.149 1:5,00 1,099,511,627,776</p>
 </td></tr>
 </table>
 <h2 class="authors">Author</h2>
 <ul class="authors">
 <li>Fr0sT-Brutal (https://github.com/Fr0sT-Brutal)</li>
 </ul>
-<hr><span class="appinfo"><em>Generated by <a href="https://github.com/pasdoc/pasdoc/wiki">PasDoc 0.15.0</a>. </em>
+<hr><span class="appinfo"><em>Generated by <a href="https://pasdoc.github.io/">PasDoc 0.16.0</a>. </em>
 </span>
-</td></tr></table></body></html>
+</div></div></body></html>

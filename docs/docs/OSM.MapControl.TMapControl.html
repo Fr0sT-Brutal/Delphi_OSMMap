@@ -3,13 +3,13 @@
 <head>
 <title>OSM Map control: OSM.MapControl: Class TMapControl</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="generator" content="PasDoc 0.15.0">
+<meta name="generator" content="PasDoc 0.16.0">
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <link rel="StyleSheet" type="text/css" href="pasdoc.css">
 </head>
 <body>
-<table class="container"><tr><td class="navigation">
-<h2><a href="index.html" class="navigation">OSM Map control</a></h2><p><a href="AllUnits.html" class="navigation">Units</a></p><p><a href="ClassHierarchy.html" class="navigation">Class Hierarchy</a></p><p><a href="AllClasses.html" class="navigation">Classes, Interfaces, Objects and Records</a></p><p><a href="AllTypes.html" class="navigation">Types</a></p><p><a href="AllVariables.html" class="navigation">Variables</a></p><p><a href="AllConstants.html" class="navigation">Constants</a></p><p><a href="AllFunctions.html" class="navigation">Functions and Procedures</a></p><p><a href="AllIdentifiers.html" class="navigation">Identifiers</a></p></td><td class="content">
+<div class="container"><div class="navigation">
+<h2><a href="index.html">OSM Map control</a></h2><ul><li><a href="AllUnits.html">Units</a></li><li><a href="ClassHierarchy.html">Class Hierarchy</a></li><li><a href="AllClasses.html">Classes, Interfaces, Objects and Records</a></li><li><a href="AllTypes.html">Types</a></li><li><a href="AllVariables.html">Variables</a></li><li><a href="AllConstants.html">Constants</a></li><li><a href="AllFunctions.html">Functions and Procedures</a></li><li><a href="AllIdentifiers.html">Identifiers</a></li></ul></div><div class="content">
 <span id="TMapControl"></span><h1 class="cio">Class TMapControl</h1>
 <div class="sections">
 <div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section"><a class="section" href="#PasDoc-Hierarchy">Hierarchy</a></div><div class="one_section"><a class="section" href="#PasDoc-Fields">Fields</a></div><div class="one_section"><a class="section" href="#PasDoc-Methods">Methods</a></div><div class="one_section"><a class="section" href="#PasDoc-Properties">Properties</a></div></div>
@@ -135,69 +135,73 @@ Control displaying a map or its visible part.</p>
 <table class="summary wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#Zoom">Zoom</a></strong>: Integer read FZoom;</code></td>
+<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#TilesProvider">TilesProvider</a></strong>: <a href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a> read FTilesProvider write SetTilesProvider;</code></td>
 </tr>
 <tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#Zoom">Zoom</a></strong>: Integer read FZoom;</code></td>
+</tr>
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#MapOptions">MapOptions</a></strong>: <a href="OSM.MapControl.html#TMapOptions">TMapOptions</a> read FMapOptions write FMapOptions;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#CenterPoint">CenterPoint</a></strong>: <a href="OSM.SlippyMapUtils.TGeoPoint.html">TGeoPoint</a> read GetCenterPoint write SetCenterPoint;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#NWPoint">NWPoint</a></strong>: <a href="OSM.SlippyMapUtils.TGeoPoint.html">TGeoPoint</a> read GetNWPoint write SetNWPoint;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#MinZoom">MinZoom</a></strong>: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a> index 0 read FMinZoom write SetZoomConstraint;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#MaxZoom">MaxZoom</a></strong>: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a> index 1 read FMaxZoom write SetZoomConstraint;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#MapMarks">MapMarks</a></strong>: <a href="OSM.MapControl.TMapMarkList.html">TMapMarkList</a> read FMapMarkList;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#MouseMode">MouseMode</a></strong>: <a href="OSM.MapControl.html#TMapMouseMode">TMapMouseMode</a> read FMouseMode write FMouseMode;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#LabelMargin">LabelMargin</a></strong>: Cardinal read FLabelMargin write SetLabelMargin;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#ViewRect">ViewRect</a></strong>: TRect read ViewAreaRect;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#VisibleLayers">VisibleLayers</a></strong>: <a href="OSM.MapControl.html#TMapLayers">TMapLayers</a> read FVisibleLayers write SetVisibleLayers;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnGetTile">OnGetTile</a></strong>: <a href="OSM.MapControl.html#TOnGetTile">TOnGetTile</a> read FOnGetTile write FOnGetTile;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnDrawTile">OnDrawTile</a></strong>: <a href="OSM.MapControl.html#TOnDrawTile">TOnDrawTile</a> read FOnDrawTile write FOnDrawTile;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnDrawTileLoading">OnDrawTileLoading</a></strong>: <a href="OSM.MapControl.html#TOnDrawTile">TOnDrawTile</a> read FOnDrawTileLoading write FOnDrawTileLoading;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnZoomChanged">OnZoomChanged</a></strong>: TNotifyEvent read FOnZoomChanged write FOnZoomChanged;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnDrawMapMark">OnDrawMapMark</a></strong>: <a href="OSM.MapControl.html#TOnDrawMapMark">TOnDrawMapMark</a> read FOnDrawMapMark write FOnDrawMapMark;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnSelectionBox">OnSelectionBox</a></strong>: <a href="OSM.MapControl.html#TOnSelectionBox">TOnSelectionBox</a> read FOnSelectionBox write FOnSelectionBox;</code></td>
 </tr>
@@ -481,6 +485,16 @@ Export whole map as bitmap.   </p>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="TilesProvider"></span><code>property <strong>TilesProvider</strong>: <a href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a> read FTilesProvider write SetTilesProvider;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Tiles provider object. Assigning this property could change some map properties (zoom range, for example). Map control takes ownership on assigned object and destroys it when needed. Assign <code>Nil</code> to use an instance of <a class="normal" href="OSM.TilesProvider.TDummyTilesProvider.html">TDummyTilesProvider</a>.</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><span id="Zoom"></span><code>property <strong>Zoom</strong>: Integer read FZoom;</code></td>
 </tr>
 <tr><td colspan="2">
@@ -650,6 +664,6 @@ Callback to custom draw a mapmark. It is called before default drawing. If <code
 Called when selection with mouse was made</p>
 </td></tr>
 </table>
-<hr><span class="appinfo"><em>Generated by <a href="https://github.com/pasdoc/pasdoc/wiki">PasDoc 0.15.0</a>. </em>
+<hr><span class="appinfo"><em>Generated by <a href="https://pasdoc.github.io/">PasDoc 0.16.0</a>. </em>
 </span>
-</td></tr></table></body></html>
+</div></div></body></html>

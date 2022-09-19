@@ -3,13 +3,13 @@
 <head>
 <title>OSM Map control: OSM.NetworkRequest: Class TNetworkRequestQueue</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="generator" content="PasDoc 0.15.0">
+<meta name="generator" content="PasDoc 0.16.0">
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <link rel="StyleSheet" type="text/css" href="pasdoc.css">
 </head>
 <body>
-<table class="container"><tr><td class="navigation">
-<h2><a href="index.html" class="navigation">OSM Map control</a></h2><p><a href="AllUnits.html" class="navigation">Units</a></p><p><a href="ClassHierarchy.html" class="navigation">Class Hierarchy</a></p><p><a href="AllClasses.html" class="navigation">Classes, Interfaces, Objects and Records</a></p><p><a href="AllTypes.html" class="navigation">Types</a></p><p><a href="AllVariables.html" class="navigation">Variables</a></p><p><a href="AllConstants.html" class="navigation">Constants</a></p><p><a href="AllFunctions.html" class="navigation">Functions and Procedures</a></p><p><a href="AllIdentifiers.html" class="navigation">Identifiers</a></p></td><td class="content">
+<div class="container"><div class="navigation">
+<h2><a href="index.html">OSM Map control</a></h2><ul><li><a href="AllUnits.html">Units</a></li><li><a href="ClassHierarchy.html">Class Hierarchy</a></li><li><a href="AllClasses.html">Classes, Interfaces, Objects and Records</a></li><li><a href="AllTypes.html">Types</a></li><li><a href="AllVariables.html">Variables</a></li><li><a href="AllConstants.html">Constants</a></li><li><a href="AllFunctions.html">Functions and Procedures</a></li><li><a href="AllIdentifiers.html">Identifiers</a></li></ul></div><div class="content">
 <span id="TNetworkRequestQueue"></span><h1 class="cio">Class TNetworkRequestQueue</h1>
 <div class="sections">
 <div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section"><a class="section" href="#PasDoc-Hierarchy">Hierarchy</a></div><div class="one_section">Fields</div><div class="one_section"><a class="section" href="#PasDoc-Methods">Methods</a></div><div class="one_section"><a class="section" href="#PasDoc-Properties">Properties</a></div></div>
@@ -29,7 +29,7 @@ Queuer of network requests. Under the hood uses multiple background threads to e
 <table class="summary wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>constructor <strong><a href="OSM.NetworkRequest.TNetworkRequestQueue.html#Create">Create</a></strong>(MaxTasksPerThread, MaxThreads: Cardinal; RequestFunc: <a href="OSM.NetworkRequest.html#TBlockingNetworkRequestFunc">TBlockingNetworkRequestFunc</a>; GotTileCb: <a href="OSM.NetworkRequest.html#TGotTileCallbackBgThr">TGotTileCallbackBgThr</a>);</code></td>
+<td class="itemcode"><code>constructor <strong><a href="OSM.NetworkRequest.TNetworkRequestQueue.html#Create">Create</a></strong>(MaxTasksPerThread, MaxThreads: Cardinal; RequestFunc: <a href="OSM.NetworkRequest.html#TBlockingNetworkRequestFunc">TBlockingNetworkRequestFunc</a>; TilesProvider: <a href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a>);</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
@@ -54,17 +54,21 @@ Queuer of network requests. Under the hood uses multiple background threads to e
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.NetworkRequest.TNetworkRequestQueue.html#DumbQueueOrder">DumbQueueOrder</a></strong>: Boolean read FDumbQueueOrder write FDumbQueueOrder;</code></td>
 </tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>property <strong><a href="OSM.NetworkRequest.TNetworkRequestQueue.html#OnGotTileBgThr">OnGotTileBgThr</a></strong>: <a href="OSM.NetworkRequest.html#TGotTileCallbackBgThr">TGotTileCallbackBgThr</a> read FGotTileCb write FGotTileCb;</code></td>
+</tr>
 </table>
 <h2 class="description">Description</h2>
 <h3 class="detail">Methods</h3>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="Create"></span><code>constructor <strong>Create</strong>(MaxTasksPerThread, MaxThreads: Cardinal; RequestFunc: <a href="OSM.NetworkRequest.html#TBlockingNetworkRequestFunc">TBlockingNetworkRequestFunc</a>; GotTileCb: <a href="OSM.NetworkRequest.html#TGotTileCallbackBgThr">TGotTileCallbackBgThr</a>);</code></td>
+<td class="itemcode"><span id="Create"></span><code>constructor <strong>Create</strong>(MaxTasksPerThread, MaxThreads: Cardinal; RequestFunc: <a href="OSM.NetworkRequest.html#TBlockingNetworkRequestFunc">TBlockingNetworkRequestFunc</a>; TilesProvider: <a href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a>);</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
-Constructor    </p>
+Constructor     Object takes ownership on this object and destroys it on release.</p>
 <h6 class="description_section">Parameters</h6>
 <dl class="parameters">
 <dt>MaxTasksPerThread</dt>
@@ -73,8 +77,8 @@ Constructor    </p>
 <dd>- limit of the number of threads</dd>
 <dt>RequestFunc</dt>
 <dd>- implementator of network request</dd>
-<dt>GotTileCb</dt>
-<dd>- method to call when request is completed</dd>
+<dt>TilesProvider</dt>
+<dd>- object holding properties of current tile provider.</dd>
 </dl>
 </td></tr>
 </table>
@@ -134,6 +138,16 @@ If set: disable all smart ordering facilities. Queue will retrieve all added til
 <p></p>
 </td></tr>
 </table>
-<hr><span class="appinfo"><em>Generated by <a href="https://github.com/pasdoc/pasdoc/wiki">PasDoc 0.15.0</a>. </em>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="OnGotTileBgThr"></span><code>property <strong>OnGotTileBgThr</strong>: <a href="OSM.NetworkRequest.html#TGotTileCallbackBgThr">TGotTileCallbackBgThr</a> read FGotTileCb write FGotTileCb;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Handler to call when request is completed (executed in the context of background thread!)</p>
+</td></tr>
+</table>
+<hr><span class="appinfo"><em>Generated by <a href="https://pasdoc.github.io/">PasDoc 0.16.0</a>. </em>
 </span>
-</td></tr></table></body></html>
+</div></div></body></html>
