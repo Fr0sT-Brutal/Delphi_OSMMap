@@ -22,10 +22,12 @@ type
     //~ global defaults
     // Default copyright text
     DefTilesCopyright = '(c) HERE';
-    // Default pattern of tile URL. Placeholders are for: Random subdomain, Zoom, X, Y, ApiKEY
+    // Default pattern of tile URL. Placeholders are for: Random subdomain (1..MaxSubdomainNum), Zoom, X, Y, ApiKEY
     DefTileURLPatt = 'https://%d.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/%d/%d/%d/256/png8?apiKey=%s';
+    // Maximal subdomain number
+    MaxSubdomainNum = 4;
   public
-    // Pattern of tile URL. Placeholders are for: Random subdomain, Zoom, X, Y, ApiKEY
+    // Pattern of tile URL. Placeholders are for: Random subdomain (1..MaxSubdomainNum), Zoom, X, Y, ApiKEY
     TileURLPatt: string;
 
     constructor Create;
@@ -47,7 +49,7 @@ end;
 
 function THERETilesProvider.GetTileURL(const Tile: TTile): string;
 begin
-  Result := Format(TileURLPatt, [Random(4) + 1, Tile.Zoom, Tile.ParameterX, Tile.ParameterY, APIKey]);
+  Result := Format(TileURLPatt, [Random(MaxSubdomainNum) + 1, Tile.Zoom, Tile.ParameterX, Tile.ParameterY, APIKey]);
 end;
 
 end.
