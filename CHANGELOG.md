@@ -1,3 +1,8 @@
+0.9.1
+=====
+
+- Added Google map tile provider
+
 0.9.0
 =====
 

@@ -1,7 +1,7 @@
 ﻿OSM MapControl
 ==============
 
-Delphi/Lazarus visual component for displaying a map. Could use any map tile provider (currently implemented OpenStreetMap and HERE). Also includes helper classes for storing and downloading map tiles.
+Delphi/Lazarus visual component for displaying a map. Could use any map tile provider (currently implemented OpenStreetMap, HERE, Google). Also includes helper classes for storing and downloading map tiles.
 Demo project implements downloading map tiles from network.
 
 :exclamation: **Alpha version, interface could change** :exclamation:
@@ -23,7 +23,7 @@ Project structure
   - `OSM.NetworkRequest.Synapse`, `OSM.NetworkRequest.WinInet`, `OSM.NetworkRequest.RTL` contain concrete implementations of network requesting routines
   - `OSM.MapControl` contains classes `TMapMark` and `TMapMarkList` for managing a set of map points and `TMapControl` itself
   - `OSM.TilesProvider` - base abstract class of map tile provider.
-  - `OSM.TilesProvider.OSM`, `OSM.TilesProvider.HERE` contain concrete implementations of map tile providers
+  - `OSM.TilesProvider.OSM`, `OSM.TilesProvider.HERE`, `OSM.TilesProvider.Google` contain concrete implementations of map tile providers
   
 Full docs for all units listed above is available [here](https://fr0st-brutal.github.io/Delphi_OSMMap/)
 
