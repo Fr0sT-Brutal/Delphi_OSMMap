@@ -16,6 +16,7 @@ uses
   OSM.SlippyMapUtils, OSM.TilesProvider;
 
 type
+  // HERE tile image provider
   THERETilesProvider = class(TTilesProvider)
   const
     //~ global defaults

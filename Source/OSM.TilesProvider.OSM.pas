@@ -15,6 +15,7 @@ uses
   OSM.SlippyMapUtils, OSM.TilesProvider;
 
 type
+  // OpenStreetMap tile image provider
   TOSMTilesProvider = class(TTilesProvider)
   const
     //~ global defaults

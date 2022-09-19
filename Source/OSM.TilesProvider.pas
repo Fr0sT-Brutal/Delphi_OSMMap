@@ -27,7 +27,7 @@ type
     MinZoomLevel: TMapZoomLevel;
     // Maximal zoom level
     MaxZoomLevel: TMapZoomLevel;
-{}//    TileFormat: TTileImage;
+{}//~    TileFormat: TTileImage;
     // Tile copyright that will be painted in the corner of the map
     TilesCopyright: string;
     // [opt] API key for requesting tiles
