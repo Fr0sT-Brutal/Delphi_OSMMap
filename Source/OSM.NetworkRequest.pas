@@ -17,7 +17,7 @@ interface
 
 uses
   SysUtils, Classes, Contnrs, SyncObjs, Types,
-  OSM.SlippyMapUtils;
+  OSM.SlippyMapUtils, OSM.TilesProvider;
 
 const
   // Prefix to add to proxy URLs if it only contains host:port - some URL parsers
@@ -107,6 +107,7 @@ type
     FMaxThreads: Cardinal;
     FGotTileCb: TGotTileCallbackBgThr;
     FRequestFunc: TBlockingNetworkRequestFunc;
+    FTilesProvider: TTilesProvider;
     FDumbQueueOrder: Boolean;
     FCurrTileNumbersRect: TRect; // rect of current view set in tile numbers
 
@@ -122,10 +123,11 @@ type
     //     `MaxTasksPerThread*%currentThreadCount%`, add one more thread
     //   @param MaxThreads - limit of the number of threads
     //   @param RequestFunc - implementator of network request
-    //   @param GotTileCb - method to call when request is completed
+    //   @param TilesProvider - object holding properties of current tile provider.
+    //     Object takes ownership on this object and destroys it on release.
     constructor Create(MaxTasksPerThread, MaxThreads: Cardinal;
       RequestFunc: TBlockingNetworkRequestFunc;
-      GotTileCb: TGotTileCallbackBgThr);
+      TilesProvider: TTilesProvider);
     destructor Destroy; override;
 
     // Add request for an image for `Tile` to request queue
@@ -146,6 +148,8 @@ type
     //   - If current view area is set via SetCurrentViewRect, the tiles inside this
     //     rect are downloaded first (priority of visible area)
     property DumbQueueOrder: Boolean read FDumbQueueOrder write FDumbQueueOrder;
+    // Handler to call when request is completed (executed in the context of background thread!)
+    property OnGotTileBgThr: TGotTileCallbackBgThr read FGotTileCb write FGotTileCb;
   end;
 
 const
@@ -172,8 +176,10 @@ type
     FOwner: TNetworkRequestQueue;
     FOnRequestComplete: TOnRequestComplete;
     FRequestFunc: TBlockingNetworkRequestFunc;
+    FTilesProvider: TTilesProvider;
   public
-    constructor Create(Owner: TNetworkRequestQueue; RequestFunc: TBlockingNetworkRequestFunc);
+    constructor Create(Owner: TNetworkRequestQueue; RequestFunc: TBlockingNetworkRequestFunc;
+      TilesProvider: TTilesProvider);
 
     procedure Execute; override;
 
@@ -205,11 +211,13 @@ end;
 
 { TNetworkRequestThread }
 
-constructor TNetworkRequestThread.Create(Owner: TNetworkRequestQueue; RequestFunc: TBlockingNetworkRequestFunc);
+constructor TNetworkRequestThread.Create(Owner: TNetworkRequestQueue;
+  RequestFunc: TBlockingNetworkRequestFunc; TilesProvider: TTilesProvider);
 begin
   inherited Create(True);
   FOwner := Owner;
   FRequestFunc := RequestFunc;
+  FTilesProvider := TilesProvider;
 end;
 
 // Extracts tiles to bу downloaded from the queue, finishes when there are no more tiles
@@ -228,7 +236,7 @@ begin
       Break;
 
     tile := pT^;
-    ReqProps.URL := TileToFullSlippyMapFileURL(tile);
+    ReqProps.URL := FTilesProvider.GetTileURL(tile);
     // Ensure proxy URL starts with HTTP proto for parsers to handle it correctly
     if (ReqProps.Proxy <> '') and (Pos(HTTPProxyProto, ReqProps.Proxy) = 0) then
       ReqProps.Proxy := HTTPProxyProto + ReqProps.Proxy;
@@ -250,7 +258,7 @@ end;
 { TNetworkRequestQueue }
 
 constructor TNetworkRequestQueue.Create(MaxTasksPerThread, MaxThreads: Cardinal;
-  RequestFunc: TBlockingNetworkRequestFunc; GotTileCb: TGotTileCallbackBgThr);
+  RequestFunc: TBlockingNetworkRequestFunc; TilesProvider: TTilesProvider);
 begin
   FTaskQueue := TQueue.Create;
   FCS := TCriticalSection.Create;
@@ -258,9 +266,9 @@ begin
   FCurrentTasks := TList.Create;
   FMaxTasksPerThread := MaxTasksPerThread;
   FMaxThreads := MaxThreads;
-  FGotTileCb := GotTileCb;
   FRequestFunc := RequestFunc;
   FRequestProps := THttpRequestProps.Create;
+  FTilesProvider := TilesProvider;
 end;
 
 destructor TNetworkRequestQueue.Destroy;
@@ -291,6 +299,7 @@ begin
   for i := 0 to FCurrentTasks.Count - 1 do
     Dispose(PTile(FCurrentTasks[i]));
   FreeAndNil(FCurrentTasks);
+  FreeAndNil(FTilesProvider);
   FreeAndNil(FCS);
   FreeAndNil(FRequestProps);
 end;
@@ -382,7 +391,7 @@ var thr: TNetworkRequestThread;
 begin
   Lock;
   try
-    thr := TNetworkRequestThread.Create(Self, FRequestFunc);
+    thr := TNetworkRequestThread.Create(Self, FRequestFunc, FTilesProvider);
     thr.OnRequestComplete := DoRequestComplete;
     thr.Start;
     FThreads.Add(thr);
@@ -471,7 +480,10 @@ begin
     Unlock;
   end;
 
-  FGotTileCb(Tile, Ms, Error);
+  if Assigned(FGotTileCb) then
+    FGotTileCb(Tile, Ms, Error)
+  else
+    FreeAndNil(Ms);
 end;
 
 end.

@@ -33,6 +33,7 @@ uses
   {$ELSE}
   , OSM.NetworkRequest.WinInet // Use WinInet (Windows only) for HTTP requests
   {$ENDIF}
+  , OSM.TilesProvider.OSM
   , TestSuite;
 
 const
@@ -256,8 +257,9 @@ begin
   TileStorage.FileCacheBaseDir := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) + 'Map';
   // Queuer of tile image network requests
   // You won't need it if you have another source (f.e. database)
-  NetRequest := TNetworkRequestQueue.Create(4, 3, NetworkRequest, NetReqGotTileBgThr);
+  NetRequest := TNetworkRequestQueue.Create(4, 3, NetworkRequest, TOSMTilesProvider.Create);
   NetRequest.RequestProps.HeaderLines := TStringList.Create;
+  NetRequest.OnGotTileBgThr := NetReqGotTileBgThr;
   for s in SampleHeaders do
     NetRequest.RequestProps.HeaderLines.Add(s);
   InitMap;
@@ -288,8 +290,8 @@ begin
   mMap.OnDrawTile := mMapDrawTile;
   mMap.OnZoomChanged := mMapZoomChanged;
   mMap.OnSelectionBox := mMapSelectionBox;
+  mMap.TilesProvider := TOSMTilesProvider.Create;
   mMap.SetZoom(1);
-  mMap.MaxZoom := High(TMapZoomLevel);
   mMap.MapMarkCaptionFont.Style := [fsItalic, fsBold];
 end;
 

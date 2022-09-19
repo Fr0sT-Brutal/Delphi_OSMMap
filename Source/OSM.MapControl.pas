@@ -24,7 +24,7 @@ uses
   {$ENDIF}
   Messages, SysUtils, Classes, Graphics, Controls, ExtCtrls, Forms,
   Math, Types, Generics.Collections, Generics.Defaults,
-  OSM.SlippyMapUtils;
+  OSM.SlippyMapUtils, OSM.TilesProvider;
 
 type
   // Shape of mapmark glyph
@@ -181,7 +181,7 @@ type
     FSelectionBoxBindPoint: TPoint;  // point at which selection starts
     FMouseMode: TMapMouseMode;
     FVisibleLayers: TMapLayers;
-
+    FTilesProvider: TTilesProvider;
     FCacheImageTilesH,               // properties of cache image
     FCacheImageTilesV,
     FCacheMarginSize: Cardinal;
@@ -226,6 +226,7 @@ type
     procedure SetZoomConstraint(Index: Integer; ZoomConstraint: TMapZoomLevel);
     procedure SetVisibleLayers(Value: TMapLayers);
     procedure SetLabelMargin(Value: Cardinal);
+    procedure SetTilesProvider(Value: TTilesProvider);
     //~ helpers
     function ViewAreaRect: TRect;
     class procedure DrawCopyright(const Text: string; DestBmp: TBitmap);
@@ -294,6 +295,10 @@ type
     function SaveToBitmap(DrawOptions: TMapOptions; DrawMapMarks: Boolean): TBitmap; overload;
 
     //~ properties
+    // Tiles provider object. Assigning this property could change some map properties
+    // (zoom range, for example). Map control takes ownership on assigned object and destroys
+    // it when needed. Assign @nil to use an instance of TDummyTilesProvider.
+    property TilesProvider: TTilesProvider read FTilesProvider write SetTilesProvider;
     // Current zoom level
     property Zoom: Integer read FZoom;
     // Map options
@@ -616,7 +621,6 @@ begin
   Self.VertScrollBar.Tracking := True;
   Self.DragCursor := crSizeAll;
   Self.AutoScroll := True;
-
   FCacheImage := TBitmap.Create;
   // Set default cache props
   FCacheImageTilesH := DefaultCacheImageTilesHorz;
@@ -632,8 +636,11 @@ begin
 
   FMapMarkList := TMapMarkList.Create(Self);
 
-  FMinZoom := Low(TMapZoomLevel);
-  FMaxZoom := High(TMapZoomLevel);
+  // The map is visual control so we can't change c-tor but tile provider is needed
+  // to know some properties on creation (zoom range, etc). We can't wait for user
+  // code to assign a provider and create dummy one (setting provider to nil assigns
+  // a new instance of TDummyTilesProvider).
+  SetTilesProvider(nil);
 
   FVisibleLayers := LayersAll;
   FLabelMargin := DefaultLabelMargin;
@@ -650,6 +657,7 @@ end;
 
 destructor TMapControl.Destroy;
 begin
+  FreeAndNil(FTilesProvider);
   FreeAndNil(FCacheImage);
   FreeAndNil(FCopyright);
   FreeAndNil(FScaleLine);
@@ -1255,12 +1263,13 @@ begin
   SetNWPoint(GeoCoordsToMap(GeoCoords));
 end;
 
-// Set zoom restriction and change current zoom if it is beyond this border
+// Set zoom restriction and change current zoom if it is beyond this border.
+// Zoom restriction couldn't go beyond tile provider's zoom limits.
 procedure TMapControl.SetZoomConstraint(Index: Integer; ZoomConstraint: TMapZoomLevel);
 begin
   case Index of
-    0: FMinZoom := ZoomConstraint;
-    1: FMaxZoom := ZoomConstraint;
+    0: FMinZoom := Max(FTilesProvider.MinZoomLevel, ZoomConstraint);
+    1: FMaxZoom := Min(FTilesProvider.MaxZoomLevel, ZoomConstraint);
   end;
   if FZoom < FMinZoom then
     SetZoom(FMinZoom)
@@ -1279,6 +1288,29 @@ procedure TMapControl.SetLabelMargin(Value: Cardinal);
 begin
   FLabelMargin := Value;
   Refresh;
+end;
+
+procedure TMapControl.SetTilesProvider(Value: TTilesProvider);
+var Init: Boolean;
+begin
+  // First initial call - the only moment when tile provider is not assigned.
+  // Save this flag to assign properties unconditionally
+  Init := FTilesProvider = nil;
+  FreeAndNil(FTilesProvider);
+  FTilesProvider := Value;
+  // Provider must be assigned always; assign dummy if nil was set
+  if FTilesProvider = nil then
+    FTilesProvider := TDummyTilesProvider.Create;
+
+  // Assign some properties
+
+  // Use property setters here to change zoom if it no longer fits into allowed range.
+  // Only change zoom limits if they're beyond new ranges - user could've set more
+  // tight range already (f.ex., 2..5)
+  if Init or (FMinZoom < FTilesProvider.MinZoomLevel) then
+    MinZoom := FTilesProvider.MinZoomLevel;
+  if Init or (FMaxZoom > FTilesProvider.MaxZoomLevel) then
+    MaxZoom := FTilesProvider.MaxZoomLevel;
 end;
 
 procedure TMapControl.ZoomToArea(const GeoRect: TGeoRect);
@@ -1441,7 +1473,7 @@ begin
       FCopyright := TBitmap.Create;
       FCopyright.Transparent := True;
       FCopyright.TransparentColor := clWhite;
-      DrawCopyright(TilesCopyright, FCopyright);
+      DrawCopyright(FTilesProvider.TilesCopyright, FCopyright);
     end;
     Canvas.Draw(
       Rect.Right - FCopyright.Width - Integer(FLabelMargin),
