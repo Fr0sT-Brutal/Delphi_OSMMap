@@ -21,7 +21,7 @@ uses
   fphttpclient, URIParser,
   {$ENDIF}
   {$IFDEF DCC}
-  System.Net.HttpClient, System.Net.HttpClientComponent, System.Net.URLClient, StrUtils,
+  System.Net.HttpClient, System.Net.HttpClientComponent, System.Net.URLClient, System.StrUtils, System.Types,
   {$ENDIF}
   OSM.NetworkRequest;
 
@@ -61,7 +61,7 @@ var
   {$ENDIF}
   {$IFDEF DCC}
   httpCli: TNetHTTPClient;
-  HdrArr: TArray<string>;
+  HdrArr: TStringDynArray;
   s, User, Pass: string;
   Resp: IHttpResponse;
   {$ENDIF}
