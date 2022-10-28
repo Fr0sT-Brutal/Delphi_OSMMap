@@ -296,8 +296,10 @@ type
 
     //~ properties
     // Tiles provider object. Assigning this property could change some map properties
-    // (zoom range, for example). Map control takes ownership on assigned object and destroys
-    // it when needed. Assign @nil to use an instance of TDummyTilesProvider.
+    // (zoom range, for example, and hence current zoom) so cache will be cleared and
+    // the map will be redrawn with new conditions. @br
+    // Map control takes ownership on assigned object and destroys it when needed. @br
+    // Assign @nil to use an instance of TDummyTilesProvider.
     property TilesProvider: TTilesProvider read FTilesProvider write SetTilesProvider;
     // Current zoom level
     property Zoom: Integer read FZoom;
@@ -1291,8 +1293,16 @@ begin
 end;
 
 procedure TMapControl.SetTilesProvider(Value: TTilesProvider);
-var Init: Boolean;
+var
+  Init: Boolean;
+  OldZoom: TMapZoomLevel;
 begin
+  // Assigning Dummy is prohibited - we only do it internally
+  if Value is TDummyTilesProvider then
+    raise Exception.CreateFmt('TMapControl.SetTilesProvider, assigning an ' +
+      'instance of %s is prohibited. Assign nil instead.',
+      [TDummyTilesProvider.ClassName]);
+
   // First initial call - the only moment when tile provider is not assigned.
   // Save this flag to assign properties unconditionally
   Init := FTilesProvider = nil;
@@ -1302,15 +1312,25 @@ begin
   if FTilesProvider = nil then
     FTilesProvider := TDummyTilesProvider.Create;
 
+  // Clear cached bitmaps - we want to be sure new provider's properties are used.
+  FreeAndNil(FCopyright);
+  FCacheImage.Canvas.FillRect(Rect(0, 0, FCacheImage.Width, FCacheImage.Height));
+
   // Assign some properties
 
   // Use property setters here to change zoom if it no longer fits into allowed range.
   // Only change zoom limits if they're beyond new ranges - user could've set more
-  // tight range already (f.ex., 2..5)
+  // tight range already (f.ex., 2..5). Also save old zoom value to determine if it
+  // was changed - no need in explicit redraw then.
+  OldZoom := Zoom;
   if Init or (FMinZoom < FTilesProvider.MinZoomLevel) then
     MinZoom := FTilesProvider.MinZoomLevel;
   if Init or (FMaxZoom > FTilesProvider.MaxZoomLevel) then
     MaxZoom := FTilesProvider.MaxZoomLevel;
+  // Ensure to refresh the cache and map if not refreshed yet due to zoom change
+  if Zoom <> OldZoom then Exit;
+  UpdateCache;
+  Refresh;
 end;
 
 procedure TMapControl.ZoomToArea(const GeoRect: TGeoRect);
