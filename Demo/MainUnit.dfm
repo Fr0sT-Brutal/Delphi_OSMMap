@@ -2,8 +2,8 @@ object MainForm: TMainForm
   Left = 16
   Top = 116
   Caption = 'Test of OSM map control'
-  ClientHeight = 746
-  ClientWidth = 1051
+  ClientHeight = 855
+  ClientWidth = 975
   Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -19,10 +19,10 @@ object MainForm: TMainForm
   PixelsPerInch = 120
   TextHeight = 16
   object Splitter1: TSplitter
-    Left = 815
+    Left = 739
     Top = 0
     Width = 8
-    Height = 602
+    Height = 711
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -33,8 +33,8 @@ object MainForm: TMainForm
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 815
-    Height = 602
+    Width = 739
+    Height = 711
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -45,18 +45,18 @@ object MainForm: TMainForm
     object mMap: TScrollBox
       Left = 0
       Top = 0
-      Width = 815
-      Height = 602
+      Width = 739
+      Height = 711
       Align = alClient
       TabOrder = 0
       OnMouseMove = mMapMouseMove
     end
   end
   object Panel2: TPanel
-    Left = 823
+    Left = 747
     Top = 0
     Width = 228
-    Height = 602
+    Height = 711
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -93,7 +93,7 @@ object MainForm: TMainForm
       Left = 0
       Top = 0
       Width = 228
-      Height = 602
+      Height = 711
       Align = alClient
       ColumnCollection = <
         item
@@ -141,7 +141,7 @@ object MainForm: TMainForm
         end
         item
           SizeStyle = ssAbsolute
-          Value = 150.000000000000000000
+          Value = 160.000000000000000000
         end
         item
           SizeStyle = ssAbsolute
@@ -327,7 +327,7 @@ object MainForm: TMainForm
         Left = 1
         Top = 101
         Width = 226
-        Height = 150
+        Height = 160
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 2
@@ -336,8 +336,8 @@ object MainForm: TMainForm
           Left = 3
           Top = 3
           Width = 220
-          Height = 114
-          Align = alClient
+          Height = 96
+          Align = alTop
           Caption = ' Proxy '
           ItemIndex = 1
           Items.Strings = (
@@ -348,18 +348,26 @@ object MainForm: TMainForm
         end
         object eProxyAddr: TEdit
           AlignWithMargins = True
-          Left = 3
-          Top = 123
-          Width = 220
+          Left = 6
+          Top = 105
+          Width = 211
           Height = 24
-          Align = alBottom
           TabOrder = 1
           TextHint = 'host:port'
+        end
+        object cbProvider: TComboBox
+          Left = 8
+          Top = 136
+          Width = 209
+          Height = 24
+          Style = csDropDownList
+          TabOrder = 2
+          OnChange = cbProviderChange
         end
       end
       object Panel6: TPanel
         Left = 1
-        Top = 251
+        Top = 261
         Width = 226
         Height = 160
         Align = alClient
@@ -467,7 +475,7 @@ object MainForm: TMainForm
       end
       object Panel7: TPanel
         Left = 1
-        Top = 411
+        Top = 421
         Width = 226
         Height = 140
         Align = alClient
@@ -527,7 +535,7 @@ object MainForm: TMainForm
       end
       object Panel8: TPanel
         Left = 1
-        Top = 551
+        Top = 561
         Width = 226
         Height = 50
         Align = alClient
@@ -556,8 +564,8 @@ object MainForm: TMainForm
   end
   object mLog: TMemo
     Left = 0
-    Top = 602
-    Width = 1051
+    Top = 711
+    Width = 975
     Height = 144
     Align = alBottom
     ScrollBars = ssVertical

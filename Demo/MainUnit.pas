@@ -33,7 +33,10 @@ uses
   {$ELSE}
   , OSM.NetworkRequest.WinInet // Use WinInet (Windows only) for HTTP requests
   {$ENDIF}
+  , OSM.TilesProvider
   , OSM.TilesProvider.OSM
+  , OSM.TilesProvider.Google
+  , OSM.TilesProvider.HERE
   , TestSuite;
 
 const
@@ -97,6 +100,7 @@ type
     chbLayer3: TCheckBox;
     chbLayer4: TCheckBox;
     Button3: TButton;
+    cbProvider: TComboBox;
     procedure btnGoLatLongClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -119,11 +123,12 @@ type
     procedure chbCacheSaveFilesClick(Sender: TObject);
     procedure chbLayer1Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure cbProviderChange(Sender: TObject);
   private
     NetRequest: TNetworkRequestQueue;
     TileStorage: TTileStorage;
     procedure Log(const s: string);
-    procedure InitMap;
+    procedure SetTilesProvider(TilesProviderClass: TTilesProviderClass);
   end;
 
   { TMapTestCase }
@@ -134,6 +139,7 @@ type
   public
     constructor Create(Map: TMapControl; LogProc: TLogProc);
     procedure Setup; override;
+    procedure Teardown; override;
     // Tests
     procedure TestZoom;
     procedure TestPosition;
@@ -186,6 +192,20 @@ begin
   Form.Height := Form.Height - (ClRect.Height - StdMapSize.cy);
 end;
 
+// Return all changed values
+procedure TMapTestCase.Teardown;
+var Form: TMainForm;
+begin
+  Form := FMap.Owner as TMainForm;
+  FMap.OnDrawTile := Form.mMapDrawTile;
+  FMap.OnZoomChanged := Form.mMapZoomChanged;
+  FMap.OnSelectionBox := Form.mMapSelectionBox;
+  FMap.MapMarkCaptionFont.Style := [fsItalic, fsBold];
+  FMap.SetZoom(1);
+
+  // TODO Return form bounds, etc...
+end;
+
 procedure TMapTestCase.TestZoom;
 var
   OldZoom, OldMinZoom, OldMaxZoom: TMapZoomLevel;
@@ -236,33 +256,23 @@ begin
   end;
 end;
 
-procedure TMainForm.btnGoLatLongClick(Sender: TObject);
-var
-  LGeoPoint: TGeoPoint;
-begin
-  mMap.SetZoom(13);
-  LGeoPoint.Long := StrToFloat(editLongitude.Text);
-  LGeoPoint.Lat := StrToFloat(editLatitude.Text);
-  mMap.CenterPoint := LGeoPoint;
-end;
-
 { TMainForm }
 
 procedure TMainForm.FormCreate(Sender: TObject);
-var s: string;
+var tpc: TTilesProviderClass;
 begin
+  mMap.OnDrawTile := mMapDrawTile;
+  mMap.OnZoomChanged := mMapZoomChanged;
+  mMap.OnSelectionBox := mMapSelectionBox;
+  mMap.MapMarkCaptionFont.Style := [fsItalic, fsBold];
   // Memory/disc cache of tile images
   // You probably won't need it if you have another fast storage (f.e. database)
   TileStorage := TTileStorage.Create(50*1000*1000);
-  TileStorage.FileCacheBaseDir := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) + 'Map';
-  // Queuer of tile image network requests
-  // You won't need it if you have another source (f.e. database)
-  NetRequest := TNetworkRequestQueue.Create(4, 3, NetworkRequest, TOSMTilesProvider.Create);
-  NetRequest.RequestProps.HeaderLines := TStringList.Create;
-  NetRequest.OnGotTileBgThr := NetReqGotTileBgThr;
-  for s in SampleHeaders do
-    NetRequest.RequestProps.HeaderLines.Add(s);
-  InitMap;
+  for tpc in TilesProviders do
+    cbProvider.Items.Add(tpc.Name);
+  cbProvider.ItemIndex := 0;
+  cbProvider.OnChange(cbProvider);
+  mMap.SetZoom(1);
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -284,15 +294,20 @@ begin
   {$IFEND}
 end;
 
-// Extracted to separate method to re-init the control after test
-procedure TMainForm.InitMap;
+procedure TMainForm.SetTilesProvider(TilesProviderClass: TTilesProviderClass);
+var s: string;
 begin
-  mMap.OnDrawTile := mMapDrawTile;
-  mMap.OnZoomChanged := mMapZoomChanged;
-  mMap.OnSelectionBox := mMapSelectionBox;
-  mMap.TilesProvider := TOSMTilesProvider.Create;
-  mMap.SetZoom(1);
-  mMap.MapMarkCaptionFont.Style := [fsItalic, fsBold];
+  TileStorage.FileCacheBaseDir := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) +
+    'Map' + PathDelim + TilesProviderClass.Name;
+  // Queuer of tile image network requests
+  // You won't need it if you have another source (f.e. database)
+  FreeAndNil(NetRequest);
+  NetRequest := TNetworkRequestQueue.Create(4, 3, NetworkRequest, TilesProviderClass.Create);
+  NetRequest.RequestProps.HeaderLines := TStringList.Create;
+  NetRequest.OnGotTileBgThr := NetReqGotTileBgThr;
+  for s in SampleHeaders do
+    NetRequest.RequestProps.HeaderLines.Add(s);
+  mMap.TilesProvider := TilesProviderClass.Create;
 end;
 
 function TMainForm.mMapGetTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal): TBitmap;
@@ -455,6 +470,16 @@ begin
   mMap.MouseMode := mmSelect;
 end;
 
+procedure TMainForm.btnGoLatLongClick(Sender: TObject);
+var
+  LGeoPoint: TGeoPoint;
+begin
+  mMap.SetZoom(13);
+  LGeoPoint.Long := StrToFloat(editLongitude.Text);
+  LGeoPoint.Lat := StrToFloat(editLatitude.Text);
+  mMap.CenterPoint := LGeoPoint;
+end;
+
 procedure TMainForm.btnTestClick(Sender: TObject);
 var suite: TMapTestCase;
 begin
@@ -462,7 +487,6 @@ begin
   suite := TMapTestCase.Create(mMap, Log);
   suite.Run;
   FreeAndNil(suite);
-  InitMap;
   mMap.Refresh;
 end;
 
@@ -497,6 +521,11 @@ begin
   bmp.SaveToFile('View.bmp');
   ShowMessage('Saved to View.bmp');
   FreeAndNil(bmp);
+end;
+
+procedure TMainForm.cbProviderChange(Sender: TObject);
+begin
+  SetTilesProvider(TilesProviders[(Sender as TComboBox).ItemIndex]);
 end;
 
 end.
