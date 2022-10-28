@@ -12,10 +12,10 @@
 <h2><a href="index.html">OSM Map control</a></h2><ul><li><a href="AllUnits.html">Units</a></li><li><a href="ClassHierarchy.html">Class Hierarchy</a></li><li><a href="AllClasses.html">Classes, Interfaces, Objects and Records</a></li><li><a href="AllTypes.html">Types</a></li><li><a href="AllVariables.html">Variables</a></li><li><a href="AllConstants.html">Constants</a></li><li><a href="AllFunctions.html">Functions and Procedures</a></li><li><a href="AllIdentifiers.html">Identifiers</a></li></ul></div><div class="content">
 <h1 class="unit">Unit OSM.TilesProvider</h1>
 <div class="sections">
-<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section">Functions and Procedures</div><div class="one_section">Types</div><div class="one_section">Constants</div><div class="one_section">Variables</div></div>
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div><div class="one_section"><a class="section" href="#PasDoc-Types">Types</a></div><div class="one_section">Constants</div><div class="one_section"><a class="section" href="#PasDoc-Variables">Variables</a></div></div>
 <span id="PasDoc-Description"></span><h2 class="description">Description</h2>
 <p>
-Generic (no real implementation) base class for tile image provider. Stores properties that could be specific to a real providers.
+Generic (no real implementation) base class for tile image provider. Stores properties that could be specific to real providers.
 
 <p>(c) Fr0sT-Brutal <a href="https://github.com/Fr0sT-Brutal/Delphi_OSMMap">https://github.com/Fr0sT-Brutal/Delphi_OSMMap</a>
 
@@ -35,6 +35,53 @@ Generic (no real implementation) base class for tile image provider. Stores prop
 <td class="itemname">Class&nbsp;<a class="bold" href="OSM.TilesProvider.TDummyTilesProvider.html"><code>TDummyTilesProvider</code></a></td>
 <td class="itemdesc">Dummy tile provider class, used as a stub in map control if no real provider is assigned.</td>
 </tr>
+</table>
+<span id="PasDoc-FuncsProcs"></span><h3 class="summary">Functions and Procedures</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code>procedure <strong><a href="OSM.TilesProvider.html#RegisterTilesProvider">RegisterTilesProvider</a></strong>(TilesProviderClass: <a href="OSM.TilesProvider.html#TTilesProviderClass">TTilesProviderClass</a>);</code></td>
+</tr>
+</table>
+<span id="PasDoc-Types"></span><h3 class="summary">Types</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code><strong><a href="OSM.TilesProvider.html#TTilesProviderClass">TTilesProviderClass</a></strong> = class of <a href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a>;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Variables"></span><h3 class="summary">Variables</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code><strong><a href="OSM.TilesProvider.html#TilesProviders">TilesProviders</a></strong>: TArray&lt;<a href="OSM.TilesProvider.html#TTilesProviderClass">TTilesProviderClass</a>&gt;;</code></td>
+</tr>
+</table>
+<h2 class="description">Description</h2>
+<h3 class="detail">Functions and Procedures</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="RegisterTilesProvider"></span><code>procedure <strong>RegisterTilesProvider</strong>(TilesProviderClass: <a href="OSM.TilesProvider.html#TTilesProviderClass">TTilesProviderClass</a>);</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Add class of tiles provider to global <a class="normal" href="OSM.TilesProvider.html#TilesProviders">TilesProviders</a> array. Handles multiple calls with the same class (by ignoring duplicates).</p>
+</td></tr>
+</table>
+<h3 class="detail">Types</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TTilesProviderClass"></span><code><strong>TTilesProviderClass</strong> = class of <a href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a>;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<h3 class="detail">Variables</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TilesProviders"></span><code><strong>TilesProviders</strong>: TArray&lt;<a href="OSM.TilesProvider.html#TTilesProviderClass">TTilesProviderClass</a>&gt;;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Global list of registered tiles providers. Use it if you want to support multiple providers within the same app.</p>
+</td></tr>
 </table>
 <h2 class="authors">Authors</h2>
 <ul class="authors">

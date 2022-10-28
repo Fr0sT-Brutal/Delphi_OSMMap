@@ -489,7 +489,7 @@ Export whole map as bitmap.   </p>
 </tr>
 <tr><td colspan="2">
 <p>
-Tiles provider object. Assigning this property could change some map properties (zoom range, for example). Map control takes ownership on assigned object and destroys it when needed. Assign <code>Nil</code> to use an instance of <a class="normal" href="OSM.TilesProvider.TDummyTilesProvider.html">TDummyTilesProvider</a>.</p>
+Tiles provider object. Assigning this property could change some map properties (zoom range, for example, and hence current zoom) so cache will be cleared and the map will be redrawn with new conditions. <br> Map control takes ownership on assigned object and destroys it when needed. <br> Assign <code>Nil</code> to use an instance of <a class="normal" href="OSM.TilesProvider.TDummyTilesProvider.html">TDummyTilesProvider</a>.</p>
 </td></tr>
 </table>
 <table class="detail wide_list">

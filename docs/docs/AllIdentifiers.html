@@ -70,12 +70,12 @@
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#EnsureInMap">EnsureInMap</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Ensures rect <code>Rc</code> is inside a map at zoom level <code>Zoom</code>, corrects values if necessary </p></td>
+<td class="itemdesc"><p>Ensures point <code>Pt</code> is inside a map at zoom level <code>Zoom</code>, corrects values if necessary </p></td>
 </tr>
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#EnsureInMap">EnsureInMap</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Ensures point <code>Pt</code> is inside a map at zoom level <code>Zoom</code>, corrects values if necessary </p></td>
+<td class="itemdesc"><p>Ensures rect <code>Rc</code> is inside a map at zoom level <code>Zoom</code>, corrects values if necessary </p></td>
 </tr>
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.TileStorage.html#GDI_HANDLES_LIMIT">GDI_HANDLES_LIMIT</a></td>
@@ -95,12 +95,12 @@
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#GeoCoordsToMap">GeoCoordsToMap</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Converts geo point in degrees to map point in pixels</p></td>
+<td class="itemdesc"><p>Converts geo rect in degrees to map rect in pixels</p></td>
 </tr>
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#GeoCoordsToMap">GeoCoordsToMap</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Converts geo rect in degrees to map rect in pixels</p></td>
+<td class="itemdesc"><p>Converts geo point in degrees to map point in pixels</p></td>
 </tr>
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#GetScaleBarParams">GetScaleBarParams</a></td>
@@ -160,12 +160,12 @@
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MapToGeoCoords">MapToGeoCoords</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Converts map rect in pixels to geo rect in degrees</p></td>
+<td class="itemdesc"><p>Converts map point in pixels to geo point in degrees</p></td>
 </tr>
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MapToGeoCoords">MapToGeoCoords</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Converts map point in pixels to geo point in degrees</p></td>
+<td class="itemdesc"><p>Converts map rect in pixels to geo rect in degrees</p></td>
 </tr>
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MapWidth">MapWidth</a></td>
@@ -208,89 +208,99 @@
 <td class="itemdesc"><p>Construct <code>TRect</code> from two <code>TPoint</code>-s</p></td>
 </tr>
 <tr class="list">
+<td class="itemname"><a class="bold" href="OSM.TilesProvider.html#RegisterTilesProvider">RegisterTilesProvider</a></td>
+<td class="itemunit"><a class="bold" href="OSM.TilesProvider.html">OSM.TilesProvider</a></td>
+<td class="itemdesc"><p>Add class of tiles provider to global <a class="normal" href="OSM.TilesProvider.html#TilesProviders">TilesProviders</a> array.</p></td>
+</tr>
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.NetworkRequest.html#ReqTimeout">ReqTimeout</a></td>
 <td class="itemunit"><a class="bold" href="OSM.NetworkRequest.html">OSM.NetworkRequest</a></td>
 <td class="itemdesc"><p>Timeout for connect and request</p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.NetworkRequest.html#SampleHeaders">SampleHeaders</a></td>
 <td class="itemunit"><a class="bold" href="OSM.NetworkRequest.html">OSM.NetworkRequest</a></td>
 <td class="itemdesc"><p>Headers that you could add to <a class="normal" href="OSM.NetworkRequest.TNetworkRequestQueue.html">TNetworkRequestQueue</a>.</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.NetworkRequest.html#SystemProxy">SystemProxy</a></td>
 <td class="itemunit"><a class="bold" href="OSM.NetworkRequest.html">OSM.NetworkRequest</a></td>
 <td class="itemdesc"><p>Internal constant to designate OS-wide proxy</p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#S_Lbl_Loading">S_Lbl_Loading</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
 <td class="itemdesc"><p>&nbsp;</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.NetworkRequest.html#TBlockingNetworkRequestFunc">TBlockingNetworkRequestFunc</a></td>
 <td class="itemunit"><a class="bold" href="OSM.NetworkRequest.html">OSM.NetworkRequest</a></td>
 <td class="itemdesc"><p>Generic type of blocking network request function.</p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.TileStorage.TCacheLimits.html">TCacheLimits</a></td>
 <td class="itemunit"><a class="bold" href="OSM.TileStorage.html">OSM.TileStorage</a></td>
 <td class="itemdesc"><p>Limits of tile cache in memory</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.TilesProvider.TDummyTilesProvider.html">TDummyTilesProvider</a></td>
 <td class="itemunit"><a class="bold" href="OSM.TilesProvider.html">OSM.TilesProvider</a></td>
 <td class="itemdesc"><p>Dummy tile provider class, used as a stub in map control if no real provider is assigned.</p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.TGeoPoint.html">TGeoPoint</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Point on a map defined by longitude and latitude.</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.TGeoRect.html">TGeoRect</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Region on a map defined by two pairs of longitude and latitude.</p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.TilesProvider.Google.TGoogleTilesProvider.html">TGoogleTilesProvider</a></td>
 <td class="itemunit"><a class="bold" href="OSM.TilesProvider.Google.html">OSM.TilesProvider.Google</a></td>
 <td class="itemdesc"><p>Google tile image provider</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.NetworkRequest.html#TGotTileCallbackBgThr">TGotTileCallbackBgThr</a></td>
 <td class="itemunit"><a class="bold" href="OSM.NetworkRequest.html">OSM.NetworkRequest</a></td>
 <td class="itemdesc"><p>Generic type of method to call when request is completed <br> ! <strong>Called from the context of a background thread</strong> !   </p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.TilesProvider.HERE.THERETilesProvider.html">THERETilesProvider</a></td>
 <td class="itemunit"><a class="bold" href="OSM.TilesProvider.HERE.html">OSM.TilesProvider.HERE</a></td>
 <td class="itemdesc"><p>HERE tile image provider</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.NetworkRequest.html#THttpRequestCapabilities">THttpRequestCapabilities</a></td>
 <td class="itemunit"><a class="bold" href="OSM.NetworkRequest.html">OSM.NetworkRequest</a></td>
 <td class="itemdesc"><p>Capabilities that a network engine has</p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.NetworkRequest.THttpRequestProps.html">THttpRequestProps</a></td>
 <td class="itemunit"><a class="bold" href="OSM.NetworkRequest.html">OSM.NetworkRequest</a></td>
 <td class="itemdesc"><p>Generic properties of request.</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#TileCount">TileCount</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Returns count of tiles on <code>Zoom</code> level (= <code>2&circ;Zoom</code>)</p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#TileMetersPerPixelOnEquator">TileMetersPerPixelOnEquator</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>See <a href="https://wiki.openstreetmap.org/wiki/Zoom_levels">https://wiki.openstreetmap.org/wiki/Zoom_levels</a> Level Degree Area m / pixel &tilde;Scale # Tiles 0 360 whole world 156,412 1:500 million 1 1 180 78,206 1:250 million 4 2 90 39,103 1:150 million 16 3 45 19,551 1:70 million 64 4 22.5 9,776 1:35 million 256 5 11.25 4,888 1:15 million 1,024 6 5.625 2,444 1:10 million 4,096 7 2.813 1,222 1:4 million 16,384 8 1.406 610.984 1:2 million 65,536 9 0.703 wide area 305.492 1:1 million 262,144 10 0.352 152.746 1:500,000 1,048,576 11 0.176 area 76.373 1:250,000 4,194,304 12 0.088 38.187 1:150,000 16,777,216 13 0.044 village/town 19.093 1:70,000 67,108,864 14 0.022 9.547 1:35,000 268,435,456 15 0.011 4.773 1:15,000 1,073,741,824 16 0.005 small road 2.387 1:8,000 4,294,967,296 17 0.003 1.193 1:4,000 17,179,869,184 18 0.001 0.596 1:2,000 68,719,476,736 19 0.0005 0.298 1:1,000 274,877,906,944 20 0.00025 mid-sized bldng 0.149 1:5,00 1,099,511,627,776</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#TilesEqual">TilesEqual</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Compares tiles</p></td>
+</tr>
+<tr class="list">
+<td class="itemname"><a class="bold" href="OSM.TilesProvider.html#TilesProviders">TilesProviders</a></td>
+<td class="itemunit"><a class="bold" href="OSM.TilesProvider.html">OSM.TilesProvider</a></td>
+<td class="itemdesc"><p>Global list of registered tiles providers.</p></td>
 </tr>
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#TileToStr">TileToStr</a></td>
@@ -483,16 +493,21 @@
 <td class="itemdesc"><p>Abstract base class for tile image provider.</p></td>
 </tr>
 <tr class="list2">
+<td class="itemname"><a class="bold" href="OSM.TilesProvider.html#TTilesProviderClass">TTilesProviderClass</a></td>
+<td class="itemunit"><a class="bold" href="OSM.TilesProvider.html">OSM.TilesProvider</a></td>
+<td class="itemdesc"><p>&nbsp;</p></td>
+</tr>
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.TileStorage.TTileStorage.html">TTileStorage</a></td>
 <td class="itemunit"><a class="bold" href="OSM.TileStorage.html">OSM.TileStorage</a></td>
 <td class="itemdesc"><p>Class that encapsulates memory and file cache of tile images.</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.TileStorage.html#TTileStorageOption">TTileStorageOption</a></td>
 <td class="itemunit"><a class="bold" href="OSM.TileStorage.html">OSM.TileStorage</a></td>
 <td class="itemdesc"><p>Flags for <a class="normal" href="OSM.TileStorage.TTileStorage.html">TTileStorage</a></p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.TileStorage.html#TTileStorageOptions">TTileStorageOptions</a></td>
 <td class="itemunit"><a class="bold" href="OSM.TileStorage.html">OSM.TileStorage</a></td>
 <td class="itemdesc"><p>&nbsp;</p></td>
