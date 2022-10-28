@@ -18,6 +18,8 @@ uses
 type
   // HERE tile image provider
   THERETilesProvider = class(TTilesProvider)
+  private
+    const TPName = 'HERE map';
   const
     //~ global defaults
     // Default copyright text
@@ -30,7 +32,8 @@ type
     // Pattern of tile URL. Placeholders are for: Random subdomain (1..MaxSubdomainNum), Zoom, X, Y, ApiKEY
     TileURLPatt: string;
 
-    constructor Create;
+    constructor Create; override;
+    class function Name: string; override;
     function GetTileURL(const Tile: TTile): string; override;
   end;
 
@@ -45,11 +48,20 @@ begin
 //  TileFormat.Height := 256;
   TilesCopyright := DefTilesCopyright;
   TileURLPatt := DefTileURLPatt;
+  RegisterTilesProvider(TTilesProviderClass(Self.ClassType));
+end;
+
+class function THERETilesProvider.Name: string;
+begin
+  Result := TPName;
 end;
 
 function THERETilesProvider.GetTileURL(const Tile: TTile): string;
 begin
   Result := Format(TileURLPatt, [Random(MaxSubdomainNum) + 1, Tile.Zoom, Tile.ParameterX, Tile.ParameterY, APIKey]);
 end;
+
+initialization
+  RegisterTilesProvider(THERETilesProvider);
 
 end.

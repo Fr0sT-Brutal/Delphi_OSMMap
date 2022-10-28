@@ -33,11 +33,14 @@ type
     DefTileURLPatt = 'http://mt%d.google.com/vt/lyrs=m&hl=en&x=%d&y=%d&z=%d';
     // Maximal subdomain number
     MaxSubdomainNum = 3;
+  private
+    const TPName = 'Google maps';
   public
     // Pattern of tile URL. Placeholders are for: Random subdomain (0..MaxSubdomainNum), X, Y, Zoom
     TileURLPatt: string;
 
-    constructor Create;
+    constructor Create; override;
+    class function Name: string; override;
     function GetTileURL(const Tile: TTile): string; override;
   end;
 
@@ -54,9 +57,17 @@ begin
   TileURLPatt := DefTileURLPatt;
 end;
 
+class function TGoogleTilesProvider.Name: string;
+begin
+  Result := TPName;
+end;
+
 function TGoogleTilesProvider.GetTileURL(const Tile: TTile): string;
 begin
   Result := Format(TileURLPatt, [Random(MaxSubdomainNum), Tile.ParameterX, Tile.ParameterY, Tile.Zoom]);
 end;
+
+initialization
+  RegisterTilesProvider(TGoogleTilesProvider);
 
 end.

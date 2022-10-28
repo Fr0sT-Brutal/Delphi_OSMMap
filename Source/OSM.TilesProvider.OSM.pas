@@ -17,6 +17,8 @@ uses
 type
   // OpenStreetMap tile image provider
   TOSMTilesProvider = class(TTilesProvider)
+  private
+    const TPName = 'OpenStreetMap';
   const
     //~ global defaults
     // Default copyright text
@@ -27,7 +29,8 @@ type
     // Pattern of tile URL. Placeholders are for: Zoom, X, Y
     TileURLPatt: string;
 
-    constructor Create;
+    constructor Create; override;
+    class function Name: string; override;
     function GetTileURL(const Tile: TTile): string; override;
   end;
 
@@ -44,9 +47,17 @@ begin
   TileURLPatt := DefTileURLPatt;
 end;
 
+class function TOSMTilesProvider.Name: string;
+begin
+  Result := TPName;
+end;
+
 function TOSMTilesProvider.GetTileURL(const Tile: TTile): string;
 begin
   Result := Format(TileURLPatt, [Tile.Zoom, Tile.ParameterX, Tile.ParameterY]);
 end;
+
+initialization
+  RegisterTilesProvider(TOSMTilesProvider);
 
 end.
