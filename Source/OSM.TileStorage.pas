@@ -108,6 +108,7 @@ type
     function GetTileFilePath(const Tile: TTile): string; inline;
     function GetFromFileCache(const Tile: TTile): TMemoryStream;
     procedure StoreInFileCache(const Tile: TTile; Ms: TMemoryStream);
+    procedure SetFileCacheBaseDir(const Value: string);
   public
     // Simplified constructor.
     // Divides memory limit equally between bitmaps, PNGs and streams.
@@ -136,8 +137,8 @@ type
 
     // Storage options
     property Options: TTileStorageOptions read FOptions write FOptions;
-    // Base directory of file cache
-    property FileCacheBaseDir: string read FFileCacheBaseDir write FFileCacheBaseDir;
+    // Base directory of file cache. All cached images are released on path change
+    property FileCacheBaseDir: string read FFileCacheBaseDir write SetFileCacheBaseDir;
   end;
 
 implementation
@@ -297,6 +298,14 @@ begin
   Path := GetTileFilePath(Tile);
   ForceDirectories(ExtractFileDir(Path));
   Ms.SaveToFile(Path);
+end;
+
+// Change cache path, clear all cached images
+procedure TTileStorage.SetFileCacheBaseDir(const Value: string);
+begin
+  if FFileCacheBaseDir = Value then Exit;
+  FFileCacheBaseDir := Value;
+  ClearCache;
 end;
 
 function TTileStorage.GetTile(const Tile: TTile): TBitmap;
