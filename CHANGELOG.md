@@ -1,3 +1,19 @@
+0.9.2
+=====
+
+- Improvements for multi-provider apps
+
+`Added`
+
+- `TTilesProvider`, virtual constructor to allow creation via class types. `TTilesProvider.Name` virtual method to return provider's label for display and other purposes. 
+- Global list of tiles providers. `TTilesProviderClass` definition, `TilesProviders` array, `RegisterTilesProvider` function
+- Demo: support multiple providers
+
+`Fixed`
+
+- OSM.TileStorage.pas, `TTileStorage`, clear cache on file path change
+- OSM.MapControl.pas, `TMapControl`, fixes to change tiles provider properly
+
 0.9.1
 =====
 
