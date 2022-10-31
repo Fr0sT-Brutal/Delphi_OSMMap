@@ -35,6 +35,7 @@ uses
   {$ENDIF}
   , OSM.TilesProvider
   , OSM.TilesProvider.OSM
+  , OSM.TilesProvider.OpenTopoMap
   , OSM.TilesProvider.Google
   , OSM.TilesProvider.HERE
   , TestSuite;
