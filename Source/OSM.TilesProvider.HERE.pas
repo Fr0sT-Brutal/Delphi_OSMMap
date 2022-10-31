@@ -1,5 +1,6 @@
 {
   HERE tile image provider.
+
   https://developer.here.com/documentation/map-tile/dev_guide/topics/introduction.html
 
   (c) Fr0sT-Brutal https://github.com/Fr0sT-Brutal/Delphi_OSMMap
@@ -24,12 +25,10 @@ type
     //~ global defaults
     // Default copyright text
     DefTilesCopyright = '(c) HERE';
-    // Default pattern of tile URL. Placeholders are for: Random subdomain (1..MaxSubdomainNum), Zoom, X, Y, ApiKEY
-    DefTileURLPatt = 'https://%d.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/%d/%d/%d/256/png8?apiKey=%s';
-    // Maximal subdomain number
-    MaxSubdomainNum = 4;
+    // Default pattern of tile URL
+    DefTileURLPatt = 'https://{1-4}.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?apiKey={key}';
   public
-    // Pattern of tile URL. Placeholders are for: Random subdomain (1..MaxSubdomainNum), Zoom, X, Y, ApiKEY
+    // Pattern of tile URL. For format see FormatTileURL
     TileURLPatt: string;
 
     constructor Create; override;
@@ -48,7 +47,6 @@ begin
 //  TileFormat.Height := 256;
   TilesCopyright := DefTilesCopyright;
   TileURLPatt := DefTileURLPatt;
-  RegisterTilesProvider(TTilesProviderClass(Self.ClassType));
 end;
 
 class function THERETilesProvider.Name: string;
@@ -58,7 +56,7 @@ end;
 
 function THERETilesProvider.GetTileURL(const Tile: TTile): string;
 begin
-  Result := Format(TileURLPatt, [Random(MaxSubdomainNum) + 1, Tile.Zoom, Tile.ParameterX, Tile.ParameterY, APIKey]);
+  Result := FormatTileURL(TileURLPatt, Tile, Self);
 end;
 
 initialization

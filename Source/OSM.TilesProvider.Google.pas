@@ -1,5 +1,6 @@
 {
   Google tile image provider.
+
   https://gis.stackexchange.com/questions/225098/using-google-maps-static-tiles-with-leaflet
   - should be an official description but I didn't find it.
 
@@ -29,14 +30,12 @@ type
       Streets: m;
       Terrain: p;
     }
-    // Default pattern of tile URL. Placeholders are for: Random subdomain (0..MaxSubdomainNum), X, Y, Zoom
-    DefTileURLPatt = 'http://mt%d.google.com/vt/lyrs=m&hl=en&x=%d&y=%d&z=%d';
-    // Maximal subdomain number
-    MaxSubdomainNum = 3;
+    // Default pattern of tile URL
+    DefTileURLPatt = 'http://mt{0-3}.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}';
   private
     const TPName = 'Google maps';
   public
-    // Pattern of tile URL. Placeholders are for: Random subdomain (0..MaxSubdomainNum), X, Y, Zoom
+    // Pattern of tile URL. For format see FormatTileURL
     TileURLPatt: string;
 
     constructor Create; override;
@@ -64,7 +63,7 @@ end;
 
 function TGoogleTilesProvider.GetTileURL(const Tile: TTile): string;
 begin
-  Result := Format(TileURLPatt, [Random(MaxSubdomainNum), Tile.ParameterX, Tile.ParameterY, Tile.Zoom]);
+  Result := FormatTileURL(TileURLPatt, Tile, Self);
 end;
 
 initialization

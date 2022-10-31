@@ -12,7 +12,7 @@ unit OSM.TilesProvider;
 interface
 
 uses
-  SysUtils,
+  SysUtils, StrUtils, Types,
   OSM.SlippyMapUtils;
 
 type
@@ -32,7 +32,7 @@ type
     // Maximal zoom level
     MaxZoomLevel: TMapZoomLevel;
 {}//~    TileFormat: TTileImage;
-    // Tile copyright that will be painted in the corner of the map
+    // [opt] Tile copyright that will be painted in the corner of the map
     TilesCopyright: string;
     // [opt] API key for requesting tiles
     APIKey: string;
@@ -80,6 +80,9 @@ var
 // calls with the same class (by ignoring duplicates).
 procedure RegisterTilesProvider(TilesProviderClass: TTilesProviderClass);
 
+// Format URL for a given tile using OpenLayers-compatible URL template.
+function FormatTileURL(const Template: string; const Tile: TTile; Provider: TTilesProvider): string;
+
 implementation
 
 { TTilesProvider }
@@ -111,6 +114,110 @@ end;
 function TDummyTilesProvider.GetTileURL(const Tile: TTile): string;
 begin
   Result := '';
+end;
+
+type
+  // Callback for ReplaceTokens
+  //   @param Token - [IN] found token {OUT] token replacement
+  // @returns whether replacement should be done. If @false, token will be removed
+  //   or left unchanged depending on EatUnmatched parameter
+  TReplTokenCallback = reference to function(var Token: string): Boolean;
+
+// Replaces all string occurrences between TokenStart and TokenEnd chars inside Patt string
+// and replaces them with result of calling Callback function.
+// EatUnmatched determines whether entries for which Callback returned False should be
+// removed (EatUnmatched = False) or left unchanged
+function ReplaceTokens(const Patt: string; TokenStart, TokenEnd: Char; EatUnmatched: Boolean;
+                       Callback: TReplTokenCallback): string;
+var
+  Token: String;
+  Curr, TxtBeg, PosBeg, PosEnd: Integer;
+begin
+  Curr := 1; TxtBeg := 1; Result := '';
+  // While pattern has tokens
+  while Curr <= Length(Patt) do
+  begin
+    // Extract token (string between TokenStart and TokenEnd)
+    PosBeg := PosEx(TokenStart, Patt, Curr);
+    if PosBeg = 0 then Break;
+    PosEnd := PosEx(TokenEnd, Patt, PosBeg+1);
+    if PosEnd = 0 then Break;
+    Token := Copy(patt, PosBeg+1, PosEnd-PosBeg-1);
+    // Call callback and check its result
+    if Callback(Token) then
+      Result := Result + Copy(Patt, TxtBeg, PosBeg-TxtBeg) + Token
+    else
+      if EatUnmatched // eat or skip
+        then Result := Result + Copy(Patt, TxtBeg, PosBeg-TxtBeg)
+        else begin Inc(Curr); Continue; end;
+    // go on
+    Curr := PosEnd+1;
+    TxtBeg := PosEnd+1;
+  end;
+  // Add string tail
+  Result := Result + Copy(Patt, TxtBeg, Length(Patt));
+end;
+
+// Accepts a string defining a set of values like "aa|dd|hh|rr" and randomly returns
+// one of them. Values could be any.
+function RandomFromSet(const SetStr: string): string;
+var Values: TStringDynArray;
+begin
+  Values := SplitString(SetStr, '|');
+  Result := Values[Random(Length(Values))];
+end;
+
+// Accepts string defining a range of values like "a-d" and randomly returns
+// one of them. Values should be digits or chars. If they're not, only the
+// first chars are considered.
+function RandomFromRange(const RangeStr: string): string;
+var
+  Values: TStringDynArray;
+  StartChar, EndChar: Char;
+begin
+  Values := SplitString(RangeStr, '-');
+  StartChar := Values[0][1];
+  EndChar := Values[1][1];
+  Result := Char(Ord(StartChar) + Random(Ord(EndChar) - Ord(StartChar) + 1));
+end;
+
+// Format URL for a given tile using OpenLayers-compatible URL template.
+// Template could contain following placeholders enclosed in {}'s:
+//   - `{x}` - horizontal tile number
+//   - `{y}` - vertical tile number
+//   - `{z}` - zoom level
+//   - `{?|?|...}` - set of any values used to determine random subdomain
+//   - `{?-?}` - range of digits or chars used to determine random subdomain
+//   - `{key}` - provider API key (APIKey property)
+//   - `{?}` - where "?" is any string - provider property named "?"
+function FormatTileURL(const Template: string; const Tile: TTile; Provider: TTilesProvider): string;
+var VarTile: TTile;
+begin
+  VarTile := Tile; // can't capture const params >_<
+  Result := ReplaceTokens(Template, '{', '}', False,
+    function(var Token: string): Boolean
+    begin
+      if Token = 'x' then
+        Token := IntToStr(VarTile.ParameterX)
+      else
+      if Token = 'y' then
+        Token := IntToStr(VarTile.ParameterY)
+      else
+      if Token = 'z' then
+        Token := IntToStr(VarTile.Zoom)
+      else
+      if Token = 'key' then
+        Token := Provider.APIKey
+      else
+      if Pos('|', Token) <> 0 then
+        Token := RandomFromSet(Token)
+      else
+      if Pos('-', Token) <> 0 then
+        Token := RandomFromRange(Token)
+      else
+        Token := Provider.GetProperty(Token);
+      Result := True;
+    end);
 end;
 
 procedure RegisterTilesProvider(TilesProviderClass: TTilesProviderClass);

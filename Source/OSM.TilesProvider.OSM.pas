@@ -23,10 +23,10 @@ type
     //~ global defaults
     // Default copyright text
     DefTilesCopyright = '(c) OpenStreetMap contributors';
-    // Default pattern of tile URL. Placeholders are for: Zoom, X, Y
-    DefTileURLPatt = 'http://tile.openstreetmap.org/%d/%d/%d.png';
+    // Default pattern of tile URL
+    DefTileURLPatt = 'http://tile.openstreetmap.org/{z}/{x}/{y}.png';
   public
-    // Pattern of tile URL. Placeholders are for: Zoom, X, Y
+    // Pattern of tile URL. For format see FormatTileURL
     TileURLPatt: string;
 
     constructor Create; override;
@@ -54,7 +54,7 @@ end;
 
 function TOSMTilesProvider.GetTileURL(const Tile: TTile): string;
 begin
-  Result := Format(TileURLPatt, [Tile.Zoom, Tile.ParameterX, Tile.ParameterY]);
+  Result := FormatTileURL(TileURLPatt, Tile, Self);
 end;
 
 initialization
