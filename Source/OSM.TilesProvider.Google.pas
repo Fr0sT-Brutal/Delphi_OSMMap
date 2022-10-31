@@ -24,12 +24,7 @@ type
     //~ global defaults
     // Default copyright text
     DefTilesCopyright = '(c) Google';
-    {~ TODO: Note that difference in the "lyrs" parameter in the URL:
-      Hybrid: s,h;
-      Satellite: s;
-      Streets: m;
-      Terrain: p;
-    }
+    //~ TODO: "lyrs" parameter is the tile ID but none of other options work
     // Default pattern of tile URL
     DefTileURLPatt = 'http://mt{0-3}.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}';
   private
