@@ -1,7 +1,7 @@
 ﻿OSM MapControl
 ==============
 
-Delphi/Lazarus visual component for displaying a map. Could use any map tile provider (currently implemented OpenStreetMap, HERE, Google). Also includes helper classes for storing and downloading map tiles.
+Delphi/Lazarus visual component for displaying a map. Could use any map tile provider (currently implemented OpenStreetMap, OpenTopoMap, HERE, Google). Also includes helper classes for storing and downloading map tiles.
 Demo project implements downloading map tiles from network.
 
 :exclamation: **Alpha version, interface could change** :exclamation:
@@ -14,16 +14,23 @@ Tested on:
   - Delphi XE2 and 10.1, VCL, Windows
   - Lazarus 2.1.0 trunk & FPC 3.3.1 trunk, LCL, Windows / Linux
 
+Tile providers
+--------------
+
+Adding a new tile provider is easy, just learn its API and take implemented providers as example. When you're done, create pull request and I'll happily merge it.
+
+For description of tile URL template placeholders refer to OSM.TilesProvider.FormatTileURL function (or [docs](https://fr0st-brutal.github.io/Delphi_OSMMap/docs/OSM.TilesProvider.html#FormatTileURL))
+
 Project structure
 -----------------
 
-  - `OSM.SlippyMapUtils` - util functions, variables and types
+  - `OSM.SlippyMapUtils` - utility functions, variables and types
   - `OSM.TileStorage` - classes `TTileBitmapCache` implementing cache of map tiles organized as a queue and `TTileStorage` implementing disc storage of map tiles.
   - `OSM.NetworkRequest` - utils and classes for network requesting of map tiles. Class `TNetworkRequestQueue` implements threaded non-blocking queue of network requests. Unit doesn't contain any real network request engine.
   - `OSM.NetworkRequest.Synapse`, `OSM.NetworkRequest.WinInet`, `OSM.NetworkRequest.RTL` contain concrete implementations of network requesting routines
   - `OSM.MapControl` contains classes `TMapMark` and `TMapMarkList` for managing a set of map points and `TMapControl` itself
   - `OSM.TilesProvider` - base abstract class of map tile provider.
-  - `OSM.TilesProvider.OSM`, `OSM.TilesProvider.HERE`, `OSM.TilesProvider.Google` contain concrete implementations of map tile providers
+  - `OSM.TilesProvider.*` contain concrete implementations of map tile providers
   
 Full docs for all units listed above is available [here](https://fr0st-brutal.github.io/Delphi_OSMMap/)
 

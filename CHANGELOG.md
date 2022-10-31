@@ -1,3 +1,14 @@
+0.9.3
+=====
+
+- Tile URL is now defined with OpenLayers-compatible templates with extended features
+
+`Added`
+
+- OSM.TilesProvider.pas, `FormatTileURL` function
+* OSM.TilesProvider.*.pas, use new template-base system for retrieval of tile URL
+- OpenTopoMap tile provider
+
 0.9.2
 =====
 
