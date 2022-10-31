@@ -10,4 +10,5 @@ ignore-marker=~
 ignore-marker=TODO
 auto-back-comments
 visible-members=public,published,automated
+implementation-comments=join
 output=$CFG_PATH\docs

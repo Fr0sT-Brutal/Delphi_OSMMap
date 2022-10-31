@@ -34,13 +34,9 @@ Google tile image provider</p>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>nested const <strong><a href="OSM.TilesProvider.Google.TGoogleTilesProvider.html#DefTileURLPatt">DefTileURLPatt</a></strong> = 'http://mt%d.google.com/vt/lyrs=m&amp;hl=en&amp;x=%d&amp;y=%d&amp;z=%d';</code></td>
+<td class="itemcode"><code>nested const <strong><a href="OSM.TilesProvider.Google.TGoogleTilesProvider.html#DefTileURLPatt">DefTileURLPatt</a></strong> = 'http://mt{0-3}.google.com/vt/lyrs=m&amp;hl=en&amp;x={x}&amp;y={y}&amp;z={z}';</code></td>
 </tr>
 <tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>nested const <strong><a href="OSM.TilesProvider.Google.TGoogleTilesProvider.html#MaxSubdomainNum">MaxSubdomainNum</a></strong> = 3;</code></td>
-</tr>
-<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code><strong><a href="OSM.TilesProvider.Google.TGoogleTilesProvider.html#TileURLPatt">TileURLPatt</a></strong>: string;</code></td>
 </tr>
@@ -75,21 +71,11 @@ Default copyright text</p>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="DefTileURLPatt"></span><code>nested const <strong>DefTileURLPatt</strong> = 'http://mt%d.google.com/vt/lyrs=m&amp;hl=en&amp;x=%d&amp;y=%d&amp;z=%d';</code></td>
+<td class="itemcode"><span id="DefTileURLPatt"></span><code>nested const <strong>DefTileURLPatt</strong> = 'http://mt{0-3}.google.com/vt/lyrs=m&amp;hl=en&amp;x={x}&amp;y={y}&amp;z={z}';</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
-Default pattern of tile URL. Placeholders are for: Random subdomain (0..MaxSubdomainNum), X, Y, Zoom</p>
-</td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="MaxSubdomainNum"></span><code>nested const <strong>MaxSubdomainNum</strong> = 3;</code></td>
-</tr>
-<tr><td colspan="2">
-<p>
-Maximal subdomain number</p>
+Default pattern of tile URL</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -99,7 +85,7 @@ Maximal subdomain number</p>
 </tr>
 <tr><td colspan="2">
 <p>
-Pattern of tile URL. Placeholders are for: Random subdomain (0..MaxSubdomainNum), X, Y, Zoom</p>
+Pattern of tile URL. For format see <a class="normal" href="OSM.TilesProvider.html#FormatTileURL">FormatTileURL</a></p>
 </td></tr>
 </table>
 <h3 class="detail">Methods</h3>

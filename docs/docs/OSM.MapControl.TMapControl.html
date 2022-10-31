@@ -272,7 +272,7 @@ Default font of mapmarks. New items will be init-ed with this value</p>
 </tr>
 <tr><td colspan="2">
 <p>
-Convert a point from map pixel coords to geo coords</p>
+Convert a point from map pixel coords to geo coords Pixels =&gt; degrees</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -292,7 +292,7 @@ Convert a rect from map pixel coords to geo coords</p>
 </tr>
 <tr><td colspan="2">
 <p>
-Convert a point from geo coords to map pixel coords</p>
+Convert a point from geo coords to map pixel coords Degrees =&gt; pixels</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -352,7 +352,14 @@ Convert a rect from map coords to view area coords</p>
 </tr>
 <tr><td colspan="2">
 <p>
-Convert map points to scrollbox inner coordinates (not client!)</p>
+Convert map points to scrollbox inner coordinates (not client!) ! Compiler-specific ! TScrollBox is different in different compilers. </p>
+
+<ul class="paragraph_spacing">
+  <li><p>FPC considers internal area just as scrollbars' range are set (that is, whole scrollable area inside the box).</p></li>
+  <li><p>Delphi considers control bounds only (just a visible area) So this method converts map points to scrollbox inner coordinates (not client!)</p></li>
+</ul>
+
+<p></p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -392,7 +399,20 @@ Absolutely move the view area</p>
 </tr>
 <tr><td colspan="2">
 <p>
-Set zoom level to new value and reposition to given point</p>
+Set zoom level to new value and reposition to given point <strong></p>
+
+<ul class="paragraph_spacing">
+  <li><p>new methods</p></li>
+</ul>
+
+<p></strong>* Set zoom level to new value and reposition to given point  </p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>Value</dt>
+<dd>- new zoom value</dd>
+<dt>MapBindPt</dt>
+<dd>- point in map coords that must keep its position within view</dd>
+</dl>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -432,7 +452,16 @@ Zoom to fill view area as much as possible</p>
 </tr>
 <tr><td colspan="2">
 <p>
-Set properties of cache image and rebuild it</p>
+Set properties of cache image and rebuild it   </p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>TilesHorz</dt>
+<dd>- width (Horizontal dimension) of cache image, in number of tiles</dd>
+<dt>TilesVert</dt>
+<dd>- height (Vertical dimension) of cache image, in number of tiles</dd>
+<dt>MarginSize</dt>
+<dd>- margin that is added to cache image to hold view area, in number of tiles</dd>
+</dl>
 </td></tr>
 </table>
 <table class="detail wide_list">

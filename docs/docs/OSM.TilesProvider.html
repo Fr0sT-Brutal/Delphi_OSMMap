@@ -41,6 +41,9 @@ Generic (no real implementation) base class for tile image provider. Stores prop
 <tr class="list">
 <td class="itemcode"><code>procedure <strong><a href="OSM.TilesProvider.html#RegisterTilesProvider">RegisterTilesProvider</a></strong>(TilesProviderClass: <a href="OSM.TilesProvider.html#TTilesProviderClass">TTilesProviderClass</a>);</code></td>
 </tr>
+<tr class="list2">
+<td class="itemcode"><code>function <strong><a href="OSM.TilesProvider.html#FormatTileURL">FormatTileURL</a></strong>(const Template: string; const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>; Provider: <a href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a>): string;</code></td>
+</tr>
 </table>
 <span id="PasDoc-Types"></span><h3 class="summary">Types</h3>
 <table class="summary wide_list">
@@ -63,6 +66,27 @@ Generic (no real implementation) base class for tile image provider. Stores prop
 <tr><td colspan="1">
 <p>
 Add class of tiles provider to global <a class="normal" href="OSM.TilesProvider.html#TilesProviders">TilesProviders</a> array. Handles multiple calls with the same class (by ignoring duplicates).</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="FormatTileURL"></span><code>function <strong>FormatTileURL</strong>(const Template: string; const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>; Provider: <a href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a>): string;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Format URL for a given tile using OpenLayers-compatible URL template. Template could contain following placeholders enclosed in {}'s: </p>
+
+<ul class="paragraph_spacing">
+  <li><p><code>{x}</code> - horizontal tile number</p></li>
+  <li><p><code>{y}</code> - vertical tile number</p></li>
+  <li><p><code>{z}</code> - zoom level</p></li>
+  <li><p><code>{?|?|...}</code> - set of any values used to determine random subdomain</p></li>
+  <li><p><code>{?-?}</code> - range of digits or chars used to determine random subdomain</p></li>
+  <li><p><code>{key}</code> - provider API key (APIKey property)</p></li>
+  <li><p><code>{?}</code> - where &quot;?&quot; is any string - provider property named &quot;?&quot;</p></li>
+</ul>
+
+<p></p>
 </td></tr>
 </table>
 <h3 class="detail">Types</h3>
