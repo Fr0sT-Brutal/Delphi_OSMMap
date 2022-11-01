@@ -22,14 +22,24 @@ uses
 
 const
   // Capabilities of WinInet engine
-  EngineCapabilities = [htcProxy, htcDirect, htcSystemProxy, htcHeaders, htcTimeout, htcTLS];
+  EngineCapabilities = [htcProxy, htcDirect, htcSystemProxy, htcHeaders,
+    htcTimeout, htcTLS];
 
-// Function executing a network request. See description of
-// OSM.NetworkRequest.TBlockingNetworkRequestFunc type.@br
-function NetworkRequest(RequestProps: THttpRequestProps;
-  ResponseStm: TStream; out ErrMsg: string): Boolean;
+// Procedure executing a network request. See description of
+// OSM.NetworkRequest.TBlockingNetworkRequestProc type.
+procedure NetworkRequest(RequestProps: THttpRequestProps;
+  ResponseStm: TStream; var Client: TNetworkClient);
 
 implementation
+
+type
+  TWinInetClient = class(TNetworkClient)
+  private
+    hInet: HINTERNET;
+  public
+    constructor Create(RequestProps: THttpRequestProps);
+    destructor Destroy; override;
+  end;
 
 // Advanced SysErrorMessage version that handles WinInet errors
 function SysErrorMessageEx(ErrorCode: Cardinal): string;
@@ -75,43 +85,65 @@ begin
   Result := Exception.CreateFmt('%s [%d]', [SysErrorMessageEx(errCode), errCode]);
 end;
 
-function NetworkRequest(RequestProps: THttpRequestProps;
-  ResponseStm: TStream; out ErrMsg: string): Boolean;
-var
-  hInet: HINTERNET;
-  Proxy, Headers: string;
-  Buf: array[0..1024-1] of Byte;
-  dwAccessType, read, opt: DWORD;
-  hFile: HINTERNET;
-begin
-  ErrMsg := ''; Result := False; hInet := nil; hFile := nil;
+{ TWinInetClient }
 
-  try try
-    // Init WinInet
-    Proxy := '';
-    if RequestProps.Proxy <> '' then
-      if RequestProps.Proxy = SystemProxy then
-        dwAccessType := INTERNET_OPEN_TYPE_PRECONFIG
-      else
-      begin
-        dwAccessType := INTERNET_OPEN_TYPE_PROXY;
-        Proxy := RequestProps.Proxy;
-      end
+constructor TWinInetClient.Create(RequestProps: THttpRequestProps);
+var
+  Proxy: string;
+  dwAccessType, opt: DWORD;
+begin
+  CheckEngineCaps(RequestProps, EngineCapabilities);
+  // Init WinInet
+  Proxy := '';
+  if RequestProps.Proxy <> '' then
+    if RequestProps.Proxy = SystemProxy then
+      dwAccessType := INTERNET_OPEN_TYPE_PRECONFIG
     else
-      dwAccessType := INTERNET_OPEN_TYPE_DIRECT;
-    hInet := InternetOpen('Foo', dwAccessType, PChar(Proxy), nil, 0);
-    if hInet = nil then
-      raise WinInetErr;
-    // Set options
+    begin
+      dwAccessType := INTERNET_OPEN_TYPE_PROXY;
+      Proxy := RequestProps.Proxy;
+    end
+  else
+    dwAccessType := INTERNET_OPEN_TYPE_DIRECT;
+  hInet := InternetOpen('Foo', dwAccessType, PChar(Proxy), nil, 0);
+  if hInet = nil then
+    raise WinInetErr;
+  // Set options
+  if htcTimeout in EngineCapabilities then
+  begin
     opt := ReqTimeout;
     InternetSetOption(hInet, INTERNET_OPTION_CONNECT_TIMEOUT, @opt, SizeOf(opt));
     InternetSetOption(hInet, INTERNET_OPTION_RECEIVE_TIMEOUT, @opt, SizeOf(opt));
     InternetSetOption(hInet, INTERNET_OPTION_SEND_TIMEOUT, @opt, SizeOf(opt));
-    // Open address
+  end;
+end;
+
+destructor TWinInetClient.Destroy;
+begin
+  InternetCloseHandle(hInet);
+  inherited;
+end;
+
+procedure NetworkRequest(RequestProps: THttpRequestProps;
+  ResponseStm: TStream; var Client: TNetworkClient);
+var
+  Headers: string;
+  hFile: HINTERNET;
+  Buf: array[0..1024-1] of Byte;
+  read: DWORD;
+begin
+  hFile := nil;
+
+  try
+    if Client = nil then
+      Client := TWinInetClient.Create(RequestProps);
+
     if RequestProps.HeaderLines <> nil then
       Headers := RequestProps.HeaderLines.Text;
-    hFile := InternetOpenUrl(hInet, PChar(RequestProps.URL), PChar(Headers), 0,
-                             INTERNET_FLAG_NO_CACHE_WRITE or INTERNET_FLAG_NO_COOKIES or INTERNET_FLAG_NO_UI,
+
+    // Open address
+    hFile := InternetOpenUrl(TWinInetClient(Client).hInet, PChar(RequestProps.URL), PChar(Headers), 0,
+                             INTERNET_FLAG_NO_CACHE_WRITE or INTERNET_FLAG_NO_COOKIES or INTERNET_FLAG_NO_UI or INTERNET_FLAG_EXISTING_CONNECT,
                              0);
     if hFile = nil then
       raise WinInetErr;
@@ -122,14 +154,8 @@ begin
       if read = 0 then Break;
       ResponseStm.Write(Buf, read);
     end;
-
-    Result := True;
-  except on E: Exception do
-    ErrMsg := E.Message;
-  end;
   finally
     InternetCloseHandle(hFile);
-    InternetCloseHandle(hInet);
   end;
 end;
 
