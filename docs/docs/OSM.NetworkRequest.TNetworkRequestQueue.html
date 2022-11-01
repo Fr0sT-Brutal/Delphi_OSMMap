@@ -29,7 +29,7 @@ Queuer of network requests. Under the hood uses multiple background threads to e
 <table class="summary wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>constructor <strong><a href="OSM.NetworkRequest.TNetworkRequestQueue.html#Create">Create</a></strong>(MaxTasksPerThread, MaxThreads: Cardinal; RequestFunc: <a href="OSM.NetworkRequest.html#TBlockingNetworkRequestFunc">TBlockingNetworkRequestFunc</a>; TilesProvider: <a href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a>);</code></td>
+<td class="itemcode"><code>constructor <strong><a href="OSM.NetworkRequest.TNetworkRequestQueue.html#Create">Create</a></strong>(MaxTasksPerThread, MaxThreads: Cardinal; RequestProc: <a href="OSM.NetworkRequest.html#TBlockingNetworkRequestProc">TBlockingNetworkRequestProc</a>; TilesProvider: <a href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a>);</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
@@ -64,7 +64,7 @@ Queuer of network requests. Under the hood uses multiple background threads to e
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="Create"></span><code>constructor <strong>Create</strong>(MaxTasksPerThread, MaxThreads: Cardinal; RequestFunc: <a href="OSM.NetworkRequest.html#TBlockingNetworkRequestFunc">TBlockingNetworkRequestFunc</a>; TilesProvider: <a href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a>);</code></td>
+<td class="itemcode"><span id="Create"></span><code>constructor <strong>Create</strong>(MaxTasksPerThread, MaxThreads: Cardinal; RequestProc: <a href="OSM.NetworkRequest.html#TBlockingNetworkRequestProc">TBlockingNetworkRequestProc</a>; TilesProvider: <a href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a>);</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
@@ -75,7 +75,7 @@ Constructor     Object takes ownership on this object and destroys it on release
 <dd>- if number of tasks becomes more than <code>MaxTasksPerThread*%currentThreadCount%</code>, add one more thread</dd>
 <dt>MaxThreads</dt>
 <dd>- limit of the number of threads</dd>
-<dt>RequestFunc</dt>
+<dt>RequestProc</dt>
 <dd>- implementator of network request</dd>
 <dt>TilesProvider</dt>
 <dd>- object holding properties of current tile provider.</dd>

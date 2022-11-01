@@ -22,9 +22,8 @@ Implements blocking HTTP request with Synapse framework.
 <p>For HTTPS-Support: </p>
 
 <ol class="paragraph_spacing">
-  <li value="1"><p>USES ssl_openssl;</p></li>
-  <li value="2"><p>copy libeay32.dll</p></li>
-  <li value="3"><p>copy ssleay32.dll</p></li>
+  <li value="1"><p>DEFINE SynapseSSL</p></li>
+  <li value="2"><p>copy libeay32.dll and ssleay32.dll near the binary</p></li>
 </ol>
 
 <p> (c) Fr0sT-Brutal <a href="https://github.com/Fr0sT-Brutal/Delphi_OSMMap">https://github.com/Fr0sT-Brutal/Delphi_OSMMap</a>
@@ -34,7 +33,7 @@ Implements blocking HTTP request with Synapse framework.
 <span id="PasDoc-FuncsProcs"></span><h3 class="summary">Functions and Procedures</h3>
 <table class="summary wide_list">
 <tr class="list">
-<td class="itemcode"><code>function <strong><a href="OSM.NetworkRequest.Synapse.html#NetworkRequest">NetworkRequest</a></strong>(RequestProps: <a href="OSM.NetworkRequest.THttpRequestProps.html">THttpRequestProps</a>; ResponseStm: TStream; out ErrMsg: string): Boolean;</code></td>
+<td class="itemcode"><code>procedure <strong><a href="OSM.NetworkRequest.Synapse.html#NetworkRequest">NetworkRequest</a></strong>(RequestProps: <a href="OSM.NetworkRequest.THttpRequestProps.html">THttpRequestProps</a>; ResponseStm: TStream; var Client: <a href="OSM.NetworkRequest.html#TNetworkClient">TNetworkClient</a>);</code></td>
 </tr>
 </table>
 <span id="PasDoc-Constants"></span><h3 class="summary">Constants</h3>
@@ -42,6 +41,7 @@ Implements blocking HTTP request with Synapse framework.
 <tr class="list">
 <td class="itemcode"><code><strong><a href="OSM.NetworkRequest.Synapse.html#EngineCapabilities">EngineCapabilities</a></strong> = [<a href="OSM.NetworkRequest.html#htcProxy">htcProxy</a>, <a href="OSM.NetworkRequest.html#htcDirect">htcDirect</a>, <a href="OSM.NetworkRequest.html#htcProxyAuth">htcProxyAuth</a>, <a href="OSM.NetworkRequest.html#htcAuth">htcAuth</a>, <a href="OSM.NetworkRequest.html#htcAuthURL">htcAuthURL</a>,
     <a href="OSM.NetworkRequest.html#htcHeaders">htcHeaders</a>, <a href="OSM.NetworkRequest.html#htcTimeout">htcTimeout</a>
+     , <a href="OSM.NetworkRequest.html#htcSystemProxy">htcSystemProxy</a> 
      , <a href="OSM.NetworkRequest.html#htcTLS">htcTLS</a>  ];</code></td>
 </tr>
 </table>
@@ -49,11 +49,11 @@ Implements blocking HTTP request with Synapse framework.
 <h3 class="detail">Functions and Procedures</h3>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="NetworkRequest"></span><code>function <strong>NetworkRequest</strong>(RequestProps: <a href="OSM.NetworkRequest.THttpRequestProps.html">THttpRequestProps</a>; ResponseStm: TStream; out ErrMsg: string): Boolean;</code></td>
+<td class="itemcode"><span id="NetworkRequest"></span><code>procedure <strong>NetworkRequest</strong>(RequestProps: <a href="OSM.NetworkRequest.THttpRequestProps.html">THttpRequestProps</a>; ResponseStm: TStream; var Client: <a href="OSM.NetworkRequest.html#TNetworkClient">TNetworkClient</a>);</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
-Function executing a network request. See description of <a class="normal" href="OSM.NetworkRequest.html#TBlockingNetworkRequestFunc">OSM.NetworkRequest.TBlockingNetworkRequestFunc</a> type.<br></p>
+Procedure executing a network request. See description of <a class="normal" href="OSM.NetworkRequest.html#TBlockingNetworkRequestProc">OSM.NetworkRequest.TBlockingNetworkRequestProc</a> type.</p>
 </td></tr>
 </table>
 <h3 class="detail">Constants</h3>
@@ -61,6 +61,7 @@ Function executing a network request. See description of <a class="normal" href=
 <tr class="list">
 <td class="itemcode"><span id="EngineCapabilities"></span><code><strong>EngineCapabilities</strong> = [<a href="OSM.NetworkRequest.html#htcProxy">htcProxy</a>, <a href="OSM.NetworkRequest.html#htcDirect">htcDirect</a>, <a href="OSM.NetworkRequest.html#htcProxyAuth">htcProxyAuth</a>, <a href="OSM.NetworkRequest.html#htcAuth">htcAuth</a>, <a href="OSM.NetworkRequest.html#htcAuthURL">htcAuthURL</a>,
     <a href="OSM.NetworkRequest.html#htcHeaders">htcHeaders</a>, <a href="OSM.NetworkRequest.html#htcTimeout">htcTimeout</a>
+     , <a href="OSM.NetworkRequest.html#htcSystemProxy">htcSystemProxy</a> 
      , <a href="OSM.NetworkRequest.html#htcTLS">htcTLS</a>  ];</code></td>
 </tr>
 <tr><td colspan="1">

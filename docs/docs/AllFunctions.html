@@ -23,9 +23,19 @@
 <td class="itemdesc"><p>Calculates distance between two geo points in meters Other</p></td>
 </tr>
 <tr class="list2">
-<td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#EnsureInMap">EnsureInMap</a></td>
-<td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Ensures rect <code>Rc</code> is inside a map at zoom level <code>Zoom</code>, corrects values if necessary </p></td>
+<td class="itemname"><a class="bold" href="OSM.NetworkRequest.html#CheckEngineCap">CheckEngineCap</a></td>
+<td class="itemunit"><a class="bold" href="OSM.NetworkRequest.html">OSM.NetworkRequest</a></td>
+<td class="itemdesc"><p>Check if capability is in set of capabilities and raise exception if not</p></td>
+</tr>
+<tr class="list">
+<td class="itemname"><a class="bold" href="OSM.NetworkRequest.html#CheckEngineCaps">CheckEngineCaps</a></td>
+<td class="itemunit"><a class="bold" href="OSM.NetworkRequest.html">OSM.NetworkRequest</a></td>
+<td class="itemdesc"><p>Check if a network engine is capable of handling all the request properties.</p></td>
+</tr>
+<tr class="list2">
+<td class="itemname"><a class="bold" href="OSM.NetworkRequest.html#CheckHTTPError">CheckHTTPError</a></td>
+<td class="itemunit"><a class="bold" href="OSM.NetworkRequest.html">OSM.NetworkRequest</a></td>
+<td class="itemdesc"><p>Check if response code means HTTP error, raise exception then</p></td>
 </tr>
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#EnsureInMap">EnsureInMap</a></td>
@@ -33,34 +43,44 @@
 <td class="itemdesc"><p>Ensures point <code>Pt</code> is inside a map at zoom level <code>Zoom</code>, corrects values if necessary </p></td>
 </tr>
 <tr class="list2">
+<td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#EnsureInMap">EnsureInMap</a></td>
+<td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
+<td class="itemdesc"><p>Ensures rect <code>Rc</code> is inside a map at zoom level <code>Zoom</code>, corrects values if necessary </p></td>
+</tr>
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.TilesProvider.html#FormatTileURL">FormatTileURL</a></td>
 <td class="itemunit"><a class="bold" href="OSM.TilesProvider.html">OSM.TilesProvider</a></td>
 <td class="itemdesc"><p>Format URL for a given tile using OpenLayers-compatible URL template.</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#GeoCoordsToMap">GeoCoordsToMap</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Converts geo rect in degrees to map rect in pixels</p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#GeoCoordsToMap">GeoCoordsToMap</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Converts geo point in degrees to map point in pixels</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#GetScaleBarParams">GetScaleBarParams</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Calculates parameters of map scalebar according to zoom level <code>Zoom</code></p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#InMap">InMap</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Checks if point <code>Pt</code> is inside a map at zoom level <code>Zoom</code></p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#InMap">InMap</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Checks if rect <code>Rc</code> is inside a map at zoom level <code>Zoom</code></p></td>
+</tr>
+<tr class="list">
+<td class="itemname"><a class="bold" href="OSM.NetworkRequest.html#IsHTTPError">IsHTTPError</a></td>
+<td class="itemunit"><a class="bold" href="OSM.NetworkRequest.html">OSM.NetworkRequest</a></td>
+<td class="itemdesc"><p>Return true if response code means HTTP error</p></td>
 </tr>
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#LatitudeToMapCoord">LatitudeToMapCoord</a></td>
@@ -105,17 +125,17 @@
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.NetworkRequest.RTL.html#NetworkRequest">NetworkRequest</a></td>
 <td class="itemunit"><a class="bold" href="OSM.NetworkRequest.RTL.html">OSM.NetworkRequest.RTL</a></td>
-<td class="itemdesc"><p>Capabilities of RTL engine Function executing a network request.</p></td>
+<td class="itemdesc"><p>Capabilities of RTL engine Procedure executing a network request.</p></td>
 </tr>
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.NetworkRequest.Synapse.html#NetworkRequest">NetworkRequest</a></td>
 <td class="itemunit"><a class="bold" href="OSM.NetworkRequest.Synapse.html">OSM.NetworkRequest.Synapse</a></td>
-<td class="itemdesc"><p>Function executing a network request.</p></td>
+<td class="itemdesc"><p>Procedure executing a network request.</p></td>
 </tr>
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.NetworkRequest.WinInet.html#NetworkRequest">NetworkRequest</a></td>
 <td class="itemunit"><a class="bold" href="OSM.NetworkRequest.WinInet.html">OSM.NetworkRequest.WinInet</a></td>
-<td class="itemdesc"><p>Function executing a network request.</p></td>
+<td class="itemdesc"><p>Procedure executing a network request.</p></td>
 </tr>
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#RectFromPoints">RectFromPoints</a></td>
@@ -166,12 +186,12 @@
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#ToOuterCoords">ToOuterCoords</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
-<td class="itemdesc"><p>Convert a rect inside a viewport having given top-left point to absolute map rect</p></td>
+<td class="itemdesc"><p>Convert a point inside a viewport having given top-left point to absolute map coords</p></td>
 </tr>
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#ToOuterCoords">ToOuterCoords</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
-<td class="itemdesc"><p>Convert a point inside a viewport having given top-left point to absolute map coords</p></td>
+<td class="itemdesc"><p>Convert a rect inside a viewport having given top-left point to absolute map rect</p></td>
 </tr>
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#ToTileBoundary">ToTileBoundary</a></td>
