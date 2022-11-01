@@ -303,6 +303,8 @@ var
   ReqProps: THttpRequestProps;
   cli: TNetworkClient;
 begin
+  cli := nil;
+
   while not Terminated do
   begin
     // Queue empty - finish thread
@@ -333,6 +335,7 @@ begin
     else // unlikely but possible
       FreeAndNil(ms)
   end;
+
   FreeAndNil(cli);
 end;
 
