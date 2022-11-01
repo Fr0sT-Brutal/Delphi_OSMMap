@@ -16,13 +16,14 @@ unit OSM.NetworkRequest;
 interface
 
 uses
-  SysUtils, Classes, Contnrs, SyncObjs, Types,
+  SysUtils, Classes, Contnrs, SyncObjs, Types, TypInfo,
   OSM.SlippyMapUtils, OSM.TilesProvider;
 
 const
   // Prefix to add to proxy URLs if it only contains host:port - some URL parsers
   // handle such inputs as proto:path
   HTTPProxyProto = 'http://';
+  HTTPTLSProto = 'https';
   // Internal constant to designate OS-wide proxy
   SystemProxy = HTTPProxyProto + 'SYSTEM';
   // Timeout for connect and request
@@ -30,10 +31,13 @@ const
 
 type
   // Capabilities that a network engine has
-  THttpRequestCapabilities =
+  THttpRequestCapability =
   (
-    htcProxy,        // Can use custom HTTP CONNECT proxy
-    htcDirect,       // Can force direct connect bypassing OS-wide proxy
+    htcProxy,        // Support HTTP proxy
+    htcDirect,       // Support direct connect bypassing OS-wide proxy. In fact,
+                     // only WinInet-based engines (WinInet, RTL in Windows) use
+                     // OS-wide proxy by default. In other engines and in Linux proxy
+                     // must be set explicitly so this cap is actual for all engines.
     htcSystemProxy,  // Can use OS-wide proxy
     htcProxyAuth,    // Support auth to proxy defined in URL
     htcAuth,         // Support auth to host
@@ -42,6 +46,7 @@ type
     htcTimeout,      // Support request timeout
     htcTLS           // Support HTTPS
   );
+  THttpRequestCapabilities = set of THttpRequestCapability;
 
   // Generic properties of request. All of them except URL are **common** - could be set once
   // and applied to all requests
@@ -69,20 +74,30 @@ type
     function Clone: THttpRequestProps; virtual;
   end;
 
-  // Generic type of blocking network request function.
-  // Function must:
+  // Base class for network client object. Used when request queue is performed
+  // through the same connection. Destructor of the object is called when the
+  // queue is empty and it must free all allocated resources.
+  TNetworkClient = TObject;
+
+  // Generic type of blocking network request procedure.
+  // Procedure must:
   //
   //   - Ensure URL requisites have priority over field requisites
   //   - Set timeouts for request to ReqTimeout
-  //   - Not raise any exception
-  //   - Check response code
+  //   - Raise exception on validation/connection/request error
+  //   - Free all resources it has allocated
   //
   //   @param RequestProps - all details regarding a request
   //   @param ResponseStm - stream that accepts response data
-  //   @param ErrMsg - [OUT] error description if any
-  //   @returns success flag
-  TBlockingNetworkRequestFunc = function (RequestProps: THttpRequestProps;
-    ResponseStm: TStream; out ErrMsg: string): Boolean;
+  //   @param Client - [IN/OUT] If the engine supports multiple requests inside
+  //     the same client, this parameter is the current client object. Request
+  //     properties are supposed to remain unchanged throughout the whole queue
+  //     (only URL changes) so it's enough to assign them at client creation only @br
+  //     IN: client object to use for requests.                        @br
+  //     OUT: newly created client object if Client was @nil at input.
+  //   @raises exception on error
+  TBlockingNetworkRequestProc = procedure (RequestProps: THttpRequestProps;
+    ResponseStm: TStream; var Client: TNetworkClient);
 
   // Generic type of method to call when request is completed @br
   // ! **Called from the context of a background thread** !
@@ -106,7 +121,7 @@ type
     FMaxTasksPerThread: Cardinal;
     FMaxThreads: Cardinal;
     FGotTileCb: TGotTileCallbackBgThr;
-    FRequestFunc: TBlockingNetworkRequestFunc;
+    FRequestProc: TBlockingNetworkRequestProc;
     FTilesProvider: TTilesProvider;
     FDumbQueueOrder: Boolean;
     FCurrTileNumbersRect: TRect; // rect of current view set in tile numbers
@@ -122,11 +137,11 @@ type
     //   @param MaxTasksPerThread - if number of tasks becomes more than \
     //     `MaxTasksPerThread*%currentThreadCount%`, add one more thread
     //   @param MaxThreads - limit of the number of threads
-    //   @param RequestFunc - implementator of network request
+    //   @param RequestProc - implementator of network request
     //   @param TilesProvider - object holding properties of current tile provider.
     //     Object takes ownership on this object and destroys it on release.
     constructor Create(MaxTasksPerThread, MaxThreads: Cardinal;
-      RequestFunc: TBlockingNetworkRequestFunc;
+      RequestProc: TBlockingNetworkRequestProc;
       TilesProvider: TTilesProvider);
     destructor Destroy; override;
 
@@ -153,16 +168,31 @@ type
   end;
 
 const
+  SampleUserAgent = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0';
   // Headers that you could add to TNetworkRequestQueue. F.ex., openstreetmap.org
   // dislikes requests without user-agent.
   SampleHeaders: array[0..2] of string =
   (
-    'User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0',
+    'User-Agent: ' + SampleUserAgent,
     'Accept-Language: en-US;q=0.7,en;q=0.3',
     'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
   );
 
+// Check if capability is in set of capabilities and raise exception if not
+procedure CheckEngineCap(NeededCap: THttpRequestCapability; Caps: THttpRequestCapabilities);
+// Check if a network engine is capable of handling all the request properties.
+// Checks for: htcProxy, htcSystemProxy, htcProxyAuth, htcAuth, htcAuthURL, htcTLS, htcHeaders.
+procedure CheckEngineCaps(RequestProps: THttpRequestProps; EngineCapabilities: THttpRequestCapabilities);
+// Return true if response code means HTTP error
+function IsHTTPError(ResponseCode: Word): Boolean;
+// Check if response code means HTTP error, raise exception then
+procedure CheckHTTPError(ResponseCode: Word; const ResponseText: string);
+
 implementation
+
+const
+  S_EMsg_UnsuppCap = 'Required capability "%s" is not supported by network engine';
+  S_EMsg_HTTPErr = 'HTTP error: %d %s';
 
 type
   // Thread has completed a request.
@@ -175,16 +205,59 @@ type
   strict private
     FOwner: TNetworkRequestQueue;
     FOnRequestComplete: TOnRequestComplete;
-    FRequestFunc: TBlockingNetworkRequestFunc;
+    FRequestProc: TBlockingNetworkRequestProc;
     FTilesProvider: TTilesProvider;
   public
-    constructor Create(Owner: TNetworkRequestQueue; RequestFunc: TBlockingNetworkRequestFunc;
+    constructor Create(Owner: TNetworkRequestQueue; RequestProc: TBlockingNetworkRequestProc;
       TilesProvider: TTilesProvider);
 
     procedure Execute; override;
 
     property OnRequestComplete: TOnRequestComplete read FOnRequestComplete write FOnRequestComplete;
   end;
+
+procedure CheckEngineCap(NeededCap: THttpRequestCapability; Caps: THttpRequestCapabilities);
+begin
+  if not (NeededCap in Caps) then
+    raise Exception.CreateFmt(S_EMsg_UnsuppCap, [GetEnumName(TypeInfo(THttpRequestCapability), Ord(NeededCap))]);
+end;
+
+procedure CheckEngineCaps(RequestProps: THttpRequestProps; EngineCapabilities: THttpRequestCapabilities);
+begin
+  if Pos(RequestProps.URL, HTTPTLSProto) = 1 then
+    CheckEngineCap(htcTLS, EngineCapabilities);
+
+  if (RequestProps.HttpUserName <> '') and (RequestProps.HttpPassword <> '') then
+    CheckEngineCap(htcAuth, EngineCapabilities);
+
+  // Does URL contain auth info? "http://user:pass@host/path"
+  if Pos('@', RequestProps.URL) <> 0 then
+    CheckEngineCap(htcAuthURL, EngineCapabilities);
+
+  if RequestProps.Proxy <> '' then
+  begin
+    CheckEngineCap(htcProxy, EngineCapabilities);
+    if RequestProps.Proxy = SystemProxy then
+      CheckEngineCap(htcSystemProxy, EngineCapabilities);
+    // Does proxy URL contain auth info? "http://user:pass@host/path"
+    if Pos('@', RequestProps.Proxy) <> 0 then
+      CheckEngineCap(htcProxyAuth, EngineCapabilities);
+  end;
+
+  if RequestProps.HeaderLines <> nil then
+    CheckEngineCap(htcHeaders, EngineCapabilities);
+end;
+
+function IsHTTPError(ResponseCode: Word): Boolean;
+begin
+  Result := ResponseCode >= 400;
+end;
+
+procedure CheckHTTPError(ResponseCode: Word; const ResponseText: string);
+begin
+  if IsHTTPError(ResponseCode) then
+    raise Exception.CreateFmt(S_EMsg_HTTPErr, [ResponseCode, ResponseText]);
+end;
 
 { THttpRequestProps }
 
@@ -212,11 +285,11 @@ end;
 { TNetworkRequestThread }
 
 constructor TNetworkRequestThread.Create(Owner: TNetworkRequestQueue;
-  RequestFunc: TBlockingNetworkRequestFunc; TilesProvider: TTilesProvider);
+  RequestProc: TBlockingNetworkRequestProc; TilesProvider: TTilesProvider);
 begin
   inherited Create(True);
   FOwner := Owner;
-  FRequestFunc := RequestFunc;
+  FRequestProc := RequestProc;
   FTilesProvider := TilesProvider;
 end;
 
@@ -228,6 +301,7 @@ var
   sErrMsg: string;
   ms: TMemoryStream;
   ReqProps: THttpRequestProps;
+  cli: TNetworkClient;
 begin
   while not Terminated do
   begin
@@ -242,10 +316,16 @@ begin
       ReqProps.Proxy := HTTPProxyProto + ReqProps.Proxy;
     ms := TMemoryStream.Create;
 
-    if not FRequestFunc(ReqProps, ms, sErrMsg) then
-      FreeAndNil(ms)
-    else
+    try
+      FRequestProc(ReqProps, ms, cli);
       ms.Position := 0;
+    except on E: Exception do
+      begin
+        sErrMsg := E.Message;
+        FreeAndNil(ms);
+        FreeAndNil(cli);
+      end;
+    end;
     FreeAndNil(ReqProps);
 
     if Assigned(FOnRequestComplete) then
@@ -253,12 +333,13 @@ begin
     else // unlikely but possible
       FreeAndNil(ms)
   end;
+  FreeAndNil(cli);
 end;
 
 { TNetworkRequestQueue }
 
 constructor TNetworkRequestQueue.Create(MaxTasksPerThread, MaxThreads: Cardinal;
-  RequestFunc: TBlockingNetworkRequestFunc; TilesProvider: TTilesProvider);
+  RequestProc: TBlockingNetworkRequestProc; TilesProvider: TTilesProvider);
 begin
   FTaskQueue := TQueue.Create;
   FCS := TCriticalSection.Create;
@@ -266,7 +347,7 @@ begin
   FCurrentTasks := TList.Create;
   FMaxTasksPerThread := MaxTasksPerThread;
   FMaxThreads := MaxThreads;
-  FRequestFunc := RequestFunc;
+  FRequestProc := RequestProc;
   FRequestProps := THttpRequestProps.Create;
   FTilesProvider := TilesProvider;
 end;
@@ -391,7 +472,7 @@ var thr: TNetworkRequestThread;
 begin
   Lock;
   try
-    thr := TNetworkRequestThread.Create(Self, FRequestFunc, FTilesProvider);
+    thr := TNetworkRequestThread.Create(Self, FRequestProc, FTilesProvider);
     thr.OnRequestComplete := DoRequestComplete;
     thr.Start;
     FThreads.Add(thr);

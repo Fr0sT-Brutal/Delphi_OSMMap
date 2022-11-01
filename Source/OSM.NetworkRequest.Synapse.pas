@@ -4,9 +4,8 @@
     based on code by Simon Kroik, 06.2018, kroiksm@@gmx.de
 
   For HTTPS-Support:
-    1) USES ssl_openssl;
-    2) copy libeay32.dll
-    3) copy ssleay32.dll
+    1) DEFINE SynapseSSL
+    2) copy libeay32.dll and ssleay32.dll near the binary
 
   (c) Fr0sT-Brutal https://github.com/Fr0sT-Brutal/Delphi_OSMMap
 
@@ -19,80 +18,102 @@ interface
 
 uses
   SysUtils, Classes,
-  HTTPSend, SynaUtil,
+  HTTPSend, SynaUtil, SynaMisc, {$IFDEF SynapseSSL} ssl_openssl, {$ENDIF}
   OSM.NetworkRequest;
 
 const
   // Capabilities of Synapse engine
   EngineCapabilities = [htcProxy, htcDirect, htcProxyAuth, htcAuth, htcAuthURL,
     htcHeaders, htcTimeout
-    {$IF DECLARED(TSSLOpenSSL)} , htcTLS {$ENDIF} ];
+    {$IFDEF MSWINDOWS} , htcSystemProxy {$ENDIF}
+    {$IF DECLARED(TSSLOpenSSL)} , htcTLS {$IFEND} ];
 
-// Function executing a network request. See description of
-// OSM.NetworkRequest.TBlockingNetworkRequestFunc type.@br
-function NetworkRequest(RequestProps: THttpRequestProps;
-  ResponseStm: TStream; out ErrMsg: string): Boolean;
+// Procedure executing a network request. See description of
+// OSM.NetworkRequest.TBlockingNetworkRequestProc type.
+procedure NetworkRequest(RequestProps: THttpRequestProps;
+  ResponseStm: TStream; var Client: TNetworkClient);
 
 implementation
 
 const
-  SEMsg_HTTPErr = 'HTTP error: %d %s';
+  SUserAgentHdrName = 'User-Agent: ';
 
-function NetworkRequest(RequestProps: THttpRequestProps;
-  ResponseStm: TStream; out ErrMsg: string): Boolean;
+// Procedure executing a network request. See description of
+// OSM.NetworkRequest.TBlockingNetworkRequestProc type.
+procedure NetworkRequest(RequestProps: THttpRequestProps;
+  ResponseStm: TStream; var Client: TNetworkClient);
 var
-  HTTP: THTTPSend;
-  User, Pass, ProxyUser, ProxyPass, ProxyHost, ProxyPort, Dummy: string;
+  httpCli: THTTPSend;
+  Prot, User, Pass, ProxyUser, ProxyPass, ProxyHost, ProxyPort, Dummy: string;
+  {$IFDEF MSWINDOWS}
+  ProxyProps: TProxySetting;
+  {$ENDIF}
 begin
-  ErrMsg := '';
-
-  HTTP := THTTPSend.Create;
-  try
-    HTTP.Timeout := ReqTimeout;
+  if Client = nil then
+  begin
+    CheckEngineCaps(RequestProps, EngineCapabilities);
+    Client := THTTPSend.Create;
+    httpCli := THTTPSend(Client);
+    httpCli.Protocol := '1.1';   // 1.0 by default thus killing keep-alive feature
+    if htcTimeout in EngineCapabilities then
+      httpCli.Timeout := ReqTimeout;
     // Ensure URL requisites have priority over field requisites
-    ParseURL(RequestProps.URL, Dummy, User, Pass, Dummy, Dummy, Dummy, Dummy);
+    ParseURL(RequestProps.URL, Prot, User, Pass, Dummy, Dummy, Dummy, Dummy);
     if (User <> '') and (Pass <> '') then
     begin
-      HTTP.UserName := User;
-      HTTP.Password := Pass;
+      httpCli.UserName := User;
+      httpCli.Password := Pass;
     end
     else
     begin
-      HTTP.UserName := RequestProps.HttpUserName;
-      HTTP.Password := RequestProps.HttpPassword;
+      httpCli.UserName := RequestProps.HttpUserName;
+      httpCli.Password := RequestProps.HttpPassword;
     end;
 
     if RequestProps.Proxy <> '' then
     begin
+      {$IFDEF MSWINDOWS}
+      if RequestProps.Proxy = SystemProxy then
+      begin
+        ProxyProps := GetIEProxy(Prot);
+        // Bypass list is ignored
+        ProxyHost := ProxyProps.Host;
+        ProxyPort := ProxyProps.Port;
+      end
+      else
+      {$ENDIF}
       ParseURL(RequestProps.Proxy, Dummy, ProxyUser, ProxyPass, ProxyHost, ProxyPort, Dummy, Dummy);
-      HTTP.ProxyHost := ProxyHost;
-      HTTP.ProxyPort := ProxyPort;
-      HTTP.ProxyUser := ProxyUser;
-      HTTP.ProxyPass := ProxyPass;
+      httpCli.ProxyHost := ProxyHost;
+      httpCli.ProxyPort := ProxyPort;
+      httpCli.ProxyUser := ProxyUser;
+      httpCli.ProxyPass := ProxyPass;
     end;
-
-    if RequestProps.HeaderLines <> nil then
-      HTTP.Headers.AddStrings(RequestProps.HeaderLines);
-
-    Result := HTTP.HTTPMethod('GET', RequestProps.URL);
-
-    // check network error
-    if not Result then
-    begin
-      ErrMsg := HTTP.Sock.LastErrorDesc;
-      Exit;
-    end;
-    // check HTTP error
-    if HTTP.ResultCode >= 400 then
-    begin
-      ErrMsg := Format(SEMsg_HTTPErr, [HTTP.ResultCode, HTTP.ResultString]);
-      Exit(False);
-    end;
-    // OK
-    ResponseStm.CopyFrom(HTTP.Document, 0);
-  finally
-    FreeAndNil(HTTP);
+  end
+  else
+  begin
+    httpCli := THTTPSend(Client);
+    // Synapse fills Headers with response headers so we need to clear them and
+    // fill again before the new request
+    httpCli.Clear;
   end;
+
+  if RequestProps.HeaderLines <> nil then
+  begin
+    httpCli.Headers.AddStrings(RequestProps.HeaderLines);
+    // Synapse doesn't take User agent from headers but from .UserAgent property.
+    // So check if we have it defined and set explicitly
+    for Dummy in RequestProps.HeaderLines do
+      if Pos(SUserAgentHdrName, Dummy) = 1 then
+        httpCli.UserAgent := Copy(Dummy, Length(SUserAgentHdrName) + 1, MaxInt);
+  end;
+
+  // try to get, check network error
+  if not httpCli.HTTPMethod('GET', RequestProps.URL) then
+    raise Exception.Create(httpCli.Sock.LastErrorDesc);
+  // check httpCli error
+  CheckHTTPError(httpCli.ResultCode, httpCli.ResultString);
+  // OK
+  ResponseStm.CopyFrom(httpCli.Document, 0);
 end;
 
 end.
