@@ -18,13 +18,15 @@ interface
 
 uses
   SysUtils, Classes,
-  HTTPSend, SynaUtil, {$IFDEF SynapseSSL} ssl_openssl, {$ENDIF}
+  HTTPSend, SynaUtil, SynaMisc, {$IFDEF SynapseSSL} ssl_openssl, {$ENDIF}
   OSM.NetworkRequest;
 
 const
   // Capabilities of Synapse engine
   EngineCapabilities = [htcProxy, htcDirect, htcProxyAuth, htcAuth, htcAuthURL,
-    htcHeaders, htcTimeout {$IF DECLARED(TSSLOpenSSL)} , htcTLS {$IFEND} ];
+    htcHeaders, htcTimeout
+    {$IFDEF MSWINDOWS} , htcSystemProxy {$ENDIF}
+    {$IF DECLARED(TSSLOpenSSL)} , htcTLS {$IFEND} ];
 
 // Procedure executing a network request. See description of
 // OSM.NetworkRequest.TBlockingNetworkRequestProc type.
@@ -42,7 +44,10 @@ procedure NetworkRequest(RequestProps: THttpRequestProps;
   ResponseStm: TStream; var Client: TNetworkClient);
 var
   httpCli: THTTPSend;
-  User, Pass, ProxyUser, ProxyPass, ProxyHost, ProxyPort, Dummy: string;
+  Prot, User, Pass, ProxyUser, ProxyPass, ProxyHost, ProxyPort, Dummy: string;
+  {$IFDEF MSWINDOWS}
+  ProxyProps: TProxySetting;
+  {$ENDIF}
 begin
   if Client = nil then
   begin
@@ -53,7 +58,7 @@ begin
     if htcTimeout in EngineCapabilities then
       httpCli.Timeout := ReqTimeout;
     // Ensure URL requisites have priority over field requisites
-    ParseURL(RequestProps.URL, Dummy, User, Pass, Dummy, Dummy, Dummy, Dummy);
+    ParseURL(RequestProps.URL, Prot, User, Pass, Dummy, Dummy, Dummy, Dummy);
     if (User <> '') and (Pass <> '') then
     begin
       httpCli.UserName := User;
@@ -67,6 +72,16 @@ begin
 
     if RequestProps.Proxy <> '' then
     begin
+      {$IFDEF MSWINDOWS}
+      if RequestProps.Proxy = SystemProxy then
+      begin
+        ProxyProps := GetIEProxy(Prot);
+        // Bypass list is ignored
+        ProxyHost := ProxyProps.Host;
+        ProxyPort := ProxyProps.Port;
+      end
+      else
+      {$ENDIF}
       ParseURL(RequestProps.Proxy, Dummy, ProxyUser, ProxyPass, ProxyHost, ProxyPort, Dummy, Dummy);
       httpCli.ProxyHost := ProxyHost;
       httpCli.ProxyPort := ProxyPort;
