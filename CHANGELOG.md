@@ -1,3 +1,17 @@
+0.9.4
+=====
+
+`[BREAKING]`
+
+- Major redesign of NetworkRequest. Reuse connections to speedup downloads and reduce server load. Engine capabilities are checked against request details. API changes for implementations of NetworkRequest only, no changes visible to end-user.
+- OSM.NetworkRequest.pas, TBlockingNetworkRequestFunc => TBlockingNetworkRequestProc, must raise exception on error thus removing excess ErrMsg and result flag; add Client parameter
+
+`Added`
+
+- OSM.NetworkRequest.Synapse.pas, to use SSL, define `SynapseSSL` in project options.
+- Updated Synapse to the last release version with original file structure. Added SSL libs from Synapse site (untested!)
+- OSM.NetworkRequest.Synapse.pas, supports System proxy
+
 0.9.3
 =====
 
@@ -5,9 +19,8 @@
 
 `Added`
 
-- OSM.TilesProvider.pas, `FormatTileURL` function
-* OSM.TilesProvider.*.pas, use new template-base system for retrieval of tile URL
 - OpenTopoMap tile provider
+- OSM.TilesProvider.*.pas, use new template-base system for retrieval of tile URL
 
 0.9.2
 =====
@@ -28,12 +41,16 @@
 0.9.1
 =====
 
-- Added Google map tile provider
+`Added`
+
+- Google map tile provider
 
 0.9.0
 =====
 
-- Added ability to use map tile provider other than OSM. Added HERE provider. Added property `Properties` to access provider-specific properties.
+`Added`
+
+- Ability to use map tile provider other than OSM. Added HERE provider. Added property `Properties` to access provider-specific properties.
 
 `[BREAKING]`
 
