@@ -33,8 +33,11 @@ type
   // Capabilities that a network engine has
   THttpRequestCapability =
   (
-    htcProxy,        // Can use custom HTTP CONNECT proxy
-    htcDirect,       // Can force direct connect bypassing OS-wide proxy
+    htcProxy,        // Support HTTP proxy
+    htcDirect,       // Support direct connect bypassing OS-wide proxy. In fact,
+                     // only WinInet-based engines (WinInet, RTL in Windows) use
+                     // OS-wide proxy by default. In other engines and in Linux proxy
+                     // must be set explicitly so this cap is actual for all engines.
     htcSystemProxy,  // Can use OS-wide proxy
     htcProxyAuth,    // Support auth to proxy defined in URL
     htcAuth,         // Support auth to host
