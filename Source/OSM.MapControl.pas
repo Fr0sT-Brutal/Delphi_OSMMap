@@ -83,6 +83,15 @@ type
   // Notification of an action over a mapmark in a list
   TOnItemNotify = procedure (Sender: TObject; Item: TMapMark; Action: TListNotification) of object;
 
+  // Options for TMapMarkList.Find. Default is empty set
+  TMapMarkFindOption = (
+    mfoConsiderGlyphSize, // If set (for map pixels only): consider mapmark glyph size as well. @br
+                          // If not set (default) : search by exact coords.
+    mfoOnlyVisible        // If set: consider only visible mapmarks.                           @br
+                          // If not set (default), consider all mapmarks
+  );
+  TMapMarkFindOptions = set of TMapMarkFindOption;
+
   // List of mapmarks.
   // Items are sorted by layer number and painted in this order, ascending
   TMapMarkList = class
@@ -103,8 +112,8 @@ type
     function Get(Index: Integer): TMapMark; inline;
     // Find the next map mark that is near specified coordinates.
     //   @param GeoCoords - coordinates to search
-    //   @param ConsiderMapMarkSize - widen an area to search by mapmark size
-    //   @param(PrevIndex - index of previous found mapmark in the list.
+    //   @param Options - set of search options
+    //   @param (StartIndex - index of previous found mapmark in the list.
     //     `-1` (default) will start from the 1st element)
     //   @returns index of mapmark in the list, `-1` if not found.
     //
@@ -117,14 +126,15 @@ type
     //     ```pascal
     //     idx := -1;
     //     repeat
-    //       idx := MapMarks.Find(Point, idx);
+    //       idx := MapMarks.Find(Point, [], idx);
     //       if idx = -1 then Break;
     //       ... do something with MapMarks[idx] ...
     //     until False;
     //     ```
-    function Find(const GeoCoords: TGeoPoint; ConsiderMapMarkSize: Boolean = True; StartIndex: Integer = -1): Integer; overload;
+    function Find(const GeoCoords: TGeoPoint; Options: TMapMarkFindOptions = []; StartIndex: Integer = -1): Integer; overload;
     // The same as above but searches within specified rectangle
-    function Find(const GeoRect: TGeoRect; ConsiderMapMarkSize: Boolean = True; StartIndex: Integer = -1): Integer; overload;
+    function Find(const GeoRect: TGeoRect; Options: TMapMarkFindOptions = []; StartIndex: Integer = -1): Integer; overload;
+    function Find(const MapPt: TPoint; Options: TMapMarkFindOptions; StartIndex: Integer): Integer; overload;
     // Find map mark by its .Data field
     //   @param Data - value to search for
     //   @returns index of mapmark in the list having .Data field same as Data, `-1` if not found.
@@ -286,6 +296,9 @@ type
     procedure ZoomToArea(const GeoRect: TGeoRect);
     // Zoom to fill view area as much as possible
     procedure ZoomToFit;
+    // Returns most recently added visible map mark located at given map point
+    // considering its glyph size.
+    function MapMarkAtPos(const MapPt: TPoint): TMapMark;
 
     // Set properties of cache image and rebuild it
     procedure SetCacheImageProperties(TilesHorz, TilesVert, MarginSize: Cardinal);
@@ -426,6 +439,9 @@ begin
   RegisterComponents('OSM', [TMapControl]);
 end;
 
+const
+  S_Err_OptionNotAllowed = 'TMapMarkList.Find: option is not allowed in this mode';
+
 // *** Utils ***
 
 // Like Client<=>Screen
@@ -463,6 +479,14 @@ begin
     Point(Rect.Left, Rect.Bottom),
     Point(Rect.Left + Rect.Width div 2, Rect.Top),
     Rect.BottomRight]);
+end;
+
+// Return rectangle with center point in CenterPt and with size Size
+function RectByCenterAndSize(const CenterPt: TPoint; Size: Integer): TRect;
+begin
+  Result.TopLeft := CenterPt;
+  Result.Offset(-Size div 2, -Size div 2);
+  Result.Size := TSize.Create(Size, Size);
 end;
 
 { TMapMark }
@@ -532,30 +556,14 @@ begin
   Result := FList.GetEnumerator;
 end;
 
-function TMapMarkList.Find(const GeoCoords: TGeoPoint; ConsiderMapMarkSize: Boolean; StartIndex: Integer): Integer;
+function TMapMarkList.Find(const GeoCoords: TGeoPoint; Options: TMapMarkFindOptions; StartIndex: Integer): Integer;
 var
   i: Integer;
   MapMark: TMapMark;
 begin
-  if StartIndex = -1 then
-    StartIndex := 0;
+  if mfoConsiderGlyphSize in Options then
+    raise Exception.Create(S_Err_OptionNotAllowed);
 
-  for i := StartIndex to Count - 1 do
-  begin
-    MapMark := Get(i);
-    {}// TODO ConsiderMapMarkSize
-    if SameValue(GeoCoords.Long, MapMark.Coord.Long) and SameValue(GeoCoords.Lat, MapMark.Coord.Lat) then
-      Exit(i);
-  end;
-
-  Result := -1;
-end;
-
-function TMapMarkList.Find(const GeoRect: TGeoRect; ConsiderMapMarkSize: Boolean; StartIndex: Integer): Integer;
-var
-  i: Integer;
-  MapMark: TMapMark;
-begin
   if StartIndex = -1 then
     StartIndex := 0
   else
@@ -564,8 +572,70 @@ begin
   for i := StartIndex to Count - 1 do
   begin
     MapMark := Get(i);
-    {}// TODO ConsiderMapMarkSize
+    // Consider mfoOnlyVisible option
+    if (mfoOnlyVisible in Options) and not MapMark.Visible then
+      Continue;
+    if GeoCoords.Same(MapMark.Coord) then
+      Exit(i);
+  end;
+
+  Result := -1;
+end;
+
+function TMapMarkList.Find(const GeoRect: TGeoRect; Options: TMapMarkFindOptions; StartIndex: Integer): Integer;
+var
+  i: Integer;
+  MapMark: TMapMark;
+begin
+  if mfoConsiderGlyphSize in Options then
+    raise Exception.Create(S_Err_OptionNotAllowed);
+
+  if StartIndex = -1 then
+    StartIndex := 0
+  else
+    Inc(StartIndex);
+
+  for i := StartIndex to Count - 1 do
+  begin
+    MapMark := Get(i);
+    // Consider mfoOnlyVisible option
+    if (mfoOnlyVisible in Options) and not MapMark.Visible then
+      Continue;
+
     if GeoRect.Contains(MapMark.Coord) then
+      Exit(i);
+  end;
+
+  Result := -1;
+end;
+
+function TMapMarkList.Find(const MapPt: TPoint; Options: TMapMarkFindOptions; StartIndex: Integer): Integer;
+var
+  i: Integer;
+  MapMark: TMapMark;
+  GlyphSize: Integer;
+begin
+  // Without considering glyph size it's the equivalent of Find(GeoPt)
+  if not (mfoConsiderGlyphSize in Options) then
+    Exit(Find(FMap.MapToGeoCoords(MapPt), Options, StartIndex));
+
+  if StartIndex = -1 then
+    StartIndex := 0
+  else
+    Inc(StartIndex);
+
+  for i := StartIndex to Count - 1 do
+  begin
+    MapMark := Get(i);
+    // Consider mfoOnlyVisible option
+    if (mfoOnlyVisible in Options) and not MapMark.Visible then
+      Continue;
+    // Calc the glyph area considering mapmark options
+    if propGlyphStyle in MapMark.CustomProps
+      then GlyphSize := MapMark.GlyphStyle.Size
+      else GlyphSize := FMap.MapMarkGlyphStyle.Size;
+    // Determine rounding rect of glyph with mapmark's coords as center point
+    if FMap.MapToGeoCoords(RectByCenterAndSize(MapPt, GlyphSize)).Contains(MapMark.Coord) then
       Exit(i);
   end;
 
@@ -793,8 +863,8 @@ begin
       mmDrag:
         begin
           MousePos := ViewToMap(Point(X, Y));
-          // Position is inside map and no mapmark below
-          if InMap(Zoom, MousePos) and (FMapMarkList.Find(MapToGeoCoords(MousePos), True) = -1) then
+          // Position is inside map and no visible mapmark below
+          if MapMarkAtPos(MousePos) = nil then
             BeginDrag(False, -1);  // < 0 - use the DragThreshold property of the global Mouse variable (c) help
           inherited;
         end;
@@ -941,7 +1011,7 @@ end;
 
 procedure TMapControl.SetZoom(Value: Integer);
 begin
-  SetZoom(Value, Point(0,0));
+  SetZoom(Value, Point(0, 0));
 end;
 
 // Determines cache image size according to control and map size
@@ -1393,6 +1463,30 @@ begin
   ZoomToArea(MapToGeoCoords(FMapRect));
 end;
 
+function TMapControl.MapMarkAtPos(const MapPt: TPoint): TMapMark;
+var
+  idx: Integer;
+  Mark: TMapMark;
+begin
+  Result := nil;
+
+  // Check if position is inside map
+  if not InMap(Zoom, MapPt) then Exit;
+
+  // Check if there's any mapmark with given options. Loop through all
+  // mapmarks that satisfy the conditions until the most recently added one is found
+  idx := -1;
+  repeat
+    idx := FMapMarkList.Find(MapPt, [mfoOnlyVisible, mfoConsiderGlyphSize], idx);
+    if idx = -1 then Exit;
+    Mark := FMapMarkList[idx];
+    // Check if mapmark belongs to a visible layer
+    if not (Mark.Layer in FVisibleLayers) then Exit;
+
+    Result := Mark;
+  until False;
+end;
+
 // Set properties of cache image and rebuild it
 //   @param TilesHorz - width (Horizontal dimension) of cache image, in number of tiles
 //   @param TilesVert - height (Vertical dimension) of cache image, in number of tiles
@@ -1438,11 +1532,8 @@ begin
     then pEffGlStyle := @MapMark.GlyphStyle
     else pEffGlStyle := @MapMarkGlyphStyle;
 
-  // Determine size
-  MapMarkRect.TopLeft := MMPt;
-  MapMarkRect.Offset(-pEffGlStyle.Size div 2, -pEffGlStyle.Size div 2);
-  MapMarkRect.Size := TSize.Create(pEffGlStyle.Size, pEffGlStyle.Size);
-
+  // Determine rounding rect of glyph with mapmark's coords as center point
+  MapMarkRect := RectByCenterAndSize(MMPt, pEffGlStyle.Size);
   Canvas.Brush.Color := pEffGlStyle.BgColor;
   Canvas.Pen.Color := pEffGlStyle.BorderColor;
 
@@ -1510,7 +1601,7 @@ begin
     GeoRect := MapToGeoCoords(Rect);
     // Draw marks within geo rect
     repeat
-      idx := FMapMarkList.Find(GeoRect, True, idx);
+      idx := FMapMarkList.Find(GeoRect, [mfoOnlyVisible], idx);
       if idx = -1 then Break;
       DrawMapMark(Canvas, FMapMarkList[idx]);
     until False;
