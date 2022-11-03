@@ -175,7 +175,7 @@ type
   // Control displaying a map or its visible part.
   TMapControl = class(TScrollBox)
   strict private
-    FMapSize: TSize;         // current map dims in pixels
+    FMapRect: TRect;         // current map dimensions in pixels, with TopLeft always at (0,0)
     FCacheImage: TBitmap;    // drawn tiles (it could be equal to or larger than view area!)
     FCopyright: TBitmap;     // lazily created cache images for
     FScaleLine: TBitmap;     //    scale line and copyright
@@ -910,10 +910,10 @@ begin
 
   ViewBindPt := MapToView(MapBindPt); // save bind point in view coords, we'll reposition to it after zoom
   FZoom := Value;
-  FMapSize := TSize.Create(MapWidth(FZoom), MapHeight(FZoom));
+  FMapRect := TRect.Create(Point(0, 0), MapWidth(FZoom), MapHeight(FZoom));
 
-  HorzScrollBar.Range := FMapSize.cx;
-  VertScrollBar.Range := FMapSize.cy;
+  HorzScrollBar.Range := FMapRect.Width;
+  VertScrollBar.Range := FMapRect.Height;
 
   // init copyright bitmap if not inited yet and draw it
   if not (moDontDrawScale in FMapOptions) then
@@ -955,8 +955,8 @@ begin
   CtrlSize.cy := ToTileHeightGreater(ClientHeight);
 
   // cache dims = Max(control+margins, Min(map, default+margins))
-  CacheSize.cx := Min(FMapSize.cx, FCacheImageTilesH*TILE_IMAGE_WIDTH + FCacheMarginSize*TILE_IMAGE_WIDTH);
-  CacheSize.cy := Min(FMapSize.cy, FCacheImageTilesV*TILE_IMAGE_HEIGHT + FCacheMarginSize*TILE_IMAGE_HEIGHT);
+  CacheSize.cx := Min(FMapRect.Width, FCacheImageTilesH*TILE_IMAGE_WIDTH + FCacheMarginSize*TILE_IMAGE_WIDTH);
+  CacheSize.cy := Min(FMapRect.Height, FCacheImageTilesV*TILE_IMAGE_HEIGHT + FCacheMarginSize*TILE_IMAGE_HEIGHT);
 
   // Cast to signed to get rid of warning
   CacheSize.cx := Max(CacheSize.cx, CtrlSize.cx + Integer(FCacheMarginSize)*TILE_IMAGE_WIDTH);
@@ -1036,8 +1036,8 @@ begin
   FCacheImage.Canvas.Brush.Color := Self.Color;
   FCacheImage.Canvas.FillRect(TRect.Create(Point(0, 0), FCacheImage.Width, FCacheImage.Height));
   // Get dimensions of cache
-  CacheHorzCount := Min(FMapSize.cx - FCacheImageRect.Left, FCacheImageRect.Width) div TILE_IMAGE_WIDTH;
-  CacheVertCount := Min(FMapSize.cy - FCacheImageRect.Top, FCacheImageRect.Height) div TILE_IMAGE_HEIGHT;
+  CacheHorzCount := Min(FMapRect.Width - FCacheImageRect.Left, FCacheImageRect.Width) div TILE_IMAGE_WIDTH;
+  CacheVertCount := Min(FMapRect.Height - FCacheImageRect.Top, FCacheImageRect.Height) div TILE_IMAGE_HEIGHT;
   // Get top-left of cache in tiles
   CacheHorzNum := FCacheImageRect.Left div TILE_IMAGE_WIDTH;
   CacheVertNum := FCacheImageRect.Top div TILE_IMAGE_HEIGHT;
@@ -1390,7 +1390,7 @@ end;
 // Zoom to fill view area as much as possible
 procedure TMapControl.ZoomToFit;
 begin
-  ZoomToArea(MapToGeoCoords(TRect.Create(Point(0, 0), FMapSize.cx, FMapSize.cy)));
+  ZoomToArea(MapToGeoCoords(FMapRect));
 end;
 
 // Set properties of cache image and rebuild it
@@ -1495,6 +1495,15 @@ var
   GeoRect: TGeoRect;
   Idx: Integer;
 begin
+  // Whole map? Just loop through all marks (faster)
+  if Rect = FMapRect then
+  begin
+    for idx := 0 to FMapMarkList.Count - 1 do
+      DrawMapMark(Canvas, FMapMarkList[idx]);
+    Exit;
+  end;
+
+  // Only a part of the map - select marks only within the area
   if FMapMarkList.Count > 0 then
   begin
     idx := -1;
@@ -1503,7 +1512,7 @@ begin
     repeat
       idx := FMapMarkList.Find(GeoRect, True, idx);
       if idx = -1 then Break;
-      DrawMapMark(Canvas, FMapMarkList.Get(idx));
+      DrawMapMark(Canvas, FMapMarkList[idx]);
     until False;
   end;
 end;
@@ -1594,7 +1603,7 @@ end;
 
 function TMapControl.SaveToBitmap(DrawOptions: TMapOptions; DrawMapMarks: Boolean): TBitmap;
 begin
-  Result := SaveToBitmap(Rect(0, 0, FMapSize.cx, FMapSize.cy), DrawOptions, DrawMapMarks);
+  Result := SaveToBitmap(FMapRect, DrawOptions, DrawMapMarks);
 end;
 
 end.
