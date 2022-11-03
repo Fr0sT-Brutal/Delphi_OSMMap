@@ -42,6 +42,10 @@ type
     Long: Double;
     Lat: Double;
     constructor Create(Long, Lat: Double);
+    // Check if two points have the same coords within configurable area
+    // (for simplicity effective area is rectangle with current point at center,
+    // height = VertArea*2 and width = HorzArea*2)
+    function Same(const GeoPt: TGeoPoint; HorzArea: Double = 0; VertArea: Double = 0): Boolean;
   end;
 
   // Region on a map defined by two pairs of longitude and latitude.
@@ -307,6 +311,12 @@ begin
   CheckValidLat(Lat);
   Self.Long := Long;
   Self.Lat := Lat;
+end;
+
+function TGeoPoint.Same(const GeoPt: TGeoPoint; HorzArea: Double = 0; VertArea: Double = 0): Boolean;
+begin
+  Result := SameValue(Self.Long, GeoPt.Long, HorzArea) and
+            SameValue(Self.Lat,  GeoPt.Lat,  VertArea);
 end;
 
 { TGeoRect }
