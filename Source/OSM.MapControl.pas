@@ -41,6 +41,7 @@ type
 
   // Visual properties of mapmark's caption
   TMapMarkCaptionStyle = record
+    Visible: Boolean;
     Color: TColor;
     BgColor: TColor;
     DX, DY: Integer;
@@ -394,6 +395,7 @@ const
   // Default style of mapmark caption.
   // TMapControl.MapMarkGlyphStyle is init-ed with this value
   DefaultMapMarkCaptionStyle: TMapMarkCaptionStyle = (
+    Visible: True;
     Color: clMenuText;
     BgColor: clWindow;
     DX: 3;
@@ -1435,26 +1437,30 @@ begin
     if propCaptionStyle in MapMark.CustomProps
       then pEffCapStyle := @MapMark.CaptionStyle
       else pEffCapStyle := @MapMarkCaptionStyle;
-    // Determine effective caption font
-    if propFont in MapMark.CustomProps
-      then CapFont := MapMark.CaptionFont
-      else CapFont := MapMarkCaptionFont;
 
-    Canvas.Font := CapFont;
-    Canvas.Font.Color := pEffCapStyle.Color;
-
-    {}// TODO: text position, alignment, ...
-    MMPt := Point(MapMarkRect.Right + pEffCapStyle.DX, MapMarkRect.Top + pEffCapStyle.DY);
-
-    if pEffCapStyle.Transparent then
-      Canvas.Brush.Style := bsClear
-    else
+    if pEffCapStyle.Visible then
     begin
-      Canvas.Brush.Style := bsSolid;
-      Canvas.Brush.Color := pEffCapStyle.BgColor;
-    end;
+      // Determine effective caption font
+      if propFont in MapMark.CustomProps
+        then CapFont := MapMark.CaptionFont
+        else CapFont := MapMarkCaptionFont;
 
-    Canvas.TextOut(MMPt.X, MMPt.Y, MapMark.Caption);
+      Canvas.Font := CapFont;
+      Canvas.Font.Color := pEffCapStyle.Color;
+
+      {}// TODO: text position, alignment, ...
+      MMPt := Point(MapMarkRect.Right + pEffCapStyle.DX, MapMarkRect.Top + pEffCapStyle.DY);
+
+      if pEffCapStyle.Transparent then
+        Canvas.Brush.Style := bsClear
+      else
+      begin
+        Canvas.Brush.Style := bsSolid;
+        Canvas.Brush.Color := pEffCapStyle.BgColor;
+      end;
+
+      Canvas.TextOut(MMPt.X, MMPt.Y, MapMark.Caption);
+    end;
   end;
 end;
 
