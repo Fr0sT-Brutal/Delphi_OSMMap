@@ -99,7 +99,8 @@ type
     destructor Destroy; override;
     procedure BeginUpdate;
     procedure EndUpdate;
-    function Get(Index: Integer): TMapMark;
+    function GetEnumerator: TObjectList<TMapMark>.TEnumerator; inline;
+    function Get(Index: Integer): TMapMark; inline;
     // Find the next map mark that is near specified coordinates.
     //   @param GeoCoords - coordinates to search
     //   @param ConsiderMapMarkSize - widen an area to search by mapmark size
@@ -124,6 +125,10 @@ type
     function Find(const GeoCoords: TGeoPoint; ConsiderMapMarkSize: Boolean = True; StartIndex: Integer = -1): Integer; overload;
     // The same as above but searches within specified rectangle
     function Find(const GeoRect: TGeoRect; ConsiderMapMarkSize: Boolean = True; StartIndex: Integer = -1): Integer; overload;
+    // Find map mark by its .Data field
+    //   @param Data - value to search for
+    //   @returns index of mapmark in the list having .Data field same as Data, `-1` if not found.
+    function Find(Data: Pointer): Integer; overload;
     // Create TMapMark object and initially assign values from owner map's fields
     function NewItem: TMapMark;
     // Simple method to add a mapmark by coords, caption and layer
@@ -131,12 +136,14 @@ type
     // Add a mapmark with fully customizable properties. `MapMark` should be init-ed by NewItem
     function Add(MapMark: TMapMark): TMapMark; overload;
     // Remove mapmark object
-    procedure Delete(MapMark: TMapMark);
-    function Count: Integer;
+    procedure Delete(Ind: Integer); overload;
+    procedure Delete(MapMark: TMapMark); overload;
+    function Count: Integer; inline;
     procedure Clear;
     // Assigning a handler for this event allows implementing custom init, disposal
-    // of allocated memory etc.
+    // of allocated memory and so on
     property OnItemNotify: TOnItemNotify read FOnItemNotify write FOnItemNotify;
+    property Items[Index: Integer]: TMapMark read Get; default;
   end;
 
   // Options of map control
@@ -520,6 +527,11 @@ begin
   Result := FList[Index];
 end;
 
+function TMapMarkList.GetEnumerator: TObjectList<TMapMark>.TEnumerator;
+begin
+  Result := FList.GetEnumerator;
+end;
+
 function TMapMarkList.Find(const GeoCoords: TGeoPoint; ConsiderMapMarkSize: Boolean; StartIndex: Integer): Integer;
 var
   i: Integer;
@@ -560,6 +572,14 @@ begin
   Result := -1;
 end;
 
+function TMapMarkList.Find(Data: Pointer): Integer;
+begin
+  for Result := 0 to Count - 1 do
+    if Get(Result).Data = Data then
+      Exit;
+  Result := -1;
+end;
+
 function TMapMarkList.NewItem: TMapMark;
 begin
   Result := TMapMark.Create;
@@ -590,15 +610,20 @@ begin
     FMap.Invalidate;
 end;
 
+procedure TMapMarkList.Delete(Ind: Integer);
+begin
+  FList.Delete(Ind);
+
+  if FUpdateCount = 0 then // redraw map view if update is not held back
+    FMap.Invalidate;
+end;
+
 procedure TMapMarkList.Delete(MapMark: TMapMark);
 var i: Integer;
 begin
   // Binary search is faster
   if FList.BinarySearch(MapMark, i) then
     FList.Delete(i);
-
-  if FUpdateCount = 0 then // redraw map view if update is not held back
-    FMap.Invalidate;
 end;
 
 procedure TMapMarkList.ListNotify(Sender: TObject; const Item: TMapMark; Action: TCollectionNotification);
