@@ -160,8 +160,12 @@ type
   TMapOption = (moDontDrawCopyright, moDontDrawScale);
   TMapOptions = set of TMapOption;
 
-  // Mode of handling of plain left mouse button press
-  TMapMouseMode = (mmDrag, mmSelect);
+  // Mode of current handling of mouse events:
+  TMapMouseMode = (
+    mmNone,       // default handling - mouse doesn't activate the map
+    mmDragging,   // dragging the map
+    mmSelecting   // drawing selection box
+  );
 
   // Callback to get an image of a single tile having number (`TileHorzNum`;`TileVertNum`).
   // Must return bitmap of a tile or @nil if it's not available at the moment
@@ -180,7 +184,7 @@ type
     MapMark: TMapMark; var Handled: Boolean) of object;
 
   // Callback to react on selection by mouse
-  TOnSelectionBox = procedure (Sender: TMapControl; const GeoRect: TGeoRect) of object;
+  TOnSelectionBox = procedure (Sender: TMapControl; const GeoRect: TGeoRect; Finished: Boolean) of object;
 
   // Control displaying a map or its visible part.
   TMapControl = class(TScrollBox)
@@ -192,6 +196,8 @@ type
     FZoom: Integer;          // current zoom; integer for simpler operations
     FCacheImageRect: TRect;  // position of cache image on map in map coords
     FMapOptions: TMapOptions;
+    FMouseDownPos: TPoint;   // position of current mouse button press, in client coords.
+                             // When mouse button is released, (-1,-1) is assigned.
     FDragPos: TPoint;
     FMaxZoom, FMinZoom: TMapZoomLevel; // zoom constraints
     FMapMarkList: TMapMarkList;
@@ -220,6 +226,7 @@ type
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     function DoMouseWheel(Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint): Boolean; override;
     procedure DragOver(Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean); override;
+    procedure DoEndDrag(Target: TObject; X, Y: Integer); override;
     procedure KeyDown(var Key: Word; Shift: TShiftState); override;
     procedure WMHScroll(var Message: TWMHScroll); message WM_HSCROLL;
     procedure WMVScroll(var Message: TWMVScroll); message WM_VSCROLL;
@@ -245,6 +252,7 @@ type
     procedure SetVisibleLayers(Value: TMapLayers);
     procedure SetLabelMargin(Value: Cardinal);
     procedure SetTilesProvider(Value: TTilesProvider);
+    procedure SetMouseMode(Value: TMapMouseMode);
     //~ helpers
     function ViewAreaRect: TRect;
     class procedure DrawCopyright(const Text: string; DestBmp: TBitmap);
@@ -337,7 +345,7 @@ type
     // List of mapmarks on a map
     property MapMarks: TMapMarkList read FMapMarkList;
     // Mode of handling left mouse button press
-    property MouseMode: TMapMouseMode read FMouseMode write FMouseMode;
+    property MouseMode: TMapMouseMode read FMouseMode write SetMouseMode;
     // Size of margin for labels on map, in pixels
     property LabelMargin: Cardinal read FLabelMargin write SetLabelMargin;
     // View area in map coords
@@ -377,7 +385,7 @@ type
     // User could draw a mapmark fully or just change some props and let default
     // drawing do its job
     property OnDrawMapMark: TOnDrawMapMark read FOnDrawMapMark write FOnDrawMapMark;
-    // Called when selection with mouse was made
+    // Called when selection with mouse changes
     property OnSelectionBox: TOnSelectionBox read FOnSelectionBox write FOnSelectionBox;
   end;
 
@@ -851,64 +859,57 @@ begin
   inherited;
 end;
 
-// Focus self on mouse press
-// Start dragging or selecting on mouse press
+// Focus self on mouse press, save mouse position
 procedure TMapControl.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-var MousePos: TPoint;
 begin
   SetFocus;
-  // Left button and no shifts only
-  if (Button = mbLeft) and (Shift = [ssLeft]) then
-    case MouseMode of
-      mmDrag:
-        begin
-          MousePos := ViewToMap(Point(X, Y));
-          // Position is inside map and no visible mapmark below
-          if MapMarkAtPos(MousePos) = nil then
-            BeginDrag(False, -1);  // < 0 - use the DragThreshold property of the global Mouse variable (c) help
-          inherited;
-        end;
-      mmSelect:
-        begin
-          MousePos := ViewToMap(Point(X, Y));
-          // Position is inside map - start selection
-          if InMap(Zoom, MousePos) then
-          begin
-            FSelectionBoxBindPoint := MapToInner(MousePos);
-            FSelectionBox.BoundsRect := TRect.Create(FSelectionBoxBindPoint, 0, 0);
-            FSelectionBox.Visible := True;
-          end;
-          inherited;
-        end;
-    end; // case
+  FMouseDownPos := Point(X, Y);
+  inherited;
 end;
 
 // Resize selection box if active
 procedure TMapControl.MouseMove(Shift: TShiftState; X, Y: Integer);
+var GeoRect: TGeoRect;
 begin
-  if FSelectionBox.Visible then
+  if MouseMode = mmSelecting then
   begin
     // ! Rect here could easily become non-normalized (Top below Bottom, f.ex.) so we normalize it
     FSelectionBox.BoundsRect := TRect.Create(FSelectionBoxBindPoint,
       MapToInner(EnsureInMap(Zoom, ViewToMap(Point(X, Y)))), True);
     Invalidate;
+    if Assigned(FOnSelectionBox) then
+    begin
+      GeoRect := MapToGeoCoords(
+        TRect.Create(InnerToMap(FSelectionBox.BoundsRect.TopLeft), FSelectionBox.Width, FSelectionBox.Height)
+      );
+      FOnSelectionBox(Self, GeoRect, False);
+    end;
   end;
   inherited;
 end;
 
+// Change mouse mode to "None".
 procedure TMapControl.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var GeoRect: TGeoRect;
 begin
-  if FSelectionBox.Visible then
+  if MouseMode = mmSelecting then
   begin
-    FSelectionBox.Visible := False;
-    Invalidate;
-    GeoRect := MapToGeoCoords(
-      TRect.Create(InnerToMap(FSelectionBox.BoundsRect.TopLeft), FSelectionBox.Width, FSelectionBox.Height)
-    );
     if Assigned(FOnSelectionBox) then
-      FOnSelectionBox(Self, GeoRect);
+    begin
+      GeoRect := MapToGeoCoords(
+        TRect.Create(InnerToMap(FSelectionBox.BoundsRect.TopLeft), FSelectionBox.Width, FSelectionBox.Height)
+      );
+      FOnSelectionBox(Self, GeoRect, True);
+    end;
   end;
+
+  // **Note**. When a control is started dragging, mouse presses/releases are consumed.
+  // "Mouse LB Up" event is fired from inside TControl.BeginDrag and there will be no "Mouse LB Down".
+  // Instead, DoEndDrag is called.
+  // So here we finish all modes except mmDragging which is finished in DoEndDrag.
+  if MouseMode <> mmDragging then
+    MouseMode := mmNone;
+
   inherited;
 end;
 
@@ -929,7 +930,7 @@ begin
   Result := True;
 end;
 
-// Process dragging
+// Handle dragging: start and in process
 procedure TMapControl.DragOver(Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
 begin
   inherited;
@@ -944,18 +945,25 @@ begin
         ScrollMapBy(FDragPos.X - X, FDragPos.Y - Y);
         FDragPos := Point(X, Y);
       end;
+    // ! Here should be dsDragLeave but it's non-reliable - not called on mouse click
+    // (no mouse move - below threshold - no real dragging started). So we have to
+    // override DoEndDrag as well
   end;
+end;
+
+// Handle dragging: finish
+procedure TMapControl.DoEndDrag(Target: TObject; X, Y: Integer);
+begin
+  MouseMode := mmNone;
+  inherited;
 end;
 
 // Cancel selection box on Escape press
 procedure TMapControl.KeyDown(var Key: Word; Shift: TShiftState);
 begin
-  if FSelectionBox.Visible then
+  if MouseMode = mmSelecting then
     if (Shift = []) and (Key = VK_ESCAPE) then
-    begin
-      FSelectionBox.Visible := False;
-      Invalidate;
-    end;
+      MouseMode := mmNone;
   inherited;
 end;
 
@@ -1428,6 +1436,51 @@ begin
   if Zoom <> OldZoom then Exit;
   UpdateCache;
   Refresh;
+end;
+
+procedure TMapControl.SetMouseMode(Value: TMapMouseMode);
+begin
+  if FMouseMode = Value then Exit;
+
+  // Cleanup previous state
+  case FMouseMode of
+    mmNone:
+      ;
+    mmDragging:
+      begin
+        FDragPos := Default(TPoint);
+        EndDrag(True);
+      end;
+    mmSelecting:
+      begin
+        FSelectionBox.Visible := False;
+        FSelectionBoxBindPoint := Default(TPoint);
+        FSelectionBox.BoundsRect := Default(TRect);
+        Invalidate;
+      end;
+  end;
+
+  FMouseMode := Value;
+
+  // Start new state
+  case FMouseMode of
+    mmNone: //
+      FMouseDownPos := Point(-1, -1);
+    mmDragging:
+      begin
+        BeginDrag(False, -1);  // < 0 - use the DragThreshold property of the global Mouse variable (c) help
+      end;
+    mmSelecting:
+      begin
+        // Position is inside map - start selection
+        if InMap(Zoom, ViewToMap(FMouseDownPos)) then
+        begin
+          FSelectionBoxBindPoint := FMouseDownPos;
+          FSelectionBox.BoundsRect := TRect.Create(FSelectionBoxBindPoint, 0, 0);
+          FSelectionBox.Visible := True;
+        end;
+      end;
+  end;
 end;
 
 procedure TMapControl.ZoomToArea(const GeoRect: TGeoRect);
