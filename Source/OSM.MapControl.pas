@@ -868,6 +868,7 @@ begin
 end;
 
 // Resize selection box if active
+// ! Note X, Y could be negative.
 procedure TMapControl.MouseMove(Shift: TShiftState; X, Y: Integer);
 var GeoRect: TGeoRect;
 begin
@@ -977,6 +978,9 @@ var
   CurrBindPt, NewViewNW, ViewBindPt: TPoint;
   BindCoords: TGeoPoint;
 begin
+  // Cancel selection / dragging
+  MouseMode := mmNone;
+
   // New value violates contraints - reject it
   if not (Value in [FMinZoom..FMaxZoom]) then Exit;
   if Value = FZoom then Exit;
@@ -1702,7 +1706,6 @@ function TMapControl.SaveToBitmap(const SaveRect: TRect; DrawOptions: TMapOption
 var
   TileAlignedSaveRect, DestRect: TRect;
   HorzCount, VertCount, horz, vert, HorzStartNum, VertStartNum: Integer;
-  Clipped: TBitmap;
 begin
   // To avoid complication, paint to tilesize-aligned canvas
   // SaveRect could be larger than map, reduce it then
