@@ -268,8 +268,8 @@ end;
 function EnsureInMap(Zoom: TMapZoomLevel; const Pt: TPoint): TPoint;
 begin
   Result := Point(
-    Min(Pt.X, MapWidth(Zoom)),
-    Min(Pt.Y, MapHeight(Zoom))
+    EnsureRange(Pt.X, 0, MapWidth(Zoom)),
+    EnsureRange(Pt.Y, 0, MapHeight(Zoom))
   );
 end;
 
