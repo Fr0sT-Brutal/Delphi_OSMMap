@@ -186,6 +186,10 @@ type
   // Callback to react on selection by mouse
   TOnSelectionBox = procedure (Sender: TMapControl; const GeoRect: TGeoRect; Finished: Boolean) of object;
 
+  // Callback to react on mouse button press/release
+  TOnMapMarkMouseButtonEvent = procedure (Sender: TMapControl; MapMark: TMapMark;
+    Button: TMouseButton; Shift: TShiftState) of object;
+
   // Control displaying a map or its visible part.
   TMapControl = class(TScrollBox)
   strict private
@@ -217,6 +221,8 @@ type
     FOnZoomChanged: TNotifyEvent;
     FOnDrawMapMark: TOnDrawMapMark;
     FOnSelectionBox: TOnSelectionBox;
+    FOnMapMarkMouseDown: TOnMapMarkMouseButtonEvent;
+    FOnMapMarkMouseUp: TOnMapMarkMouseButtonEvent;
   strict protected
     //~ overrides
     procedure PaintWindow(DC: HDC); override;
@@ -387,6 +393,10 @@ type
     property OnDrawMapMark: TOnDrawMapMark read FOnDrawMapMark write FOnDrawMapMark;
     // Called when selection with mouse changes
     property OnSelectionBox: TOnSelectionBox read FOnSelectionBox write FOnSelectionBox;
+    // Called when user presses a mouse button above a mapmark
+    property OnMapMarkMouseDown: TOnMapMarkMouseButtonEvent read FOnMapMarkMouseDown write FOnMapMarkMouseDown;
+    // Called when user releases a mouse button above a mapmark
+    property OnMapMarkMouseUp: TOnMapMarkMouseButtonEvent read FOnMapMarkMouseUp write FOnMapMarkMouseUp;
   end;
 
 //~ Like Client<=>Screen
@@ -861,9 +871,16 @@ end;
 
 // Focus self on mouse press, save mouse position
 procedure TMapControl.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var MapMark: TMapMark;
 begin
   SetFocus;
   FMouseDownPos := Point(X, Y);
+  if Assigned(FOnMapMarkMouseDown) then
+  begin
+    MapMark := MapMarkAtPos(ViewToMap(FMouseDownPos));
+    if MapMark <> nil then
+      FOnMapMarkMouseDown(Self, MapMark, Button, Shift);
+  end;
   inherited;
 end;
 
@@ -891,8 +908,19 @@ end;
 
 // Change mouse mode to "None".
 procedure TMapControl.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-var GeoRect: TGeoRect;
+var
+  GeoRect: TGeoRect;
+  MapMark: TMapMark;
 begin
+  // Mapmark event - only if not selecting or dragging
+  if MouseMode = mmNone then
+    if Assigned(FOnMapMarkMouseUp) then
+    begin
+      MapMark := MapMarkAtPos(ViewToMap(FMouseDownPos));
+      if MapMark <> nil then
+        FOnMapMarkMouseUp(Self, MapMark, Button, Shift);
+    end;
+
   if MouseMode = mmSelecting then
   begin
     if Assigned(FOnSelectionBox) then
