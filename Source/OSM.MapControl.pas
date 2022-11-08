@@ -41,11 +41,11 @@ type
 
   // Visual properties of mapmark's caption
   TMapMarkCaptionStyle = record
-    Visible: Boolean;
+    Visible: Boolean;             // Visibility flag
     Color: TColor;
-    BgColor: TColor;
-    DX, DY: Integer;
-    Transparent: Boolean;
+    BgColor: TColor;              // Caption background color if Transparent is False
+    DX, DY: Integer;              // Caption offsets from the TopRight corner of mapmark glyph rectangle, in pixels
+    Transparent: Boolean;         // Caption transparency flag
     {}//TODO: text position, alignment
   end;
   PMapMarkCaptionStyle = ^TMapMarkCaptionStyle;
@@ -70,7 +70,7 @@ type
     Data: Pointer;                       // User data
     Layer: TMapLayer;                    // Layer number
     //~ Visual style
-    CustomProps: TMapMarkCustomProps;
+    CustomProps: TMapMarkCustomProps;    // Set of properties that differ from map's global values
     GlyphStyle: TMapMarkGlyphStyle;
     CaptionStyle: TMapMarkCaptionStyle;
     CaptionFont: TFont;
@@ -113,8 +113,8 @@ type
     // Find the next map mark that is near specified coordinates.
     //   @param GeoCoords - coordinates to search
     //   @param Options - set of search options
-    //   @param (StartIndex - index of previous found mapmark in the list.
-    //     `-1` (default) will start from the 1st element)
+    //   @param StartIndex - index of previous found mapmark in the list.    \
+    //     `-1` (default) will start from the 1st element
     //   @returns index of mapmark in the list, `-1` if not found.
     //
     // Samples:
@@ -134,6 +134,7 @@ type
     function Find(const GeoCoords: TGeoPoint; Options: TMapMarkFindOptions = []; StartIndex: Integer = -1): Integer; overload;
     // The same as above but searches within specified rectangle
     function Find(const GeoRect: TGeoRect; Options: TMapMarkFindOptions = []; StartIndex: Integer = -1): Integer; overload;
+    // The same as above but searches by map point in pixels
     function Find(const MapPt: TPoint; Options: TMapMarkFindOptions; StartIndex: Integer): Integer; overload;
     // Find map mark by its .Data field
     //   @param Data - value to search for
@@ -145,10 +146,13 @@ type
     function Add(const GeoCoords: TGeoPoint; const Caption: string; Layer: TMapLayer = 0): TMapMark; overload;
     // Add a mapmark with fully customizable properties. `MapMark` should be init-ed by NewItem
     function Add(MapMark: TMapMark): TMapMark; overload;
-    // Remove mapmark object
+    // Remove mapmark object by index
     procedure Delete(Ind: Integer); overload;
+    // Remove given mapmark object
     procedure Delete(MapMark: TMapMark); overload;
+    // Return count of elements in list
     function Count: Integer; inline;
+    // Remove all elements
     procedure Clear;
     // Assigning a handler for this event allows implementing custom init, disposal
     // of allocated memory and so on
@@ -462,6 +466,7 @@ const
   LayersNone: TMapLayers = [];
 
 const
+  // Default pattern to draw on currently loading tiles
   S_Lbl_Loading = 'Loading [%d : %d]...';
 
 // @exclude
@@ -479,7 +484,7 @@ const
 
 // *** Utils ***
 
-// Like Client<=>Screen
+//~ Like Client<=>Screen
 
 function ToInnerCoords(const StartPt, Pt: TPoint): TPoint;
 begin
@@ -544,7 +549,7 @@ begin
     FreeAndNil(CaptionFont);
 end;
 
-{ TMapMarkList }
+{~ TMapMarkList }
 
 // Sort the list by Layer currently
 function ListSortCompare(const Left, Right: TMapMark): Integer;
@@ -755,7 +760,7 @@ begin
     end;
 end;
 
-{ TMapControl }
+{~ TMapControl }
 
 const
   UnassignedZoom = Low(TMapZoomLevel) - 1;
@@ -1139,7 +1144,8 @@ begin
   Result := ToInnerCoords(ViewAreaRect.TopLeft, MapRect);
 end;
 
-// ! Compiler-specific !
+// Convert map points to scrollbox inner coordinates (not client!)                   @br
+// ! Compiler-specific !                                                             @br
 // TScrollBox is different in different compilers.
 //   - FPC considers internal area just as scrollbars' range are set (that is, whole
 //     scrollable area inside the box).
@@ -1369,7 +1375,8 @@ begin
   Canv.Rectangle(ScalebarRect);
 end;
 
-// Pixels => degrees
+//~ Pixels => degrees
+
 function TMapControl.MapToGeoCoords(const MapPt: TPoint): TGeoPoint;
 begin
   Result := OSM.SlippyMapUtils.MapToGeoCoords(FZoom, MapPt);
@@ -1380,7 +1387,8 @@ begin
   Result := OSM.SlippyMapUtils.MapToGeoCoords(FZoom, MapRect);
 end;
 
-// Degrees => pixels
+//~ Degrees => pixels
+
 function TMapControl.GeoCoordsToMap(const GeoCoords: TGeoPoint): TPoint;
 begin
   Result := OSM.SlippyMapUtils.GeoCoordsToMap(FZoom, GeoCoords);
@@ -1583,7 +1591,6 @@ begin
   SetNWPoint(GeoRect.TopLeft);
 end;
 
-// Zoom to fill view area as much as possible
 procedure TMapControl.ZoomToFit;
 begin
   ZoomToArea(MapToGeoCoords(FMapRect));

@@ -48,25 +48,30 @@ type
   );
   THttpRequestCapabilities = set of THttpRequestCapability;
 
-  // Generic properties of request. All of them except URL are **common** - could be set once
-  // and applied to all requests
+  // Generic properties of request. All of them except URL are **common** - assigned once
+  // and applied to all requests in current queue. Changing the properties won't take
+  // effect until queue gets empty.
   THttpRequestProps = class
   public
-    // `[http://]host:port` Address of HTTP (CONNECT) proxy, protocol is optional.         @br
-    // Direct connection if empty. If equals to SystemProxy, OS-wide value is used.        @br
+    // HTTP URL to access.                                                          @br
+    // Could contain login in the form `proto://user:pass@url` overriding `HttpUserName`
+    // and `HttpPassword` fields.                                                   @br
+    // Used only in TBlockingNetworkRequestProc, ignored in TNetworkRequestQueue.
+    URL: string;
+    // `[http://]host:port` Address of HTTP (CONNECT) proxy, protocol is optional.  @br
+    // Direct connection if empty. If equals to SystemProxy, OS-wide value is used.
     // Could contain login in the form `user:pass@@host:port`.
     Proxy: string;
-    // HTTP URL to access.
-    // Could contain login in the form `proto://user:pass@url` overriding `HttpUserName`
-    // and `HttpPassword` fields.
-    URL: string;
     // Access login name.
     HttpUserName: string;
     // Access login pass.
     HttpPassword: string;
     // HTTP header.
     HeaderLines: TStrings;
-    // Any data that request function could use
+    // Any data that request function could use. Note that data MUST not change
+    // as it is not copied in Clone and is being accessed from multiple threads.
+    // Alternatively, THttpRequestProps descendant could implement proper copying
+    // in overridden Clone.
     Additional: Pointer;
 
     destructor Destroy; override;
@@ -93,7 +98,7 @@ type
   //     the same client, this parameter is the current client object. Request
   //     properties are supposed to remain unchanged throughout the whole queue
   //     (only URL changes) so it's enough to assign them at client creation only @br
-  //     IN: client object to use for requests.                        @br
+  //     IN: client object to use for requests.                                   @br
   //     OUT: newly created client object if Client was @nil at input.
   //   @raises exception on error
   TBlockingNetworkRequestProc = procedure (RequestProps: THttpRequestProps;
@@ -134,11 +139,11 @@ type
     function PopTask(out pTile: PTile): Boolean;
   public
     // Constructor
-    //   @param MaxTasksPerThread - if number of tasks becomes more than \
+    //   @param MaxTasksPerThread - if number of tasks becomes more than            \
     //     `MaxTasksPerThread*%currentThreadCount%`, add one more thread
     //   @param MaxThreads - limit of the number of threads
     //   @param RequestProc - implementator of network request
-    //   @param TilesProvider - object holding properties of current tile provider.
+    //   @param TilesProvider - object holding properties of current tile provider. \
     //     Object takes ownership on this object and destroys it on release.
     constructor Create(MaxTasksPerThread, MaxThreads: Cardinal;
       RequestProc: TBlockingNetworkRequestProc;
@@ -263,7 +268,7 @@ begin
     raise Exception.CreateFmt(S_EMsg_HTTPErr, [ResponseCode, ResponseText]);
 end;
 
-{ THttpRequestProps }
+{~ THttpRequestProps }
 
 destructor THttpRequestProps.Destroy;
 begin
@@ -286,7 +291,7 @@ begin
   Result.Additional := Additional;
 end;
 
-{ TNetworkRequestThread }
+{~ TNetworkRequestThread }
 
 constructor TNetworkRequestThread.Create(Owner: TNetworkRequestQueue;
   RequestProc: TBlockingNetworkRequestProc; TilesProvider: TTilesProvider;
@@ -349,7 +354,7 @@ begin
   FreeAndNil(cli);
 end;
 
-{ TNetworkRequestQueue }
+{~ TNetworkRequestQueue }
 
 constructor TNetworkRequestQueue.Create(MaxTasksPerThread, MaxThreads: Cardinal;
   RequestProc: TBlockingNetworkRequestProc; TilesProvider: TTilesProvider);

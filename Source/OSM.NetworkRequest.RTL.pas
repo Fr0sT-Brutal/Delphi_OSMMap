@@ -26,16 +26,16 @@ uses
   OSM.NetworkRequest;
 
 const
-  // Capabilities of RTL engine
+  // Capabilities of RTL engine. Some other options vary for compiler and target OS
+  EngineCapabilities = [htcProxy, htcProxyAuth, htcAuth, htcAuthURL, htcHeaders, htcTimeout]
   {$IFDEF FPC}
-  EngineCapabilities = [htcProxy, htcDirect, htcProxyAuth, htcAuth, htcAuthURL,
-    htcHeaders, htcTimeout];
+  + [htcDirect]
   {$ENDIF}
   {$IFDEF DCC}
   // Direct connection is only available on Windows
-  EngineCapabilities = [htcProxy, {$IFDEF MSWINDOWS} htcDirect, {$ENDIF} htcSystemProxy,
-    htcProxyAuth, htcAuth, htcAuthURL, htcHeaders, htcTimeout, htcTLS];
+  + [{$IFDEF MSWINDOWS} htcDirect, {$ENDIF} htcSystemProxy, htcTLS]
   {$ENDIF}
+  ;
 
 // Procedure executing a network request. See description of
 // OSM.NetworkRequest.TBlockingNetworkRequestProc type.

@@ -85,7 +85,7 @@ function FormatTileURL(const Template: string; const Tile: TTile; Provider: TTil
 
 implementation
 
-{ TTilesProvider }
+{~ TTilesProvider }
 
 function TTilesProvider.GetProperty(const Index: string): string;
 begin
@@ -97,7 +97,7 @@ begin
   raise Exception.Create('Setter for Properties not implemented');
 end;
 
-{ TDummyTilesProvider }
+{~ TDummyTilesProvider }
 
 constructor TDummyTilesProvider.Create;
 begin

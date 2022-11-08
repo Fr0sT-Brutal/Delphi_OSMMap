@@ -85,7 +85,7 @@ begin
   Result := Exception.CreateFmt('%s [%d]', [SysErrorMessageEx(errCode), errCode]);
 end;
 
-{ TWinInetClient }
+{~ TWinInetClient }
 
 constructor TWinInetClient.Create(RequestProps: THttpRequestProps);
 var

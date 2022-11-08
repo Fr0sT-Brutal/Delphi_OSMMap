@@ -60,6 +60,7 @@ const
   TILE_IMAGE_WIDTH = 256;   // Width of map tile in pixels
   TILE_IMAGE_HEIGHT = 256;  // Height of map tile in pixels
   // See https://wiki.openstreetmap.org/wiki/Zoom_levels
+  // ```
   // Level   Degree  Area            m / pixel       ~Scale          # Tiles
   // 0       360     whole world     156,412         1:500 million   1
   // 1       180                     78,206          1:250 million   4
@@ -82,6 +83,7 @@ const
   // 18      0.001                   0.596           1:2,000         68,719,476,736
   // 19      0.0005                  0.298           1:1,000         274,877,906,944
   // 20      0.00025 mid-sized bldng 0.149           1:5,00          1,099,511,627,776
+  // ```
   TileMetersPerPixelOnEquator: array [TMapZoomLevel] of Double =
   (
     156412,
@@ -177,7 +179,7 @@ begin
   Result.BottomRight := BottomRight;
 end;
 
-// Tile utils
+//~ Tile utils
 
 function TileCount(Zoom: TMapZoomLevel): Cardinal;
 begin
@@ -205,7 +207,7 @@ begin
     (Tile1.ParameterY = Tile2.ParameterY);
 end;
 
-// Floor value to tile size
+//~ Floor value to tile size
 
 function ToTileWidthLesser(Width: Cardinal): Cardinal; inline;
 begin
@@ -217,7 +219,7 @@ begin
   Result := (Height div TILE_IMAGE_HEIGHT)*TILE_IMAGE_HEIGHT;
 end;
 
-// Ceil value to tile size
+//~ Ceil value to tile size
 
 function ToTileWidthGreater(Width: Cardinal): Cardinal; inline;
 begin
@@ -281,7 +283,7 @@ begin
   );
 end;
 
-// Coord checking
+//~ Coord checking
 
 procedure CheckValidLong(Longitude: Double); inline;
 begin
@@ -303,7 +305,7 @@ begin
   Assert(InRange(Y, 0, MapHeight(Zoom)));
 end;
 
-{ TGeoPoint }
+{~ TGeoPoint }
 
 constructor TGeoPoint.Create(Long, Lat: Double);
 begin
@@ -319,7 +321,7 @@ begin
             SameValue(Self.Lat,  GeoPt.Lat,  VertArea);
 end;
 
-{ TGeoRect }
+{~ TGeoRect }
 
 constructor TGeoRect.Create(const TopLeft, BottomRight: TGeoPoint);
 begin
@@ -335,7 +337,7 @@ begin
     InRange(GeoPoint.Lat, BottomRight.Lat, TopLeft.Lat); // !
 end;
 
-// Degrees to pixels
+//~ Degrees to pixels
 
 function LongitudeToMapCoord(Zoom: TMapZoomLevel; Longitude: Double): Cardinal;
 begin
@@ -376,7 +378,7 @@ begin
   );
 end;
 
-// Pixels to degrees
+//~ Pixels to degrees
 
 function MapCoordToLongitude(Zoom: TMapZoomLevel; X: Cardinal): Double;
 begin
@@ -414,7 +416,7 @@ begin
   );
 end;
 
-// Other
+//~ Other
 
 function CalcLinDistanceInMeter(const Coord1, Coord2: TGeoPoint): Double;
 var
