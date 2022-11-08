@@ -21,7 +21,7 @@
 <code>type THttpRequestProps = class(TObject)</code></p>
 <h2 class="description">Description</h2>
 <p>
-Generic properties of request. All of them except URL are <strong>common</strong> - could be set once and applied to all requests</p>
+Generic properties of request. All of them except URL are <strong>common</strong> - assigned once and applied to all requests in current queue. Changing the properties won't take effect until queue gets empty.</p>
 <span id="PasDoc-Hierarchy"></span><h2 class="hierarchy">Hierarchy</h2>
 <ul class="hierarchy"><li class="ancestor">TObject</li>
 <li class="thisitem">THttpRequestProps</li></ul><h2 class="overview">Overview</h2>
@@ -29,11 +29,11 @@ Generic properties of request. All of them except URL are <strong>common</strong
 <table class="summary wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code><strong><a href="OSM.NetworkRequest.THttpRequestProps.html#Proxy">Proxy</a></strong>: string;</code></td>
+<td class="itemcode"><code><strong><a href="OSM.NetworkRequest.THttpRequestProps.html#URL">URL</a></strong>: string;</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code><strong><a href="OSM.NetworkRequest.THttpRequestProps.html#URL">URL</a></strong>: string;</code></td>
+<td class="itemcode"><code><strong><a href="OSM.NetworkRequest.THttpRequestProps.html#Proxy">Proxy</a></strong>: string;</code></td>
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
@@ -68,21 +68,21 @@ Generic properties of request. All of them except URL are <strong>common</strong
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="Proxy"></span><code><strong>Proxy</strong>: string;</code></td>
+<td class="itemcode"><span id="URL"></span><code><strong>URL</strong>: string;</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
-<code>[<a href="http://">http://</a>]host:port</code> Address of HTTP (CONNECT) proxy, protocol is optional. <br> Direct connection if empty. If equals to <a class="normal" href="OSM.NetworkRequest.html#SystemProxy">SystemProxy</a>, OS-wide value is used. <br> Could contain login in the form <code>user:pass@host:port</code>.</p>
+HTTP URL to access. <br> Could contain login in the form <code><a href="proto://user:pass@url">proto://user:pass@url</a></code> overriding <code><a class="normal" href="OSM.NetworkRequest.THttpRequestProps.html#HttpUserName">HttpUserName</a></code> and <code><a class="normal" href="OSM.NetworkRequest.THttpRequestProps.html#HttpPassword">HttpPassword</a></code> fields. <br> Used only in <a class="normal" href="OSM.NetworkRequest.html#TBlockingNetworkRequestProc">TBlockingNetworkRequestProc</a>, ignored in <a class="normal" href="OSM.NetworkRequest.TNetworkRequestQueue.html">TNetworkRequestQueue</a>.</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="URL"></span><code><strong>URL</strong>: string;</code></td>
+<td class="itemcode"><span id="Proxy"></span><code><strong>Proxy</strong>: string;</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
-HTTP URL to access. Could contain login in the form <code><a href="proto://user:pass@url">proto://user:pass@url</a></code> overriding <code><a class="normal" href="OSM.NetworkRequest.THttpRequestProps.html#HttpUserName">HttpUserName</a></code> and <code><a class="normal" href="OSM.NetworkRequest.THttpRequestProps.html#HttpPassword">HttpPassword</a></code> fields.</p>
+<code>[<a href="http://">http://</a>]host:port</code> Address of HTTP (CONNECT) proxy, protocol is optional. <br> Direct connection if empty. If equals to <a class="normal" href="OSM.NetworkRequest.html#SystemProxy">SystemProxy</a>, OS-wide value is used. Could contain login in the form <code>user:pass@host:port</code>.</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -122,7 +122,7 @@ HTTP header.</p>
 </tr>
 <tr><td colspan="2">
 <p>
-Any data that request function could use</p>
+Any data that request function could use. Note that data MUST not change as it is not copied in <a class="normal" href="OSM.NetworkRequest.THttpRequestProps.html#Clone">Clone</a> and is being accessed from multiple threads. Alternatively, <a class="normal" href="OSM.NetworkRequest.THttpRequestProps.html">THttpRequestProps</a> descendant could implement proper copying in overridden <a class="normal" href="OSM.NetworkRequest.THttpRequestProps.html#Clone">Clone</a>.</p>
 </td></tr>
 </table>
 <h3 class="detail">Methods</h3>
@@ -132,9 +132,7 @@ Any data that request function could use</p>
 <td class="itemcode"><span id="Destroy"></span><code>destructor <strong>Destroy</strong>; override;</code></td>
 </tr>
 <tr><td colspan="2">
-<p>
-<a class="normal" href="OSM.NetworkRequest.THttpRequestProps.html">THttpRequestProps</a></p>
-</td></tr>
+&nbsp;</td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">

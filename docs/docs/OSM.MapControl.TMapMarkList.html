@@ -21,7 +21,7 @@
 <code>type TMapMarkList = class(TObject)</code></p>
 <h2 class="description">Description</h2>
 <p>
-List of mapmarks. Items are sorted by layer number and painted in this order, ascending</p>
+List of mapmarks. <a class="normal" href="OSM.MapControl.TMapMarkList.html#Items">Items</a> are sorted by layer number and painted in this order, ascending</p>
 <span id="PasDoc-Hierarchy"></span><h2 class="hierarchy">Hierarchy</h2>
 <ul class="hierarchy"><li class="ancestor">TObject</li>
 <li class="thisitem">TMapMarkList</li></ul><h2 class="overview">Overview</h2>
@@ -45,35 +45,51 @@ List of mapmarks. Items are sorted by layer number and painted in this order, as
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapMarkList.html#Get">Get</a></strong>(Index: Integer): <a href="OSM.MapControl.TMapMark.html">TMapMark</a>;</code></td>
+<td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapMarkList.html#GetEnumerator">GetEnumerator</a></strong>: TObjectList&lt;<a href="OSM.MapControl.TMapMark.html">TMapMark</a>&gt;.TEnumerator; inline;</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapMarkList.html#Find">Find</a></strong>(const GeoCoords: <a href="OSM.SlippyMapUtils.TGeoPoint.html">TGeoPoint</a>; ConsiderMapMarkSize: Boolean = True; StartIndex: Integer = -1): Integer; overload;</code></td>
+<td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapMarkList.html#Get">Get</a></strong>(Index: Integer): <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; inline;</code></td>
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapMarkList.html#Find">Find</a></strong>(const GeoRect: <a href="OSM.SlippyMapUtils.TGeoRect.html">TGeoRect</a>; ConsiderMapMarkSize: Boolean = True; StartIndex: Integer = -1): Integer; overload;</code></td>
+<td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapMarkList.html#Find">Find</a></strong>(const GeoCoords: <a href="OSM.SlippyMapUtils.TGeoPoint.html">TGeoPoint</a>; Options: <a href="OSM.MapControl.html#TMapMarkFindOptions">TMapMarkFindOptions</a> = []; StartIndex: Integer = -1): Integer; overload;</code></td>
 </tr>
 <tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapMarkList.html#Find">Find</a></strong>(const GeoRect: <a href="OSM.SlippyMapUtils.TGeoRect.html">TGeoRect</a>; Options: <a href="OSM.MapControl.html#TMapMarkFindOptions">TMapMarkFindOptions</a> = []; StartIndex: Integer = -1): Integer; overload;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapMarkList.html#Find">Find</a></strong>(const MapPt: TPoint; Options: <a href="OSM.MapControl.html#TMapMarkFindOptions">TMapMarkFindOptions</a>; StartIndex: Integer): Integer; overload;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapMarkList.html#Find">Find</a></strong>(Data: Pointer): Integer; overload;</code></td>
+</tr>
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapMarkList.html#NewItem">NewItem</a></strong>: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapMarkList.html#Add">Add</a></strong>(const GeoCoords: <a href="OSM.SlippyMapUtils.TGeoPoint.html">TGeoPoint</a>; const Caption: string; Layer: <a href="OSM.MapControl.html#TMapLayer">TMapLayer</a> = 0): <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; overload;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapMarkList.html#Add">Add</a></strong>(MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>): <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; overload;</code></td>
 </tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="OSM.MapControl.TMapMarkList.html#Delete">Delete</a></strong>(Ind: Integer); overload;</code></td>
+</tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>procedure <strong><a href="OSM.MapControl.TMapMarkList.html#Delete">Delete</a></strong>(MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>);</code></td>
+<td class="itemcode"><code>procedure <strong><a href="OSM.MapControl.TMapMarkList.html#Delete">Delete</a></strong>(MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>); overload;</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapMarkList.html#Count">Count</a></strong>: Integer;</code></td>
+<td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapMarkList.html#Count">Count</a></strong>: Integer; inline;</code></td>
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
@@ -85,6 +101,10 @@ List of mapmarks. Items are sorted by layer number and painted in this order, as
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapMarkList.html#OnItemNotify">OnItemNotify</a></strong>: <a href="OSM.MapControl.html#TOnItemNotify">TOnItemNotify</a> read FOnItemNotify write FOnItemNotify;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapMarkList.html#Items">Items</a></strong>[Index: Integer]: <a href="OSM.MapControl.TMapMark.html">TMapMark</a> read <a href="OSM.MapControl.TMapMarkList.html#Get">Get</a>;</code></td>
 </tr>
 </table>
 <h2 class="description">Description</h2>
@@ -124,7 +144,7 @@ List of mapmarks. Items are sorted by layer number and painted in this order, as
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="Get"></span><code>function <strong>Get</strong>(Index: Integer): <a href="OSM.MapControl.TMapMark.html">TMapMark</a>;</code></td>
+<td class="itemcode"><span id="GetEnumerator"></span><code>function <strong>GetEnumerator</strong>: TObjectList&lt;<a href="OSM.MapControl.TMapMark.html">TMapMark</a>&gt;.TEnumerator; inline;</code></td>
 </tr>
 <tr><td colspan="2">
 &nbsp;</td></tr>
@@ -132,7 +152,15 @@ List of mapmarks. Items are sorted by layer number and painted in this order, as
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="Find"></span><code>function <strong>Find</strong>(const GeoCoords: <a href="OSM.SlippyMapUtils.TGeoPoint.html">TGeoPoint</a>; ConsiderMapMarkSize: Boolean = True; StartIndex: Integer = -1): Integer; overload;</code></td>
+<td class="itemcode"><span id="Get"></span><code>function <strong>Get</strong>(Index: Integer): <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; inline;</code></td>
+</tr>
+<tr><td colspan="2">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Find"></span><code>function <strong>Find</strong>(const GeoCoords: <a href="OSM.SlippyMapUtils.TGeoPoint.html">TGeoPoint</a>; Options: <a href="OSM.MapControl.html#TMapMarkFindOptions">TMapMarkFindOptions</a> = []; StartIndex: Integer = -1): Integer; overload;</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
@@ -152,7 +180,7 @@ Find the next map mark that is near specified coordinates.
 <pre class="longcode">
 idx := -<span class="pascal_numeric">1</span>;
 <span class="pascal_keyword">repeat</span>
-  idx := MapMarks.Find(Point, idx);
+  idx := MapMarks.Find(Point, [], idx);
   <span class="pascal_keyword">if</span> idx = -<span class="pascal_numeric">1</span> <span class="pascal_keyword">then</span> Break;
   ... <span class="pascal_keyword">do</span> something <span class="pascal_keyword">with</span> MapMarks[idx] ...
 <span class="pascal_keyword">until</span> False;</pre>
@@ -165,9 +193,9 @@ idx := -<span class="pascal_numeric">1</span>;
 <dl class="parameters">
 <dt>GeoCoords</dt>
 <dd>- coordinates to search</dd>
-<dt>ConsiderMapMarkSize</dt>
-<dd>- widen an area to search by mapmark size</dd>
-<dt>PrevIndex</dt>
+<dt>Options</dt>
+<dd>- set of search options</dd>
+<dt>StartIndex</dt>
 <dd>- index of previous found mapmark in the list. <code>-1</code> (default) will start from the 1st element</dd>
 </dl>
 <h6 class="description_section">Returns</h6>
@@ -176,12 +204,38 @@ idx := -<span class="pascal_numeric">1</span>;
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="Find"></span><code>function <strong>Find</strong>(const GeoRect: <a href="OSM.SlippyMapUtils.TGeoRect.html">TGeoRect</a>; ConsiderMapMarkSize: Boolean = True; StartIndex: Integer = -1): Integer; overload;</code></td>
+<td class="itemcode"><span id="Find"></span><code>function <strong>Find</strong>(const GeoRect: <a href="OSM.SlippyMapUtils.TGeoRect.html">TGeoRect</a>; Options: <a href="OSM.MapControl.html#TMapMarkFindOptions">TMapMarkFindOptions</a> = []; StartIndex: Integer = -1): Integer; overload;</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
 The same as above but searches within specified rectangle</p>
 </td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Find"></span><code>function <strong>Find</strong>(const MapPt: TPoint; Options: <a href="OSM.MapControl.html#TMapMarkFindOptions">TMapMarkFindOptions</a>; StartIndex: Integer): Integer; overload;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+The same as above but searches by map point in pixels</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Find"></span><code>function <strong>Find</strong>(Data: Pointer): Integer; overload;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Find map mark by its .Data field  </p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>Data</dt>
+<dd>- value to search for</dd>
+</dl>
+<h6 class="description_section">Returns</h6>
+<p class="return">index of mapmark in the list having .Data field same as Data, <code>-1</code> if not found.</p></td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
@@ -216,20 +270,32 @@ Add a mapmark with fully customizable properties. <code>MapMark</code> should be
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="Delete"></span><code>procedure <strong>Delete</strong>(MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>);</code></td>
+<td class="itemcode"><span id="Delete"></span><code>procedure <strong>Delete</strong>(Ind: Integer); overload;</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
-Remove mapmark object</p>
+Remove mapmark object by index</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="Count"></span><code>function <strong>Count</strong>: Integer;</code></td>
+<td class="itemcode"><span id="Delete"></span><code>procedure <strong>Delete</strong>(MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>); overload;</code></td>
 </tr>
 <tr><td colspan="2">
-&nbsp;</td></tr>
+<p>
+Remove given mapmark object</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Count"></span><code>function <strong>Count</strong>: Integer; inline;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Return count of elements in list</p>
+</td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
@@ -237,7 +303,9 @@ Remove mapmark object</p>
 <td class="itemcode"><span id="Clear"></span><code>procedure <strong>Clear</strong>;</code></td>
 </tr>
 <tr><td colspan="2">
-&nbsp;</td></tr>
+<p>
+Remove all elements</p>
+</td></tr>
 </table>
 <h3 class="detail">Properties</h3>
 <table class="detail wide_list">
@@ -247,8 +315,16 @@ Remove mapmark object</p>
 </tr>
 <tr><td colspan="2">
 <p>
-Assigning a handler for this event allows implementing custom init, disposal of allocated memory etc.</p>
+Assigning a handler for this event allows implementing custom init, disposal of allocated memory and so on</p>
 </td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Items"></span><code>property <strong>Items</strong>[Index: Integer]: <a href="OSM.MapControl.TMapMark.html">TMapMark</a> read <a href="OSM.MapControl.TMapMarkList.html#Get">Get</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+&nbsp;</td></tr>
 </table>
 <hr><span class="appinfo"><em>Generated by <a href="https://pasdoc.github.io/">PasDoc 0.16.0</a>. </em>
 </span>

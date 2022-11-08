@@ -67,6 +67,9 @@ Visual control displaying a map. Data for the map (tile images) must be supplied
 <tr class="list2">
 <td class="itemcode"><code>function <strong><a href="OSM.MapControl.html#ToOuterCoords">ToOuterCoords</a></strong>(const StartPt: TPoint; const Rect: TRect): TRect; overload; inline;</code></td>
 </tr>
+<tr class="list">
+<td class="itemcode"><code>function <strong><a href="OSM.MapControl.html#ShiftStateIs">ShiftStateIs</a></strong>(Current, Desired: TShiftState): Boolean;</code></td>
+</tr>
 </table>
 <span id="PasDoc-Types"></span><h3 class="summary">Types</h3>
 <table class="summary wide_list">
@@ -95,6 +98,12 @@ Visual control displaying a map. Data for the map (tile images) must be supplied
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnItemNotify">TOnItemNotify</a></strong> = procedure (Sender: TObject; Item: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; Action: TListNotification) of object;</code></td>
 </tr>
 <tr class="list">
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TMapMarkFindOption">TMapMarkFindOption</a></strong> = (...);</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TMapMarkFindOptions">TMapMarkFindOptions</a></strong> = set of <a href="OSM.MapControl.html#TMapMarkFindOption">TMapMarkFindOption</a>;</code></td>
+</tr>
+<tr class="list">
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#TMapOption">TMapOption</a></strong> = (...);</code></td>
 </tr>
 <tr class="list2">
@@ -113,7 +122,10 @@ Visual control displaying a map. Data for the map (tile images) must be supplied
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnDrawMapMark">TOnDrawMapMark</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; Canvas: TCanvas; const Point: TPoint; MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; var Handled: Boolean) of object;</code></td>
 </tr>
 <tr class="list">
-<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnSelectionBox">TOnSelectionBox</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; const GeoRect: <a href="OSM.SlippyMapUtils.TGeoRect.html">TGeoRect</a>) of object;</code></td>
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnSelectionBox">TOnSelectionBox</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; const GeoRect: <a href="OSM.SlippyMapUtils.TGeoRect.html">TGeoRect</a>; Finished: Boolean) of object;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnMapMarkMouseButtonEvent">TOnMapMarkMouseButtonEvent</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; Button: TMouseButton; Shift: TShiftState) of object;</code></td>
 </tr>
 </table>
 <span id="PasDoc-Constants"></span><h3 class="summary">Constants</h3>
@@ -140,6 +152,7 @@ Visual control displaying a map. Data for the map (tile images) must be supplied
 </tr>
 <tr class="list2">
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#DefaultMapMarkCaptionStyle">DefaultMapMarkCaptionStyle</a></strong>: <a href="OSM.MapControl.TMapMarkCaptionStyle.html">TMapMarkCaptionStyle</a> = (
+    Visible: True;
     Color: clMenuText;
     BgColor: clWindow;
     DX: 3;
@@ -164,13 +177,7 @@ Visual control displaying a map. Data for the map (tile images) must be supplied
 </tr>
 <tr><td colspan="1">
 <p>
-Convert absolute map coords to a point inside a viewport having given top-left point <strong></p>
-
-<ul class="paragraph_spacing">
-  <li><p>Utils</p></li>
-</ul>
-
-<p></strong>* Like Client&lt;=&gt;Screen</p>
+Convert absolute map coords to a point inside a viewport having given top-left point</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -198,6 +205,15 @@ Convert absolute map rect to a rect inside a viewport having given top-left poin
 <tr><td colspan="1">
 <p>
 Convert a rect inside a viewport having given top-left point to absolute map rect</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="ShiftStateIs"></span><code>function <strong>ShiftStateIs</strong>(Current, Desired: TShiftState): Boolean;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Determine whether current ShiftState corresponds to desired one (that is, if mouse button and pressed modifiers are the same - not a simple comparison because TShiftState could include additional entries like &quot;Pen&quot;, &quot;Touch&quot; and so on. This function only checks Ctrl, Alt, Shift and Left, Right, Middle mouse buttons.</p>
 </td></tr>
 </table>
 <h3 class="detail">Types</h3>
@@ -285,6 +301,31 @@ Notification of an action over a mapmark in a list</p>
 </table>
 <table class="detail wide_list">
 <tr class="list">
+<td class="itemcode"><span id="TMapMarkFindOption"></span><code><strong>TMapMarkFindOption</strong> = (...);</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Options for <a class="normal" href="OSM.MapControl.TMapMarkList.html#Find">TMapMarkList.Find</a>. Default is empty set</p>
+<h6 class="description_section">Values</h6>
+<ul>
+<li>
+<span id="mfoConsiderGlyphSize">mfoConsiderGlyphSize</span>: If set (for map pixels only): consider mapmark glyph size as well. <br></li>
+<li>
+<span id="mfoOnlyVisible">mfoOnlyVisible</span>: If set: consider only visible mapmarks. <br></li>
+</ul>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TMapMarkFindOptions"></span><code><strong>TMapMarkFindOptions</strong> = set of <a href="OSM.MapControl.html#TMapMarkFindOption">TMapMarkFindOption</a>;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+If not set (default), consider all mapmarks</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
 <td class="itemcode"><span id="TMapOption"></span><code><strong>TMapOption</strong> = (...);</code></td>
 </tr>
 <tr><td colspan="1">
@@ -312,13 +353,15 @@ Options of map control</p>
 </tr>
 <tr><td colspan="1">
 <p>
-Mode of handling of plain left mouse button press</p>
+Mode of current handling of mouse events:</p>
 <h6 class="description_section">Values</h6>
 <ul>
 <li>
-<span id="mmDrag">mmDrag</span></li>
+<span id="mmNone">mmNone</span>: default handling - mouse doesn't activate the map</li>
 <li>
-<span id="mmSelect">mmSelect</span></li>
+<span id="mmDragging">mmDragging</span>: dragging the map</li>
+<li>
+<span id="mmSelecting">mmSelecting</span>: drawing selection box</li>
 </ul>
 </td></tr>
 </table>
@@ -351,11 +394,20 @@ Callback to custom draw a mapmark. It is called before default drawing. If <code
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="TOnSelectionBox"></span><code><strong>TOnSelectionBox</strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; const GeoRect: <a href="OSM.SlippyMapUtils.TGeoRect.html">TGeoRect</a>) of object;</code></td>
+<td class="itemcode"><span id="TOnSelectionBox"></span><code><strong>TOnSelectionBox</strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; const GeoRect: <a href="OSM.SlippyMapUtils.TGeoRect.html">TGeoRect</a>; Finished: Boolean) of object;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
 Callback to react on selection by mouse</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TOnMapMarkMouseButtonEvent"></span><code><strong>TOnMapMarkMouseButtonEvent</strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; Button: TMouseButton; Shift: TShiftState) of object;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Callback to react on mouse button press/release</p>
 </td></tr>
 </table>
 <h3 class="detail">Constants</h3>
@@ -410,6 +462,7 @@ Default style of mapmark glyph. <a class="normal" href="OSM.MapControl.TMapContr
 <table class="detail wide_list">
 <tr class="list">
 <td class="itemcode"><span id="DefaultMapMarkCaptionStyle"></span><code><strong>DefaultMapMarkCaptionStyle</strong>: <a href="OSM.MapControl.TMapMarkCaptionStyle.html">TMapMarkCaptionStyle</a> = (
+    Visible: True;
     Color: clMenuText;
     BgColor: clWindow;
     DX: 3;
@@ -444,7 +497,9 @@ Constant containing no layers</p>
 <td class="itemcode"><span id="S_Lbl_Loading"></span><code><strong>S_Lbl_Loading</strong> = 'Loading [%d : %d]...';</code></td>
 </tr>
 <tr><td colspan="1">
-&nbsp;</td></tr>
+<p>
+Default pattern to draw on currently loading tiles</p>
+</td></tr>
 </table>
 <h2 class="authors">Author</h2>
 <ul class="authors">

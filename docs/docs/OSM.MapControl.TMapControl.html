@@ -39,6 +39,14 @@ Control displaying a map or its visible part.</p>
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code><strong><a href="OSM.MapControl.TMapControl.html#MapMarkCaptionFont">MapMarkCaptionFont</a></strong>: TFont;</code></td>
 </tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="OSM.MapControl.TMapControl.html#SelectionShiftState">SelectionShiftState</a></strong>: TShiftState;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="OSM.MapControl.TMapControl.html#DragShiftState">DragShiftState</a></strong>: TShiftState;</code></td>
+</tr>
 </table>
 <span id="PasDoc-Methods"></span><h3 class="summary">Methods</h3>
 <table class="summary wide_list">
@@ -120,6 +128,14 @@ Control displaying a map or its visible part.</p>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapControl.html#MapMarkVisible">MapMarkVisible</a></strong>(MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>): Boolean; inline;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapControl.html#MapMarkAtPos">MapMarkAtPos</a></strong>(const MapPt: TPoint): <a href="OSM.MapControl.TMapMark.html">TMapMark</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>procedure <strong><a href="OSM.MapControl.TMapControl.html#SetCacheImageProperties">SetCacheImageProperties</a></strong>(TilesHorz, TilesVert, MarginSize: Cardinal);</code></td>
 </tr>
 <tr class="list">
@@ -167,7 +183,7 @@ Control displaying a map or its visible part.</p>
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#MouseMode">MouseMode</a></strong>: <a href="OSM.MapControl.html#TMapMouseMode">TMapMouseMode</a> read FMouseMode write FMouseMode;</code></td>
+<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#MouseMode">MouseMode</a></strong>: <a href="OSM.MapControl.html#TMapMouseMode">TMapMouseMode</a> read FMouseMode write SetMouseMode;</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
@@ -205,6 +221,14 @@ Control displaying a map or its visible part.</p>
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnSelectionBox">OnSelectionBox</a></strong>: <a href="OSM.MapControl.html#TOnSelectionBox">TOnSelectionBox</a> read FOnSelectionBox write FOnSelectionBox;</code></td>
 </tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnMapMarkMouseDown">OnMapMarkMouseDown</a></strong>: <a href="OSM.MapControl.html#TOnMapMarkMouseButtonEvent">TOnMapMarkMouseButtonEvent</a> read FOnMapMarkMouseDown write FOnMapMarkMouseDown;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnMapMarkMouseUp">OnMapMarkMouseUp</a></strong>: <a href="OSM.MapControl.html#TOnMapMarkMouseButtonEvent">TOnMapMarkMouseButtonEvent</a> read FOnMapMarkMouseUp write FOnMapMarkMouseUp;</code></td>
+</tr>
 </table>
 <h2 class="description">Description</h2>
 <h3 class="detail">Fields</h3>
@@ -236,6 +260,26 @@ Default caption style of mapmarks. New items will be init-ed with this value</p>
 <tr><td colspan="2">
 <p>
 Default font of mapmarks. New items will be init-ed with this value</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="SelectionShiftState"></span><code><strong>SelectionShiftState</strong>: TShiftState;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Modifiers and mouse buttons combination to enter selection state on mouse down. Assigning this property removes necessity of handling &quot;mouse down&quot; event just for changing map state.</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="DragShiftState"></span><code><strong>DragShiftState</strong>: TShiftState;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Modifiers and mouse buttons combination to enter dragging state on mouse down. Assigning this property removes necessity of handling &quot;mouse down&quot; event just for changing map state.</p>
 </td></tr>
 </table>
 <h3 class="detail">Methods</h3>
@@ -272,7 +316,7 @@ Default font of mapmarks. New items will be init-ed with this value</p>
 </tr>
 <tr><td colspan="2">
 <p>
-Convert a point from map pixel coords to geo coords Pixels =&gt; degrees</p>
+Convert a point from map pixel coords to geo coords</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -292,7 +336,7 @@ Convert a rect from map pixel coords to geo coords</p>
 </tr>
 <tr><td colspan="2">
 <p>
-Convert a point from geo coords to map pixel coords Degrees =&gt; pixels</p>
+Convert a point from geo coords to map pixel coords</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -352,7 +396,7 @@ Convert a rect from map coords to view area coords</p>
 </tr>
 <tr><td colspan="2">
 <p>
-Convert map points to scrollbox inner coordinates (not client!) ! Compiler-specific ! TScrollBox is different in different compilers. </p>
+Convert map points to scrollbox inner coordinates (not client!) <br> ! Compiler-specific ! <br> TScrollBox is different in different compilers. </p>
 
 <ul class="paragraph_spacing">
   <li><p>FPC considers internal area just as scrollbars' range are set (that is, whole scrollable area inside the box).</p></li>
@@ -399,13 +443,7 @@ Absolutely move the view area</p>
 </tr>
 <tr><td colspan="2">
 <p>
-Set zoom level to new value and reposition to given point <strong></p>
-
-<ul class="paragraph_spacing">
-  <li><p>new methods</p></li>
-</ul>
-
-<p></strong>* Set zoom level to new value and reposition to given point  </p>
+Set zoom level to new value and reposition to given point  </p>
 <h6 class="description_section">Parameters</h6>
 <dl class="parameters">
 <dt>Value</dt>
@@ -443,6 +481,26 @@ Zoom to show given region <code>GeoRect</code></p>
 <tr><td colspan="2">
 <p>
 Zoom to fill view area as much as possible</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="MapMarkVisible"></span><code>function <strong>MapMarkVisible</strong>(MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>): Boolean; inline;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Returns mapmark visibility based on mapmark's own property and also on currently selected visible layers of the map</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="MapMarkAtPos"></span><code>function <strong>MapMarkAtPos</strong>(const MapPt: TPoint): <a href="OSM.MapControl.TMapMark.html">TMapMark</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Returns most recently added visible map mark located at given map point considering its glyph size.</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -594,7 +652,7 @@ List of mapmarks on a map</p>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="MouseMode"></span><code>property <strong>MouseMode</strong>: <a href="OSM.MapControl.html#TMapMouseMode">TMapMouseMode</a> read FMouseMode write FMouseMode;</code></td>
+<td class="itemcode"><span id="MouseMode"></span><code>property <strong>MouseMode</strong>: <a href="OSM.MapControl.html#TMapMouseMode">TMapMouseMode</a> read FMouseMode write SetMouseMode;</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
@@ -690,7 +748,27 @@ Callback to custom draw a mapmark. It is called before default drawing. If <code
 </tr>
 <tr><td colspan="2">
 <p>
-Called when selection with mouse was made</p>
+Called when selection with mouse changes</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="OnMapMarkMouseDown"></span><code>property <strong>OnMapMarkMouseDown</strong>: <a href="OSM.MapControl.html#TOnMapMarkMouseButtonEvent">TOnMapMarkMouseButtonEvent</a> read FOnMapMarkMouseDown write FOnMapMarkMouseDown;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Called when user presses a mouse button above a mapmark</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="OnMapMarkMouseUp"></span><code>property <strong>OnMapMarkMouseUp</strong>: <a href="OSM.MapControl.html#TOnMapMarkMouseButtonEvent">TOnMapMarkMouseButtonEvent</a> read FOnMapMarkMouseUp write FOnMapMarkMouseUp;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Called when user releases a mouse button above a mapmark</p>
 </td></tr>
 </table>
 <hr><span class="appinfo"><em>Generated by <a href="https://pasdoc.github.io/">PasDoc 0.16.0</a>. </em>

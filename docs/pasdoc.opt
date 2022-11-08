@@ -8,6 +8,7 @@ define=MSWINDOWS
 markdown
 ignore-marker=~
 ignore-marker=TODO
+ignore-marker= ***
 auto-back-comments
 visible-members=public,published,automated
 implementation-comments=join

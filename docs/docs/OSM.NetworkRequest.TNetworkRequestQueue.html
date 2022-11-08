@@ -68,7 +68,7 @@ Queuer of network requests. Under the hood uses multiple background threads to e
 </tr>
 <tr><td colspan="2">
 <p>
-Constructor     Object takes ownership on this object and destroys it on release. <a class="normal" href="OSM.NetworkRequest.TNetworkRequestQueue.html">TNetworkRequestQueue</a></p>
+Constructor    </p>
 <h6 class="description_section">Parameters</h6>
 <dl class="parameters">
 <dt>MaxTasksPerThread</dt>
@@ -78,7 +78,7 @@ Constructor     Object takes ownership on this object and destroys it on release
 <dt>RequestProc</dt>
 <dd>- implementator of network request</dd>
 <dt>TilesProvider</dt>
-<dd>- object holding properties of current tile provider.</dd>
+<dd>- object holding properties of current tile provider. Object takes ownership on this object and destroys it on release.</dd>
 </dl>
 </td></tr>
 </table>
@@ -118,7 +118,7 @@ Set current view rect in absolute map coords. If smart ordering facilities are e
 </tr>
 <tr><td colspan="2">
 <p>
-Common network request props</p>
+Common network request props applied to all requests in current queue. Changing the properties won't take effect until queue gets empty. <a class="normal" href="OSM.NetworkRequest.THttpRequestProps.html#URL">THttpRequestProps.URL</a> field is ignored.</p>
 </td></tr>
 </table>
 <table class="detail wide_list">

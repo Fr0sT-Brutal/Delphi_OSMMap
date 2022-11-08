@@ -20,7 +20,7 @@
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#CalcLinDistanceInMeter">CalcLinDistanceInMeter</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Calculates distance between two geo points in meters Other</p></td>
+<td class="itemdesc"><p>Calculates distance between two geo points in meters</p></td>
 </tr>
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.NetworkRequest.html#CheckEngineCap">CheckEngineCap</a></td>
@@ -70,12 +70,12 @@
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#InMap">InMap</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Checks if point <code>Pt</code> is inside a map at zoom level <code>Zoom</code></p></td>
+<td class="itemdesc"><p>Checks if rect <code>Rc</code> is inside a map at zoom level <code>Zoom</code></p></td>
 </tr>
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#InMap">InMap</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Checks if rect <code>Rc</code> is inside a map at zoom level <code>Zoom</code></p></td>
+<td class="itemdesc"><p>Checks if point <code>Pt</code> is inside a map at zoom level <code>Zoom</code></p></td>
 </tr>
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.NetworkRequest.html#IsHTTPError">IsHTTPError</a></td>
@@ -90,7 +90,7 @@
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#LongitudeToMapCoord">LongitudeToMapCoord</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Converts geo coord in degrees to map coord in pixels Degrees to pixels</p></td>
+<td class="itemdesc"><p>Converts geo coord in degrees to map coord in pixels</p></td>
 </tr>
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MapCoordToLatitude">MapCoordToLatitude</a></td>
@@ -100,7 +100,7 @@
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MapCoordToLongitude">MapCoordToLongitude</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Converts map coord in pixels to geo coord in degrees Pixels to degrees</p></td>
+<td class="itemdesc"><p>Converts map coord in pixels to geo coord in degrees</p></td>
 </tr>
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MapHeight">MapHeight</a></td>
@@ -110,12 +110,12 @@
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MapToGeoCoords">MapToGeoCoords</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Converts map point in pixels to geo point in degrees</p></td>
+<td class="itemdesc"><p>Converts map rect in pixels to geo rect in degrees</p></td>
 </tr>
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MapToGeoCoords">MapToGeoCoords</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Converts map rect in pixels to geo rect in degrees</p></td>
+<td class="itemdesc"><p>Converts map point in pixels to geo point in degrees</p></td>
 </tr>
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MapWidth">MapWidth</a></td>
@@ -125,7 +125,7 @@
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.NetworkRequest.RTL.html#NetworkRequest">NetworkRequest</a></td>
 <td class="itemunit"><a class="bold" href="OSM.NetworkRequest.RTL.html">OSM.NetworkRequest.RTL</a></td>
-<td class="itemdesc"><p>Capabilities of RTL engine Procedure executing a network request.</p></td>
+<td class="itemdesc"><p>Procedure executing a network request.</p></td>
 </tr>
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.NetworkRequest.Synapse.html#NetworkRequest">NetworkRequest</a></td>
@@ -148,24 +148,34 @@
 <td class="itemdesc"><p>Add class of tiles provider to global <a class="normal" href="OSM.TilesProvider.html#TilesProviders">TilesProviders</a> array.</p></td>
 </tr>
 <tr class="list">
-<td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#TileCount">TileCount</a></td>
-<td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Returns count of tiles on <code>Zoom</code> level (= <code>2&circ;Zoom</code>) Tile utils</p></td>
+<td class="itemname"><a class="bold" href="OSM.MapControl.html#ShiftStateIs">ShiftStateIs</a></td>
+<td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
+<td class="itemdesc"><p>Determine whether current ShiftState corresponds to desired one (that is, if mouse button and pressed modifiers are the same - not a simple comparison because TShiftState could include additional entries like &quot;Pen&quot;, &quot;Touch&quot; and so on.</p></td>
 </tr>
 <tr class="list2">
+<td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#TileCount">TileCount</a></td>
+<td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
+<td class="itemdesc"><p>Returns count of tiles on <code>Zoom</code> level (= <code>2&circ;Zoom</code>)</p></td>
+</tr>
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#TilesEqual">TilesEqual</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Compares tiles</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#TileToStr">TileToStr</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Returns standartized string representation of <code>Tile</code></p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#TileValid">TileValid</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Checks <code>Tile</code> fields for validity</p></td>
+</tr>
+<tr class="list2">
+<td class="itemname"><a class="bold" href="OSM.MapControl.html#ToInnerCoords">ToInnerCoords</a></td>
+<td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
+<td class="itemdesc"><p>Convert absolute map coords to a point inside a viewport having given top-left point</p></td>
 </tr>
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#ToInnerCoords">ToInnerCoords</a></td>
@@ -173,50 +183,39 @@
 <td class="itemdesc"><p>Convert absolute map rect to a rect inside a viewport having given top-left point</p></td>
 </tr>
 <tr class="list2">
-<td class="itemname"><a class="bold" href="OSM.MapControl.html#ToInnerCoords">ToInnerCoords</a></td>
-<td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
-<td class="itemdesc"><p>Convert absolute map coords to a point inside a viewport having given top-left point <strong></p>
-
-<ul class="paragraph_spacing">
-  <li><p>Utils</p></li>
-</ul>
-
-<p></strong>* Like Client&lt;=&gt;Screen</p></td>
-</tr>
-<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#ToOuterCoords">ToOuterCoords</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
 <td class="itemdesc"><p>Convert a point inside a viewport having given top-left point to absolute map coords</p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#ToOuterCoords">ToOuterCoords</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
 <td class="itemdesc"><p>Convert a rect inside a viewport having given top-left point to absolute map rect</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#ToTileBoundary">ToTileBoundary</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Align absolute map rect to tile boundaries</p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#ToTileHeightGreater">ToTileHeightGreater</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Ceil vertical map coord to tile size</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#ToTileHeightLesser">ToTileHeightLesser</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Floor vertical map coord to tile size</p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#ToTileWidthGreater">ToTileWidthGreater</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Ceil horizontal map coord to tile size Ceil value to tile size</p></td>
+<td class="itemdesc"><p>Ceil horizontal map coord to tile size</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#ToTileWidthLesser">ToTileWidthLesser</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Floor horizontal map coord to tile size Floor value to tile size</p></td>
+<td class="itemdesc"><p>Floor horizontal map coord to tile size</p></td>
 </tr>
 </table>
 <hr><span class="appinfo"><em>Generated by <a href="https://pasdoc.github.io/">PasDoc 0.16.0</a>. </em>
