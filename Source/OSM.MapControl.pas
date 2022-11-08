@@ -270,6 +270,14 @@ type
     MapMarkCaptionStyle: TMapMarkCaptionStyle;
     // Default font of mapmarks. New items will be init-ed with this value
     MapMarkCaptionFont: TFont;
+    // Modifiers and mouse buttons combination to enter selection state on mouse down.
+    // Assigning this property removes necessity of handling "mouse down" event just
+    // for changing map state.
+    SelectionShiftState: TShiftState;
+    // Modifiers and mouse buttons combination to enter dragging state on mouse down.
+    // Assigning this property removes necessity of handling "mouse down" event just
+    // for changing map state.
+    DragShiftState: TShiftState;
 
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -410,6 +418,12 @@ function ToInnerCoords(const StartPt: TPoint; const Rect: TRect): TRect; overloa
 // Convert a rect inside a viewport having given top-left point to absolute map rect
 function ToOuterCoords(const StartPt: TPoint; const Rect: TRect): TRect; overload; inline;
 
+// Determine whether current ShiftState corresponds to desired one (that is, if
+// mouse button and pressed modifiers are the same - not a simple comparison because
+// TShiftState could include additional entries like "Pen", "Touch" and so on.
+// This function only checks Ctrl, Alt, Shift and Left, Right, Middle mouse buttons.
+function ShiftStateIs(Current, Desired: TShiftState): Boolean;
+
 const
   // Default Width (Horizontal dimension) and Height (Vertical dimension) of cache image
   // in number of tiles. Cache is init-ed with these values but could be changed later.@br
@@ -507,7 +521,19 @@ begin
   Result.Size := TSize.Create(Size, Size);
 end;
 
-{ TMapMark }
+function ShiftStateIs(Current, Desired: TShiftState): Boolean;
+const
+  Modifiers = [ssShift, ssAlt, ssCtrl];
+  Buttons = [ssLeft, ssRight, ssMiddle];
+begin
+  Result :=
+    // Check modifiers
+    (Current*Modifiers = Desired*Modifiers) and
+    // Check button(s)
+    (Current*Buttons = Desired*Buttons);
+end;
+
+{~ TMapMark }
 
 destructor TMapMark.Destroy;
 begin
@@ -869,18 +895,28 @@ begin
   inherited;
 end;
 
-// Focus self on mouse press, save mouse position
+// Focus self on mouse press, save mouse position, run mapmark press event, change mode
 procedure TMapControl.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var MapMark: TMapMark;
 begin
   SetFocus;
   FMouseDownPos := Point(X, Y);
+
+  // mapmark pressed?
   if Assigned(FOnMapMarkMouseDown) then
   begin
     MapMark := MapMarkAtPos(ViewToMap(FMouseDownPos));
     if MapMark <> nil then
       FOnMapMarkMouseDown(Self, MapMark, Button, Shift);
   end;
+
+  // check assigned combinations for selection and dragging
+  if ShiftStateIs(Shift, SelectionShiftState) then
+    MouseMode := mmSelecting
+  else
+  if ShiftStateIs(Shift, DragShiftState) then
+    MouseMode := mmDragging;
+
   inherited;
 end;
 
@@ -991,7 +1027,7 @@ end;
 procedure TMapControl.KeyDown(var Key: Word; Shift: TShiftState);
 begin
   if MouseMode = mmSelecting then
-    if (Shift = []) and (Key = VK_ESCAPE) then
+    if Key = VK_ESCAPE then
       MouseMode := mmNone;
   inherited;
 end;
