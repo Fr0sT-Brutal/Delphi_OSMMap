@@ -658,6 +658,7 @@ var
   i: Integer;
   MapMark: TMapMark;
   GlyphSize: Integer;
+  SearchRect: TRect;
 begin
   // Without considering glyph size it's the equivalent of Find(GeoPt)
   if not (mfoConsiderGlyphSize in Options) then
@@ -679,7 +680,8 @@ begin
       then GlyphSize := MapMark.GlyphStyle.Size
       else GlyphSize := FMap.MapMarkGlyphStyle.Size;
     // Determine rounding rect of glyph with mapmark's coords as center point
-    if FMap.MapToGeoCoords(RectByCenterAndSize(MapPt, GlyphSize)).Contains(MapMark.Coord) then
+    SearchRect := EnsureInMap(FMap.Zoom, RectByCenterAndSize(MapPt, GlyphSize));
+    if FMap.MapToGeoCoords(SearchRect).Contains(MapMark.Coord) then
       Exit(i);
   end;
 
