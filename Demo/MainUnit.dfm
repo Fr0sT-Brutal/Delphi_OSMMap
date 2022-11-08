@@ -49,6 +49,7 @@ object MainForm: TMainForm
       Height = 711
       Align = alClient
       TabOrder = 0
+      OnMouseDown = mMapMouseDown
       OnMouseMove = mMapMouseMove
     end
   end

@@ -50,7 +50,7 @@
 			<DCC_DcuOutput>Lib\$(Platform)</DCC_DcuOutput>
 			<Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
 			<Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
-			<DCC_UnitSearchPath>..\3rdParty\Synapse;..\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<DCC_UnitSearchPath>..\3rdParty\Synapse\source\lib;..\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<VerInfo_Locale>1049</VerInfo_Locale>
 			<DCC_S>false</DCC_S>
 			<DCC_K>false</DCC_K>

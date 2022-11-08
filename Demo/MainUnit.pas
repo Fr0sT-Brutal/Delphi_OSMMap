@@ -112,10 +112,11 @@ type
     procedure MsgGotTile(var Message: TMessage); message MSG_GOTTILE;
     procedure NetReqGotTileBgThr(const Tile: TTile; Ms: TMemoryStream; const Error: string);
     procedure mMapMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure mMapMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     function mMapGetTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal): TBitmap;
     procedure mMapDrawTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas; var Handled: Boolean);
     procedure mMapZoomChanged(Sender: TObject);
-    procedure mMapSelectionBox(Sender: TMapControl; const GeoRect: TGeoRect);
+    procedure mMapSelectionBox(Sender: TMapControl; const GeoRect: TGeoRect; Finish: Boolean);
     procedure Button2Click(Sender: TObject);
     procedure btnMouseModePanClick(Sender: TObject);
     procedure btnMouseModeSelClick(Sender: TObject);
@@ -128,6 +129,7 @@ type
   private
     NetRequest: TNetworkRequestQueue;
     TileStorage: TTileStorage;
+    MouseLBMode: TMapMouseMode;
     procedure Log(const s: string);
     procedure SetTilesProvider(TilesProviderClass: TTilesProviderClass);
   end;
@@ -180,7 +182,6 @@ begin
   FMap.MaxZoom := High(TMapZoomLevel);;
   FMap.SetZoom(1);
   FMap.MapMarkCaptionFont.Style := [];
-  FMap.MouseMode := mmDrag;
   FMap.OnDrawTile := nil;
   FMap.OnZoomChanged := nil;
   FMap.OnSelectionBox := nil;
@@ -262,6 +263,9 @@ end;
 procedure TMainForm.FormCreate(Sender: TObject);
 var tpc: TTilesProviderClass;
 begin
+  MouseLBMode := mmDragging;
+  mMap.SelectionShiftState := [ssLeft, ssShift];
+  mMap.DragShiftState := [ssRight];
   mMap.OnDrawTile := mMapDrawTile;
   mMap.OnZoomChanged := mMapZoomChanged;
   mMap.OnSelectionBox := mMapSelectionBox;
@@ -361,12 +365,17 @@ var
   MapPt: TPoint;
   GeoPt: TGeoPoint;
 begin
-  MapPt := mMap.ViewToMap(Point(X, Y));
-  MapPt.X := EnsureRange(MapPt.X, 0, MapWidth(mMap.Zoom));
-  MapPt.Y := EnsureRange(MapPt.Y, 0, MapHeight(mMap.Zoom));
+  MapPt := EnsureInMap(mMap.Zoom, mMap.ViewToMap(Point(X, Y)));
   GeoPt := mMap.MapToGeoCoords(MapPt);
   Label1.Caption := Format('Pixels: %d : %d', [MapPt.X, MapPt.Y]);
   Label2.Caption := Format('Geo coords: %.3f : %.3f', [GeoPt.Long, GeoPt.Lat]);
+end;
+
+// Start selecting / dragging on LMB press
+procedure TMainForm.mMapMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  if ShiftStateIs(Shift, [ssLeft]) and (TMapControl(Sender).MouseMode = mmNone) then
+    TMapControl(Sender).MouseMode := MouseLBMode;
 end;
 
 procedure TMainForm.mMapZoomChanged(Sender: TObject);
@@ -375,12 +384,14 @@ begin
 end;
 
 // Zoom to show selected region
-procedure TMainForm.mMapSelectionBox(Sender: TMapControl; const GeoRect: TGeoRect);
+procedure TMainForm.mMapSelectionBox(Sender: TMapControl; const GeoRect: TGeoRect; Finish: Boolean);
 begin
-  Log(Format('Selected region: (%.3f : %.3f; %.3f : %.3f)',
-    [GeoRect.TopLeft.Long, GeoRect.TopLeft.Lat, GeoRect.BottomRight.Long, GeoRect.BottomRight.Lat]));
-
-  Sender.ZoomToArea(GeoRect);
+  if Finish then
+  begin
+    Log(Format('Selected region: (%.3f : %.3f; %.3f : %.3f)',
+      [GeoRect.TopLeft.Long, GeoRect.TopLeft.Lat, GeoRect.BottomRight.Long, GeoRect.BottomRight.Lat]));
+    Sender.ZoomToArea(GeoRect);
+  end;
 end;
 
 // Callback from a thread of network requester that request has been done
@@ -463,12 +474,12 @@ end;
 
 procedure TMainForm.btnMouseModePanClick(Sender: TObject);
 begin
-  mMap.MouseMode := mmDrag;
+  MouseLBMode := mmDragging;
 end;
 
 procedure TMainForm.btnMouseModeSelClick(Sender: TObject);
 begin
-  mMap.MouseMode := mmSelect;
+  MouseLBMode := mmSelecting;
 end;
 
 procedure TMainForm.btnGoLatLongClick(Sender: TObject);
