@@ -318,6 +318,9 @@ type
     procedure ZoomToArea(const GeoRect: TGeoRect);
     // Zoom to fill view area as much as possible
     procedure ZoomToFit;
+    // Returns mapmark visibility based on mapmark's own property and also on
+    // currently selected visible layers of the map
+    function MapMarkVisible(MapMark: TMapMark): Boolean; inline;
     // Returns most recently added visible map mark located at given map point
     // considering its glyph size.
     function MapMarkAtPos(const MapPt: TPoint): TMapMark;
@@ -617,7 +620,7 @@ begin
   begin
     MapMark := Get(i);
     // Consider mfoOnlyVisible option
-    if (mfoOnlyVisible in Options) and not MapMark.Visible then
+    if (mfoOnlyVisible in Options) and not FMap.MapMarkVisible(MapMark) then
       Continue;
     if GeoCoords.Same(MapMark.Coord) then
       Exit(i);
@@ -643,7 +646,7 @@ begin
   begin
     MapMark := Get(i);
     // Consider mfoOnlyVisible option
-    if (mfoOnlyVisible in Options) and not MapMark.Visible then
+    if (mfoOnlyVisible in Options) and not FMap.MapMarkVisible(MapMark) then
       Continue;
 
     if GeoRect.Contains(MapMark.Coord) then
@@ -673,7 +676,7 @@ begin
   begin
     MapMark := Get(i);
     // Consider mfoOnlyVisible option
-    if (mfoOnlyVisible in Options) and not MapMark.Visible then
+    if (mfoOnlyVisible in Options) and not FMap.MapMarkVisible(MapMark) then
       Continue;
     // Calc the glyph area considering mapmark options
     if propGlyphStyle in MapMark.CustomProps
@@ -1586,10 +1589,14 @@ begin
   ZoomToArea(MapToGeoCoords(FMapRect));
 end;
 
+function TMapControl.MapMarkVisible(MapMark: TMapMark): Boolean;
+begin
+  Result := MapMark.Visible and (MapMark.Layer in FVisibleLayers);
+end;
+
 function TMapControl.MapMarkAtPos(const MapPt: TPoint): TMapMark;
 var
   idx: Integer;
-  Mark: TMapMark;
 begin
   Result := nil;
 
@@ -1597,16 +1604,13 @@ begin
   if not InMap(Zoom, MapPt) then Exit;
 
   // Check if there's any mapmark with given options. Loop through all
-  // mapmarks that satisfy the conditions until the most recently added one is found
+  // mapmarks that satisfy the conditions until the last one is found
+  // TODO search from the end backwards
   idx := -1;
   repeat
     idx := FMapMarkList.Find(MapPt, [mfoOnlyVisible, mfoConsiderGlyphSize], idx);
     if idx = -1 then Exit;
-    Mark := FMapMarkList[idx];
-    // Check if mapmark belongs to a visible layer
-    if not (Mark.Layer in FVisibleLayers) then Exit;
-
-    Result := Mark;
+    Result := FMapMarkList[idx];
   until False;
 end;
 
@@ -1633,20 +1637,18 @@ var
   pEffCapStyle: PMapMarkCaptionStyle;
   CapFont: TFont;
 begin
-  // Check if mapmark is visible and belongs to a visible layer
-  if not (MapMark.Visible and (MapMark.Layer in FVisibleLayers)) then Exit;
-
-  Handled := False;
   MMPt := ToInnerCoords(ViewAreaRect.TopLeft, GeoCoordsToMap(MapMark.Coord));
   // ! Consider Canvas.ClipRect
   MMPt.Offset(Canvas.ClipRect.TopLeft);
 
   // Let the user modify properties or handle drawing completely
   if Assigned(FOnDrawMapMark) then
+  begin
+    Handled := False;
     FOnDrawMapMark(Self, Canvas, MMPt, MapMark, Handled);
-  if Handled then Exit;
-
-  if not MapMark.Visible then Exit;
+    if Handled then Exit;
+    if not MapMarkVisible(MapMark) then Exit; // user could have changed visibility properties
+  end;
 
   // Draw glyph
 
@@ -1713,7 +1715,8 @@ begin
   if Rect = FMapRect then
   begin
     for idx := 0 to FMapMarkList.Count - 1 do
-      DrawMapMark(Canvas, FMapMarkList[idx]);
+      if MapMarkVisible(FMapMarkList[idx]) then
+        DrawMapMark(Canvas, FMapMarkList[idx]);
     Exit;
   end;
 
