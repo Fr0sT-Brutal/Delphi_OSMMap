@@ -131,7 +131,7 @@ type
     procedure AddThread;
     procedure DoRequestComplete(Sender: TThread; const Tile: TTile; Ms: TMemoryStream; const Error: string);
   private // for access from TNetworkRequestThread
-    function PopTask(out pTile: PTile; out RequestProps: THttpRequestProps): Boolean;
+    function PopTask(out pTile: PTile): Boolean;
   public
     // Constructor
     //   @param MaxTasksPerThread - if number of tasks becomes more than \
@@ -152,7 +152,9 @@ type
     // priority when extracted from request queue.
     procedure SetCurrentViewRect(const ViewRect: TRect);
 
-    // Common network request props
+    // Common network request props applied to all requests in current queue.
+    // Changing the properties won't take effect until queue gets empty.
+    // THttpRequestProps.URL field is ignored.
     property RequestProps: THttpRequestProps read FRequestProps write FRequestProps;
     // If set: disable all smart ordering facilities. Queue will retrieve all added tiles
     // one by one.
@@ -207,9 +209,11 @@ type
     FOnRequestComplete: TOnRequestComplete;
     FRequestProc: TBlockingNetworkRequestProc;
     FTilesProvider: TTilesProvider;
+    FRequestProps: THttpRequestProps;
   public
     constructor Create(Owner: TNetworkRequestQueue; RequestProc: TBlockingNetworkRequestProc;
-      TilesProvider: TTilesProvider);
+      TilesProvider: TTilesProvider; RequestProps: THttpRequestProps);
+    destructor Destroy; override;
 
     procedure Execute; override;
 
@@ -285,12 +289,20 @@ end;
 { TNetworkRequestThread }
 
 constructor TNetworkRequestThread.Create(Owner: TNetworkRequestQueue;
-  RequestProc: TBlockingNetworkRequestProc; TilesProvider: TTilesProvider);
+  RequestProc: TBlockingNetworkRequestProc; TilesProvider: TTilesProvider;
+  RequestProps: THttpRequestProps);
 begin
   inherited Create(True);
   FOwner := Owner;
   FRequestProc := RequestProc;
   FTilesProvider := TilesProvider;
+  FRequestProps := RequestProps.Clone;
+end;
+
+destructor TNetworkRequestThread.Destroy;
+begin
+  FreeAndNil(FRequestProps);
+  inherited;
 end;
 
 // Extracts tiles to bу downloaded from the queue, finishes when there are no more tiles
@@ -300,26 +312,25 @@ var
   tile: TTile;
   sErrMsg: string;
   ms: TMemoryStream;
-  ReqProps: THttpRequestProps;
   cli: TNetworkClient;
 begin
   cli := nil;
+  // Ensure proxy URL starts with HTTP proto for parsers to handle it correctly
+  if (FRequestProps.Proxy <> '') and (Pos(HTTPProxyProto, FRequestProps.Proxy) = 0) then
+    FRequestProps.Proxy := HTTPProxyProto + FRequestProps.Proxy;
 
   while not Terminated do
   begin
     // Queue empty - finish thread
-    if not FOwner.PopTask(pT, ReqProps) then
+    if not FOwner.PopTask(pT) then
       Break;
 
     tile := pT^;
-    ReqProps.URL := FTilesProvider.GetTileURL(tile);
-    // Ensure proxy URL starts with HTTP proto for parsers to handle it correctly
-    if (ReqProps.Proxy <> '') and (Pos(HTTPProxyProto, ReqProps.Proxy) = 0) then
-      ReqProps.Proxy := HTTPProxyProto + ReqProps.Proxy;
+    FRequestProps.URL := FTilesProvider.GetTileURL(tile);
     ms := TMemoryStream.Create;
 
     try
-      FRequestProc(ReqProps, ms, cli);
+      FRequestProc(FRequestProps, ms, cli);
       ms.Position := 0;
     except on E: Exception do
       begin
@@ -328,7 +339,6 @@ begin
         FreeAndNil(cli);
       end;
     end;
-    FreeAndNil(ReqProps);
 
     if Assigned(FOnRequestComplete) then
       FOnRequestComplete(Self, tile, ms, sErrMsg)
@@ -475,7 +485,7 @@ var thr: TNetworkRequestThread;
 begin
   Lock;
   try
-    thr := TNetworkRequestThread.Create(Self, FRequestProc, FTilesProvider);
+    thr := TNetworkRequestThread.Create(Self, FRequestProc, FTilesProvider, FRequestProps);
     thr.OnRequestComplete := DoRequestComplete;
     thr.Start;
     FThreads.Add(thr);
@@ -489,7 +499,7 @@ end;
 //   @param pTile - pointer to tile to request
 //   @param RequestProps - personal copy of request properties that a thread must dispose
 //   @returns @True if a task was returned, @False if queue is empty
-function TNetworkRequestQueue.PopTask(out pTile: PTile; out RequestProps: THttpRequestProps): Boolean;
+function TNetworkRequestQueue.PopTask(out pTile: PTile): Boolean;
 
   // Search for tiles in list and return the 1st one that falls into given rect of tile numbers
   // (!) Numbers, not coords (!)
@@ -516,7 +526,6 @@ begin
     Exit(False);
 
   pTile := nil;
-  RequestProps := nil;
 
   Lock;
   try
@@ -534,7 +543,6 @@ begin
     if Result then
     begin
       FCurrentTasks.Add(pTile);
-      RequestProps := FRequestProps.Clone;
     end;
 
     FNotEmpty := (FTaskQueue.Count > 0);
