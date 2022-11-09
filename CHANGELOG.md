@@ -1,10 +1,62 @@
+0.10.0
+======
+
+`[BREAKING]`
+
+- OSM.MapControl.pas: TMapMarkList.Find, ConsiderMapMarkSize argument replaced by TMapMarkFindOptions set and namely mfoConsiderGlyphSize value. However, it is not default anymore (and disallowed for searching by geo coords raising an exception because glyph size doesn't map reliably to geo coords). It didn't work before anyway.
+
+  **End-user code required changes** Modify all TMapMarkList.Find calls:
+  
+  - Where you need to consider glyph size - use Find(TPoint, [mfoConsiderGlyphSize]) overload. Glyph size is only actual when dealing with pixels.
+  - In other places - use TMapMarkList.Find(GeoRect, [], idx) (will be forced by compiler)
+  - You may also want to include mfoOnlyVisible option
+
+- OSM.MapControl.pas: TMapMouseMode has changed its meaning. Now it reflects current map state of mouse events not the kind of reaction on mouse press-and-move. mmNone is default state, mmDrag/mmSelect renamed to mmDragging/mmSelecting.
+
+  **End-user code required changes**:
+  
+  - Move mode setting from init section to MouseDown handlers. Or assign TMapControl.SelectionShiftState, DragShiftState instead
+  - Rename mmDrag/mmSelect to mmDragging/mmSelecting (will be forced by compiler)
+
+`Added`
+
+- OSM.MapControl.pas, TMapMarkCaptionStyle.Visible to control display of the caption
+- OSM.MapControl.pas, TMapMarkList gets upgrades: enumerator to use in for-in loops, Find(Pointer) to search by .Data field, Delete(Integer) to remove item by index, default Items property to get rid of writing Get().
+- OSM.MapControl.pas, TMapMarkList.Find(TPoint), overload that allows considering glyph size with mfoConsiderGlyphSize option set
+- OSM.MapControl.pas, TMapMarkFindOptions, mfoOnlyVisible option to allow skipping invisible marks. Method calls TMapControl.MapMarkVisible to determine effective visibility considering not only Visible flag but also visibility of mapmark layer.
+- OSM.MapControl.pas, TMapControl.MapMarkAtPos method to find topmost visible mapmark at given pixel coords.
+- OSM.MapControl.pas: TMapControl.MapMarkVisible - Returns mapmark visibility based on mapmark's own property and also on currently selected visible layers of the map. TMapMarkList.Find methods all use this method.
+- OSM.MapControl.pas, TOnSelectionBox now is called on every selection box change to reflect changes on-the-fly. Added parameter "Finished"
+- OSM.MapControl.pas: TMapControl.OnMapMarkMouse(Down|Up) events
+- OSM.MapControl.pas: TMapControl.SelectionShiftState, DragShiftState properties that set combination to enter selection/dragging state on mouse down. Assigning these properties removes necessity of handling MouseDown event just for changing map state
+- OSM.MapControl.pas: ShiftStateIs function for correct comparison of shift states (to use in MouseUp|Move|Down event handlers)
+
+`Changed`
+
+- OSM.SlippyMapUtils.pas: EnsureInMap, ensures negative coords as well
+- OSM.MapControl.pas: TMapControl.SetZoom, cancels selection/dragging
+- OSM.NetworkRequest.pas, request props are cloned and assigned to every TNetworkRequestThread in its c-tor to avoid multithread access issues.
+
+`Fixed`
+
+- OSM.MapControl.pas: TMapMarkList.Find(TGeoPoint), fixed StartIndex not incremented
+- OSM.MapControl.pas: fixed map dragging
+
 0.9.4
 =====
 
 `[BREAKING]`
 
 - Major redesign of NetworkRequest. Reuse connections to speedup downloads and reduce server load. Engine capabilities are checked against request details. API changes for implementations of NetworkRequest only, no changes visible to end-user.
-- OSM.NetworkRequest.pas, TBlockingNetworkRequestFunc => TBlockingNetworkRequestProc, must raise exception on error thus removing excess ErrMsg and result flag; add Client parameter
+
+- OSM.NetworkRequest.pas, TBlockingNetworkRequestFunc => TBlockingNetworkRequestProc, must raise exception on error thus removing excess ErrMsg and result flag; add Client parameter. API changes for implementations of NetworkRequest only, no changes visible to end-user.
+
+  **End-user code required changes**: none except for custom implementations of NetworkRequest. For those:
+  
+  - Function must be turned to procedure with other set of arguments (will be forced by compiler)
+  - Procedure should call engine capabilities check
+  - Procedure must raise exception on error
+  - Procedure should reuse existing Client object
 
 `Added`
 
