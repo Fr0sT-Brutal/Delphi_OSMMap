@@ -39,4 +39,6 @@ Third party
 
 If you wish to use **Synapse** network engine and don't have it yet, you can take it from **Releases** section.
 
-![screen](https://raw.githubusercontent.com/Fr0sT-Brutal/Delphi_OSMMap/master/Screen/screen.png)
+![screen1](https://raw.githubusercontent.com/Fr0sT-Brutal/Delphi_OSMMap/master/Screen/screen1.png)
+
+![screen2](https://raw.githubusercontent.com/Fr0sT-Brutal/Delphi_OSMMap/master/Screen/screen2.png)
