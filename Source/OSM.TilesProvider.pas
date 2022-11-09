@@ -188,9 +188,9 @@ end;
 //   - `{z}` - zoom level
 //   - `{?|?|...}` - set of any values used to determine random subdomain
 //   - `{?-?}` - range of digits or chars used to determine random subdomain
-//   - `{key}` - provider API key (TTilesProvider.APIKey property)
+//   - `{key}` - provider API key (@link(TTilesProvider.APIKey Provider.APIKey) property)
 //   - `{?}` - where "?" is any string - provider property named "?"
-//     (obtained via TTilesProvider.Properties)
+//     (obtained via @link(TTilesProvider.Properties Provider.Properties))
 function FormatTileURL(const Template: string; const Tile: TTile; Provider: TTilesProvider): string;
 var VarTile: TTile;
 begin

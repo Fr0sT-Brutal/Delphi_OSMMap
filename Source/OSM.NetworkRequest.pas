@@ -20,8 +20,8 @@ uses
   OSM.SlippyMapUtils, OSM.TilesProvider;
 
 const
-  // Prefix to add to proxy URLs if it only contains host:port - some URL parsers
-  // handle such inputs as proto:path
+  // Prefix to add to proxy URLs if it only contains `host:port` - some URL parsers
+  // handle such inputs as `proto:path`
   HTTPProxyProto = 'http://';
   HTTPTLSProto = 'https';
   // Internal constant to designate OS-wide proxy
@@ -34,10 +34,11 @@ type
   THttpRequestCapability =
   (
     htcProxy,        // Support HTTP proxy
-    htcDirect,       // Support direct connect bypassing OS-wide proxy. In fact,
-                     // only WinInet-based engines (WinInet, RTL in Windows) use
-                     // OS-wide proxy by default. In other engines and in Linux proxy
-                     // must be set explicitly so this cap is actual for all engines.
+    // Support direct connect bypassing OS-wide proxy. In fact,
+    // only WinInet-based engines (WinInet, RTL in Windows) use
+    // OS-wide proxy by default. In other engines and in Linux the proxy
+    // must be set explicitly so this cap is actual for all engines.
+    htcDirect,
     htcSystemProxy,  // Can use OS-wide proxy
     htcProxyAuth,    // Support auth to proxy defined in URL
     htcAuth,         // Support auth to host
@@ -69,9 +70,9 @@ type
     // HTTP header.
     HeaderLines: TStrings;
     // Any data that request function could use. Note that data MUST not change
-    // as it is not copied in Clone and is being accessed from multiple threads.
-    // Alternatively, THttpRequestProps descendant could implement proper copying
-    // in overridden Clone.
+    // as it is not copied in @link(Clone) and is being accessed from multiple threads.
+    // Alternatively, @classname descendant could implement proper copying
+    // in overridden @link(Clone).
     Additional: Pointer;
 
     destructor Destroy; override;
@@ -94,12 +95,13 @@ type
   //
   //   @param RequestProps - all details regarding a request
   //   @param ResponseStm - stream that accepts response data
-  //   @param Client - [IN/OUT] If the engine supports multiple requests inside
-  //     the same client, this parameter is the current client object. Request
-  //     properties are supposed to remain unchanged throughout the whole queue
-  //     (only URL changes) so it's enough to assign them at client creation only @br
-  //     IN: client object to use for requests.                                   @br
-  //     OUT: newly created client object if Client was @nil at input.
+  //   @param Client - [IN/OUT] If the engine supports multiple requests inside       \
+  //     the same client, this parameter is the current client object. Request        \
+  //     properties are supposed to remain unchanged throughout the whole queue       \
+  //     (only @link(THttpRequestProps.URL URL) changes) so it's enough to assign     \
+  //     them at client creation only @br \
+  //     IN: client object to use for requests.                                   @br \
+  //     OUT: newly created client object if `Client` was @nil at input.
   //   @raises exception on error
   TBlockingNetworkRequestProc = procedure (RequestProps: THttpRequestProps;
     ResponseStm: TStream; var Client: TNetworkClient);
@@ -107,7 +109,7 @@ type
   // Generic type of method to call when request is completed @br
   // ! **Called from the context of a background thread** !
   //   @param Tile - tile that has been received
-  //   @param Ms - stream with tile image data. In case of error, it could be @nil even if Error is empty
+  //   @param Ms - stream with tile image data. In case of error, it could be @nil even if `Error` is empty
   //   @param Error - error description if any
   TGotTileCallbackBgThr = procedure (const Tile: TTile; Ms: TMemoryStream; const Error: string) of object;
 
@@ -150,7 +152,7 @@ type
       TilesProvider: TTilesProvider);
     destructor Destroy; override;
 
-    // Add request for an image for `Tile` to request queue
+    // Add request for an image for `Tile` to the request queue
     procedure RequestTile(const Tile: TTile);
     // Set current view rect in absolute map coords.
     // If smart ordering facilities are enabled, tiles inside current view have
@@ -159,7 +161,7 @@ type
 
     // Common network request props applied to all requests in current queue.
     // Changing the properties won't take effect until queue gets empty.
-    // THttpRequestProps.URL field is ignored.
+    // @link(THttpRequestProps.URL URL) field is ignored.
     property RequestProps: THttpRequestProps read FRequestProps write FRequestProps;
     // If set: disable all smart ordering facilities. Queue will retrieve all added tiles
     // one by one.
@@ -176,8 +178,8 @@ type
 
 const
   SampleUserAgent = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0';
-  // Headers that you could add to TNetworkRequestQueue. F.ex., openstreetmap.org
-  // dislikes requests without user-agent.
+  // Headers that you could add to @link(THttpRequestProps.HeaderLines TNetworkRequestQueue.RequestProps.HeaderLines).
+  // F.ex., openstreetmap.org dislikes requests without user-agent.
   SampleHeaders: array[0..2] of string =
   (
     'User-Agent: ' + SampleUserAgent,

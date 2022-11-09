@@ -28,7 +28,7 @@ uses
 
 const
   // Amount of bytes that a single tile bitmap occupies in memory.
-  // Bitmap consumes ~4 byte per pixel. This constant could be used to
+  // Bitmap consumes ~4 bytes per pixel. This constant could be used to
   // determine acceptable cache size knowing acceptable memory usage.
   TILE_BITMAP_SIZE = 4*TILE_IMAGE_WIDTH*TILE_IMAGE_HEIGHT;
 
@@ -86,7 +86,7 @@ type
   end;
 
   // Class that encapsulates memory and file cache of tile images.
-  // It operates 3-level in-memory cache: TBitmap's, TPngImage's and TMemoryStream's.
+  // It operates 3-level in-memory cache: `TBitmap`'s, `TPngImage`'s and `TMemoryStream`'s.
   // According to benchmarks, different actions take following percents of time:
   //   - Load PNG from file to memory  - 30%
   //   - Read PNG from memory to image - 63% (!)

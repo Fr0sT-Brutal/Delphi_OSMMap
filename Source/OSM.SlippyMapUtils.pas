@@ -44,7 +44,7 @@ type
     constructor Create(Long, Lat: Double);
     // Check if two points have the same coords within configurable area
     // (for simplicity effective area is rectangle with current point at center,
-    // height = VertArea*2 and width = HorzArea*2)
+    // height = `VertArea`*2 and width = `HorzArea`*2)
     function Same(const GeoPt: TGeoPoint; HorzArea: Double = 0; VertArea: Double = 0): Boolean;
   end;
 

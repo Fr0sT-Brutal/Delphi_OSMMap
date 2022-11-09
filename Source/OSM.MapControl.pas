@@ -43,7 +43,7 @@ type
   TMapMarkCaptionStyle = record
     Visible: Boolean;             // Visibility flag
     Color: TColor;
-    BgColor: TColor;              // Caption background color if Transparent is False
+    BgColor: TColor;              // Caption background color if @link(Transparent) is @false
     DX, DY: Integer;              // Caption offsets from the TopRight corner of mapmark glyph rectangle, in pixels
     Transparent: Boolean;         // Caption transparency flag
     {}//TODO: text position, alignment
@@ -85,10 +85,12 @@ type
 
   // Options for TMapMarkList.Find. Default is empty set
   TMapMarkFindOption = (
-    mfoConsiderGlyphSize, // If set (for map pixels only): consider mapmark glyph size as well. @br
-                          // If not set (default) : search by exact coords.
-    mfoOnlyVisible        // If set: consider only visible mapmarks.                           @br
-                          // If not set (default), consider all mapmarks
+    // If set (for map pixels only): consider mapmark glyph size as well.
+    // If not set (default): search by exact coords.
+    mfoConsiderGlyphSize,
+    // If set: consider only visible mapmarks.
+    // If not set (default), consider all mapmarks
+    mfoOnlyVisible
   );
   TMapMarkFindOptions = set of TMapMarkFindOption;
 
@@ -136,9 +138,10 @@ type
     function Find(const GeoRect: TGeoRect; Options: TMapMarkFindOptions = []; StartIndex: Integer = -1): Integer; overload;
     // The same as above but searches by map point in pixels
     function Find(const MapPt: TPoint; Options: TMapMarkFindOptions; StartIndex: Integer): Integer; overload;
-    // Find map mark by its .Data field
+    // Find map mark by its @link(TMapMark.Data Data) field
     //   @param Data - value to search for
-    //   @returns index of mapmark in the list having .Data field same as Data, `-1` if not found.
+    //   @returns index of mapmark in the list having @link(TMapMark.Data Data)  \
+    //     field same as `Data`, `-1` if not found.
     function Find(Data: Pointer): Integer; overload;
     // Create TMapMark object and initially assign values from owner map's fields
     function NewItem: TMapMark;
@@ -325,7 +328,7 @@ type
     // Returns mapmark visibility based on mapmark's own property and also on
     // currently selected visible layers of the map
     function MapMarkVisible(MapMark: TMapMark): Boolean; inline;
-    // Returns most recently added visible map mark located at given map point
+    // Returns most recently added visible mapmark located at given map point
     // considering its glyph size.
     function MapMarkAtPos(const MapPt: TPoint): TMapMark;
 
