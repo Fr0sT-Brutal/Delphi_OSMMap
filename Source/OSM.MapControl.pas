@@ -30,12 +30,16 @@ type
   // Shape of mapmark glyph
   TMapMarkGlyphShape = (gshCircle, gshSquare, gshTriangle);
 
+  // Opacity level, from 0 (transparent) to $FF (non-transparent)
+  TOpacity = Byte;
+
   // Visual properties of mapmark's glyph
   TMapMarkGlyphStyle = record
     Shape: TMapMarkGlyphShape;
     Size: Cardinal;
     BorderColor: TColor;
     BgColor: TColor;
+    Opacity: TOpacity;    // Glyph transparence. Slows drawing down when there are many mapmarks in view
   end;
   PMapMarkGlyphStyle = ^TMapMarkGlyphStyle;
 
@@ -185,8 +189,8 @@ type
   TOnDrawTile = procedure (Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal;
     const TopLeft: TPoint; Canvas: TCanvas; var Handled: Boolean) of object;
 
-  // Callback to custom draw a mapmark. It is called before default drawing.
-  // If `Handled` is not set to @true, default drawing will be done.
+  // Callback to custom draw a mapmark or just a glyph with center point `Point`.
+  // It is called before default drawing. If `Handled` is not set to @true, default drawing will be done.
   TOnDrawMapMark = procedure (Sender: TMapControl; Canvas: TCanvas; const Point: TPoint;
     MapMark: TMapMark; var Handled: Boolean) of object;
 
@@ -227,6 +231,7 @@ type
     FOnDrawTileLoading: TOnDrawTile;
     FOnZoomChanged: TNotifyEvent;
     FOnDrawMapMark: TOnDrawMapMark;
+    FOnDrawMapMarkGlyph: TOnDrawMapMark;
     FOnSelectionBox: TOnSelectionBox;
     FOnMapMarkMouseDown: TOnMapMarkMouseButtonEvent;
     FOnMapMarkMouseUp: TOnMapMarkMouseButtonEvent;
@@ -406,9 +411,14 @@ type
     property OnZoomChanged: TNotifyEvent read FOnZoomChanged write FOnZoomChanged;
     // Callback to custom draw a mapmark. It is called before default drawing.
     // If `Handled` is not set to @true, default drawing will be done.
-    // User could draw a mapmark fully or just change some props and let default
-    // drawing do its job
+    // User could draw a mapmark fully or change some props of a mapmark and let default
+    // drawing do its job.
     property OnDrawMapMark: TOnDrawMapMark read FOnDrawMapMark write FOnDrawMapMark;
+    // Callback to custom draw a mapmark's glyph. It is called before default drawing.
+    // If `Handled` is not set to @true, default drawing will be done. @br
+    // Glyph rounding rectangle could be calculated with RectByCenterAndSize function
+    // and effective glyph style.
+    property OnDrawMapMarkGlyph: TOnDrawMapMark read FOnDrawMapMarkGlyph write FOnDrawMapMarkGlyph;
     // Called when selection with mouse changes
     property OnSelectionBox: TOnSelectionBox read FOnSelectionBox write FOnSelectionBox;
     // Called when user presses a mouse button above a mapmark
@@ -427,6 +437,11 @@ function ToOuterCoords(const StartPt, Pt: TPoint): TPoint; overload; inline;
 function ToInnerCoords(const StartPt: TPoint; const Rect: TRect): TRect; overload; inline;
 // Convert a rect inside a viewport having given top-left point to absolute map rect
 function ToOuterCoords(const StartPt: TPoint; const Rect: TRect): TRect; overload; inline;
+
+// Draw triangle on canvas
+procedure Triangle(Canvas: TCanvas; const Rect: TRect);
+// Return rectangle with center point in CenterPt and with size Size
+function RectByCenterAndSize(const CenterPt: TPoint; Size: Integer): TRect;
 
 // Determine whether current ShiftState corresponds to desired one (that is, if
 // mouse button and pressed modifiers are the same - not a simple comparison because
@@ -453,6 +468,7 @@ const
     Size: 20;
     BorderColor: clWindowFrame;
     BgColor: clSkyBlue;
+    Opacity: High(TOpacity);
   );
   // Default style of mapmark caption.
   // TMapControl.MapMarkGlyphStyle is init-ed with this value
@@ -515,16 +531,15 @@ begin
   );
 end;
 
-// Draw triangle on canvas
 procedure Triangle(Canvas: TCanvas; const Rect: TRect);
 begin
+  // Note that -1's estimating line width
   Canvas.Polygon([
-    Point(Rect.Left, Rect.Bottom),
+    Point(Rect.Left, Rect.Bottom - 1),
     Point(Rect.Left + Rect.Width div 2, Rect.Top),
-    Rect.BottomRight]);
+    Point(Rect.Right, Rect.Bottom - 1)]);
 end;
 
-// Return rectangle with center point in CenterPt and with size Size
 function RectByCenterAndSize(const CenterPt: TPoint; Size: Integer): TRect;
 begin
   Result.TopLeft := CenterPt;
@@ -1639,13 +1654,29 @@ end;
 
 // Base method to draw mapmark. Calls callback to do custom actions
 procedure TMapControl.DrawMapMark(Canvas: TCanvas; MapMark: TMapMark);
+
+  procedure DrawGlyph(Canvas: TCanvas; Rect: TRect; const GlyphStyle: TMapMarkGlyphStyle);
+  begin
+    Canvas.Brush.Color := GlyphStyle.BgColor;
+    Canvas.Pen.Color := GlyphStyle.BorderColor;
+    case GlyphStyle.Shape of
+      gshCircle:
+        Canvas.Ellipse(Rect);
+      gshSquare:
+        Canvas.Rectangle(Rect);
+      gshTriangle:
+        Triangle(Canvas, Rect);
+    end;
+  end;
+
 var
   Handled: Boolean;
   MMPt: TPoint;
-  MapMarkRect: TRect;
+  MapMarkRect, GlyphRect: TRect;
   pEffGlStyle: PMapMarkGlyphStyle;
   pEffCapStyle: PMapMarkCaptionStyle;
   CapFont: TFont;
+  bmpGlyph: TBitmap;
 begin
   MMPt := ToInnerCoords(ViewAreaRect.TopLeft, GeoCoordsToMap(MapMark.Coord));
   // ! Consider Canvas.ClipRect
@@ -1662,23 +1693,37 @@ begin
 
   // Draw glyph
 
-  // Determine effective glyph style
-  if propGlyphStyle in MapMark.CustomProps
-    then pEffGlStyle := @MapMark.GlyphStyle
-    else pEffGlStyle := @MapMarkGlyphStyle;
+  // Let the user handle glyph drawing
+  Handled := False;
+  if Assigned(FOnDrawMapMarkGlyph) then
+    FOnDrawMapMarkGlyph(Self, Canvas, MMPt, MapMark, Handled);
 
-  // Determine rounding rect of glyph with mapmark's coords as center point
-  MapMarkRect := RectByCenterAndSize(MMPt, pEffGlStyle.Size);
-  Canvas.Brush.Color := pEffGlStyle.BgColor;
-  Canvas.Pen.Color := pEffGlStyle.BorderColor;
+  if not Handled then
+  begin
+    // Determine effective glyph style
+    if propGlyphStyle in MapMark.CustomProps
+      then pEffGlStyle := @MapMark.GlyphStyle
+      else pEffGlStyle := @MapMarkGlyphStyle;
 
-  case pEffGlStyle.Shape of
-    gshCircle:
-      Canvas.Ellipse(MapMarkRect);
-    gshSquare:
-      Canvas.Rectangle(MapMarkRect);
-    gshTriangle:
-      Triangle(Canvas, MapMarkRect);
+    // Determine rounding rect of glyph with mapmark's coords as center point
+    MapMarkRect := RectByCenterAndSize(MMPt, pEffGlStyle.Size);
+
+    // Draw glyph with opacity - via temporary bitmap
+    if pEffGlStyle.Opacity < High(TOpacity) then
+    begin
+      GlyphRect := Rect(0, 0, MapMarkRect.Width, MapMarkRect.Height);
+      // Warning: opacity doesn't work in this code! TODO
+      bmpGlyph := TBitmap.Create;
+      bmpGlyph.Transparent := True;
+      bmpGlyph.TransparentMode := tmFixed;
+      bmpGlyph.TransparentColor := clWhite;
+      bmpGlyph.SetSize(GlyphRect.Width, GlyphRect.Height);
+      DrawGlyph(bmpGlyph.Canvas, GlyphRect, pEffGlStyle^);
+      Canvas.Draw(MapMarkRect.Left, MapMarkRect.Top, bmpGlyph, pEffGlStyle.Opacity);
+      FreeAndNil(bmpGlyph);
+    end
+    else
+      DrawGlyph(Canvas, MapMarkRect, pEffGlStyle^);
   end;
 
   // Draw caption
