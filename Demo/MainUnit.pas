@@ -419,6 +419,7 @@ begin
   if pData.Error <> '' then
   begin
     Log(Format('Error getting tile %s: %s', [TileToStr(pData.Tile), pData.Error]));
+    FreeAndNil(pData.Ms);
   end
   else
   begin
