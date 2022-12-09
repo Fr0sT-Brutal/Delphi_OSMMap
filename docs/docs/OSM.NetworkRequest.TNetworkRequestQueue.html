@@ -29,7 +29,7 @@ Queuer of network requests. Under the hood uses multiple background threads to e
 <table class="summary wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>constructor <strong><a href="OSM.NetworkRequest.TNetworkRequestQueue.html#Create">Create</a></strong>(MaxTasksPerThread, MaxThreads: Cardinal; RequestProc: <a href="OSM.NetworkRequest.html#TBlockingNetworkRequestProc">TBlockingNetworkRequestProc</a>; TilesProvider: <a href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a>);</code></td>
+<td class="itemcode"><code>constructor <strong><a href="OSM.NetworkRequest.TNetworkRequestQueue.html#Create-Cardinal-Cardinal-TBlockingNetworkRequestProc-TTilesProvider-">Create</a></strong>(MaxTasksPerThread, MaxThreads: Cardinal; RequestProc: TBlockingNetworkRequestProc; TilesProvider: <a href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a>);</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
@@ -37,11 +37,11 @@ Queuer of network requests. Under the hood uses multiple background threads to e
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>procedure <strong><a href="OSM.NetworkRequest.TNetworkRequestQueue.html#RequestTile">RequestTile</a></strong>(const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>);</code></td>
+<td class="itemcode"><code>procedure <strong><a href="OSM.NetworkRequest.TNetworkRequestQueue.html#RequestTile-TTile-">RequestTile</a></strong>(const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>);</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>procedure <strong><a href="OSM.NetworkRequest.TNetworkRequestQueue.html#SetCurrentViewRect">SetCurrentViewRect</a></strong>(const ViewRect: TRect);</code></td>
+<td class="itemcode"><code>procedure <strong><a href="OSM.NetworkRequest.TNetworkRequestQueue.html#SetCurrentViewRect-TRect-">SetCurrentViewRect</a></strong>(const ViewRect: TRect);</code></td>
 </tr>
 </table>
 <span id="PasDoc-Properties"></span><h3 class="summary">Properties</h3>
@@ -56,7 +56,7 @@ Queuer of network requests. Under the hood uses multiple background threads to e
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>property <strong><a href="OSM.NetworkRequest.TNetworkRequestQueue.html#OnGotTileBgThr">OnGotTileBgThr</a></strong>: <a href="OSM.NetworkRequest.html#TGotTileCallbackBgThr">TGotTileCallbackBgThr</a> read FGotTileCb write FGotTileCb;</code></td>
+<td class="itemcode"><code>property <strong><a href="OSM.NetworkRequest.TNetworkRequestQueue.html#OnGotTileBgThr">OnGotTileBgThr</a></strong>: TGotTileCallbackBgThr read FGotTileCb write FGotTileCb;</code></td>
 </tr>
 </table>
 <h2 class="description">Description</h2>
@@ -64,7 +64,7 @@ Queuer of network requests. Under the hood uses multiple background threads to e
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="Create"></span><code>constructor <strong>Create</strong>(MaxTasksPerThread, MaxThreads: Cardinal; RequestProc: <a href="OSM.NetworkRequest.html#TBlockingNetworkRequestProc">TBlockingNetworkRequestProc</a>; TilesProvider: <a href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a>);</code></td>
+<td class="itemcode"><span id="Create-Cardinal-Cardinal-TBlockingNetworkRequestProc-TTilesProvider-"></span><code>constructor <strong>Create</strong>(MaxTasksPerThread, MaxThreads: Cardinal; RequestProc: TBlockingNetworkRequestProc; TilesProvider: <a href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a>);</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
@@ -88,22 +88,22 @@ Constructor    </p>
 <td class="itemcode"><span id="Destroy"></span><code>destructor <strong>Destroy</strong>; override;</code></td>
 </tr>
 <tr><td colspan="2">
-&nbsp;</td></tr>
+<p class="nodescription">This item has no description.</p></td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="RequestTile"></span><code>procedure <strong>RequestTile</strong>(const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>);</code></td>
+<td class="itemcode"><span id="RequestTile-TTile-"></span><code>procedure <strong>RequestTile</strong>(const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>);</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
-Add request for an image for <code>Tile</code> to request queue</p>
+Add request for an image for <code>Tile</code> to the request queue</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="SetCurrentViewRect"></span><code>procedure <strong>SetCurrentViewRect</strong>(const ViewRect: TRect);</code></td>
+<td class="itemcode"><span id="SetCurrentViewRect-TRect-"></span><code>procedure <strong>SetCurrentViewRect</strong>(const ViewRect: TRect);</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
@@ -118,7 +118,7 @@ Set current view rect in absolute map coords. If smart ordering facilities are e
 </tr>
 <tr><td colspan="2">
 <p>
-Common network request props applied to all requests in current queue. Changing the properties won't take effect until queue gets empty. <a class="normal" href="OSM.NetworkRequest.THttpRequestProps.html#URL">THttpRequestProps.URL</a> field is ignored.</p>
+Common network request props applied to all requests in current queue. Changing the properties won't take effect until queue gets empty. <a class="normal" href="OSM.NetworkRequest.THttpRequestProps.html#URL">URL</a> field is ignored.</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -131,8 +131,8 @@ Common network request props applied to all requests in current queue. Changing 
 If set: disable all smart ordering facilities. Queue will retrieve all added tiles one by one. If not set (default): </p>
 
 <ul class="paragraph_spacing">
-  <li><p>When <a class="normal" href="OSM.NetworkRequest.TNetworkRequestQueue.html#RequestTile">RequestTile</a> adds a tile, all queued items with another zoom level are cancelled (use case: user quickly zooms in/out by multiple steps - no sense to wait for all of them to download)</p></li>
-  <li><p>If current view area is set via <a class="normal" href="OSM.NetworkRequest.TNetworkRequestQueue.html#SetCurrentViewRect">SetCurrentViewRect</a>, the tiles inside this rect are downloaded first (priority of visible area)</p></li>
+  <li><p>When <a class="normal" href="OSM.NetworkRequest.TNetworkRequestQueue.html#RequestTile-TTile-">RequestTile</a> adds a tile, all queued items with another zoom level are cancelled (use case: user quickly zooms in/out by multiple steps - no sense to wait for all of them to download)</p></li>
+  <li><p>If current view area is set via <a class="normal" href="OSM.NetworkRequest.TNetworkRequestQueue.html#SetCurrentViewRect-TRect-">SetCurrentViewRect</a>, the tiles inside this rect are downloaded first (priority of visible area)</p></li>
 </ul>
 
 <p></p>
@@ -141,7 +141,7 @@ If set: disable all smart ordering facilities. Queue will retrieve all added til
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="OnGotTileBgThr"></span><code>property <strong>OnGotTileBgThr</strong>: <a href="OSM.NetworkRequest.html#TGotTileCallbackBgThr">TGotTileCallbackBgThr</a> read FGotTileCb write FGotTileCb;</code></td>
+<td class="itemcode"><span id="OnGotTileBgThr"></span><code>property <strong>OnGotTileBgThr</strong>: TGotTileCallbackBgThr read FGotTileCb write FGotTileCb;</code></td>
 </tr>
 <tr><td colspan="2">
 <p>

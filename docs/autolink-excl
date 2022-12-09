@@ -16,3 +16,7 @@ data
 layer
 properties
 name
+color
+clone
+transparent
+items

@@ -39,10 +39,10 @@ Generic (no real implementation) base class for tile image provider. Stores prop
 <span id="PasDoc-FuncsProcs"></span><h3 class="summary">Functions and Procedures</h3>
 <table class="summary wide_list">
 <tr class="list">
-<td class="itemcode"><code>procedure <strong><a href="OSM.TilesProvider.html#RegisterTilesProvider">RegisterTilesProvider</a></strong>(TilesProviderClass: <a href="OSM.TilesProvider.html#TTilesProviderClass">TTilesProviderClass</a>);</code></td>
+<td class="itemcode"><code>procedure <strong><a href="OSM.TilesProvider.html#RegisterTilesProvider-TTilesProviderClass-">RegisterTilesProvider</a></strong>(TilesProviderClass: <a href="OSM.TilesProvider.html#TTilesProviderClass">TTilesProviderClass</a>);</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code>function <strong><a href="OSM.TilesProvider.html#FormatTileURL">FormatTileURL</a></strong>(const Template: string; const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>; Provider: <a href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a>): string;</code></td>
+<td class="itemcode"><code>function <strong><a href="OSM.TilesProvider.html#FormatTileURL-string-TTile-TTilesProvider-">FormatTileURL</a></strong>(const Template: string; const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>; Provider: <a href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a>): string;</code></td>
 </tr>
 </table>
 <span id="PasDoc-Types"></span><h3 class="summary">Types</h3>
@@ -61,7 +61,7 @@ Generic (no real implementation) base class for tile image provider. Stores prop
 <h3 class="detail">Functions and Procedures</h3>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="RegisterTilesProvider"></span><code>procedure <strong>RegisterTilesProvider</strong>(TilesProviderClass: <a href="OSM.TilesProvider.html#TTilesProviderClass">TTilesProviderClass</a>);</code></td>
+<td class="itemcode"><span id="RegisterTilesProvider-TTilesProviderClass-"></span><code>procedure <strong>RegisterTilesProvider</strong>(TilesProviderClass: <a href="OSM.TilesProvider.html#TTilesProviderClass">TTilesProviderClass</a>);</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
@@ -70,7 +70,7 @@ Add class of tiles provider to global <a class="normal" href="OSM.TilesProvider.
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="FormatTileURL"></span><code>function <strong>FormatTileURL</strong>(const Template: string; const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>; Provider: <a href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a>): string;</code></td>
+<td class="itemcode"><span id="FormatTileURL-string-TTile-TTilesProvider-"></span><code>function <strong>FormatTileURL</strong>(const Template: string; const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>; Provider: <a href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a>): string;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
@@ -82,8 +82,8 @@ Format URL for a given tile using OpenLayers-compatible URL template. Template c
   <li><p><code>{z}</code> - zoom level</p></li>
   <li><p><code>{?|?|...}</code> - set of any values used to determine random subdomain</p></li>
   <li><p><code>{?-?}</code> - range of digits or chars used to determine random subdomain</p></li>
-  <li><p><code>{key}</code> - provider API key (<a class="normal" href="OSM.TilesProvider.TTilesProvider.html#APIKey">TTilesProvider.APIKey</a> property)</p></li>
-  <li><p><code>{?}</code> - where &quot;?&quot; is any string - provider property named &quot;?&quot; (obtained via <a class="normal" href="OSM.TilesProvider.TTilesProvider.html#Properties">TTilesProvider.Properties</a>)</p></li>
+  <li><p><code>{key}</code> - provider API key (<a class="normal" href="OSM.TilesProvider.TTilesProvider.html#APIKey">Provider.APIKey</a> property)</p></li>
+  <li><p><code>{?}</code> - where &quot;?&quot; is any string - provider property named &quot;?&quot; (obtained via <a class="normal" href="OSM.TilesProvider.TTilesProvider.html#Properties">Provider.Properties</a>)</p></li>
 </ul>
 
 <p></p>
@@ -95,7 +95,7 @@ Format URL for a given tile using OpenLayers-compatible URL template. Template c
 <td class="itemcode"><span id="TTilesProviderClass"></span><code><strong>TTilesProviderClass</strong> = class of <a href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a>;</code></td>
 </tr>
 <tr><td colspan="1">
-&nbsp;</td></tr>
+<p class="nodescription">This item has no description.</p></td></tr>
 </table>
 <h3 class="detail">Variables</h3>
 <table class="detail wide_list">

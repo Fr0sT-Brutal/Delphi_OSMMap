@@ -21,7 +21,7 @@
 <code>type TTileStorage = class(TObject)</code></p>
 <h2 class="description">Description</h2>
 <p>
-Class that encapsulates memory and file cache of tile images. It operates 3-level in-memory cache: TBitmap's, TPngImage's and TMemoryStream's. According to benchmarks, different actions take following percents of time: </p>
+Class that encapsulates memory and file cache of tile images. It operates 3-level in-memory cache: <code>TBitmap</code>'s, <code>TPngImage</code>'s and <code>TMemoryStream</code>'s. According to benchmarks, different actions take following percents of time: </p>
 
 <ul class="paragraph_spacing">
   <li><p>Load PNG from file to memory - 30%</p></li>
@@ -38,11 +38,11 @@ Class that encapsulates memory and file cache of tile images. It operates 3-leve
 <table class="summary wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>constructor <strong><a href="OSM.TileStorage.TTileStorage.html#Create">Create</a></strong>(CacheSize: Cardinal; const TilePathPatt: string = <a href="OSM.TileStorage.html#DefaultTilePathPatt">DefaultTilePathPatt</a>); overload;</code></td>
+<td class="itemcode"><code>constructor <strong><a href="OSM.TileStorage.TTileStorage.html#Create-Cardinal-string-">Create</a></strong>(CacheSize: Cardinal; const TilePathPatt: string = <a href="OSM.TileStorage.html#DefaultTilePathPatt">DefaultTilePathPatt</a>); overload;</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>constructor <strong><a href="OSM.TileStorage.TTileStorage.html#Create">Create</a></strong>(const CacheLimits: <a href="OSM.TileStorage.TCacheLimits.html">TCacheLimits</a>; const TilePathPatt: string = <a href="OSM.TileStorage.html#DefaultTilePathPatt">DefaultTilePathPatt</a>); overload;</code></td>
+<td class="itemcode"><code>constructor <strong><a href="OSM.TileStorage.TTileStorage.html#Create-TCacheLimits-string-">Create</a></strong>(const CacheLimits: <a href="OSM.TileStorage.TCacheLimits.html">TCacheLimits</a>; const TilePathPatt: string = <a href="OSM.TileStorage.html#DefaultTilePathPatt">DefaultTilePathPatt</a>); overload;</code></td>
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
@@ -50,11 +50,11 @@ Class that encapsulates memory and file cache of tile images. It operates 3-leve
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>function <strong><a href="OSM.TileStorage.TTileStorage.html#GetTile">GetTile</a></strong>(const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>): TBitmap;</code></td>
+<td class="itemcode"><code>function <strong><a href="OSM.TileStorage.TTileStorage.html#GetTile-TTile-">GetTile</a></strong>(const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>): TBitmap;</code></td>
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>procedure <strong><a href="OSM.TileStorage.TTileStorage.html#StoreTile">StoreTile</a></strong>(const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>; var Ms: TMemoryStream);</code></td>
+<td class="itemcode"><code>procedure <strong><a href="OSM.TileStorage.TTileStorage.html#StoreTile-TTile-TMemoryStream-">StoreTile</a></strong>(const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>; var Ms: TMemoryStream);</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
@@ -77,7 +77,7 @@ Class that encapsulates memory and file cache of tile images. It operates 3-leve
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="Create"></span><code>constructor <strong>Create</strong>(CacheSize: Cardinal; const TilePathPatt: string = <a href="OSM.TileStorage.html#DefaultTilePathPatt">DefaultTilePathPatt</a>); overload;</code></td>
+<td class="itemcode"><span id="Create-Cardinal-string-"></span><code>constructor <strong>Create</strong>(CacheSize: Cardinal; const TilePathPatt: string = <a href="OSM.TileStorage.html#DefaultTilePathPatt">DefaultTilePathPatt</a>); overload;</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
@@ -94,7 +94,7 @@ Simplified constructor. Divides memory limit equally between bitmaps, PNGs and s
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="Create"></span><code>constructor <strong>Create</strong>(const CacheLimits: <a href="OSM.TileStorage.TCacheLimits.html">TCacheLimits</a>; const TilePathPatt: string = <a href="OSM.TileStorage.html#DefaultTilePathPatt">DefaultTilePathPatt</a>); overload;</code></td>
+<td class="itemcode"><span id="Create-TCacheLimits-string-"></span><code>constructor <strong>Create</strong>(const CacheLimits: <a href="OSM.TileStorage.TCacheLimits.html">TCacheLimits</a>; const TilePathPatt: string = <a href="OSM.TileStorage.html#DefaultTilePathPatt">DefaultTilePathPatt</a>); overload;</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
@@ -114,12 +114,12 @@ Constructor with detailed cache limits.  </p>
 <td class="itemcode"><span id="Destroy"></span><code>destructor <strong>Destroy</strong>; override;</code></td>
 </tr>
 <tr><td colspan="2">
-&nbsp;</td></tr>
+<p class="nodescription">This item has no description.</p></td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="GetTile"></span><code>function <strong>GetTile</strong>(const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>): TBitmap;</code></td>
+<td class="itemcode"><span id="GetTile-TTile-"></span><code>function <strong>GetTile</strong>(const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>): TBitmap;</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
@@ -130,7 +130,7 @@ Tries to get bitmap for <code>Tile</code>. If bitmap has been loaded from file, 
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="StoreTile"></span><code>procedure <strong>StoreTile</strong>(const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>; var Ms: TMemoryStream);</code></td>
+<td class="itemcode"><span id="StoreTile-TTile-TMemoryStream-"></span><code>procedure <strong>StoreTile</strong>(const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>; var Ms: TMemoryStream);</code></td>
 </tr>
 <tr><td colspan="2">
 <p>

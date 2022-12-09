@@ -33,12 +33,12 @@
 <td class="itemdesc"><p>&nbsp;</p></td>
 </tr>
 <tr class="list2">
-<td class="itemname"><a class="bold" href="OSM.NetworkRequest.html#TBlockingNetworkRequestProc">TBlockingNetworkRequestProc</a></td>
+<td class="itemname"><a class="bold" href="OSM.NetworkRequest.html#TBlockingNetworkRequestProc-THttpRequestProps-TStream-TNetworkClient-">TBlockingNetworkRequestProc</a></td>
 <td class="itemunit"><a class="bold" href="OSM.NetworkRequest.html">OSM.NetworkRequest</a></td>
 <td class="itemdesc"><p>Generic type of blocking network request procedure.</p></td>
 </tr>
 <tr class="list">
-<td class="itemname"><a class="bold" href="OSM.NetworkRequest.html#TGotTileCallbackBgThr">TGotTileCallbackBgThr</a></td>
+<td class="itemname"><a class="bold" href="OSM.NetworkRequest.html#TGotTileCallbackBgThr-TTile-TMemoryStream-string-">TGotTileCallbackBgThr</a></td>
 <td class="itemunit"><a class="bold" href="OSM.NetworkRequest.html">OSM.NetworkRequest</a></td>
 <td class="itemdesc"><p>Generic type of method to call when request is completed <br> ! <strong>Called from the context of a background thread</strong> !   </p></td>
 </tr>
@@ -75,12 +75,12 @@
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#TMapMarkFindOption">TMapMarkFindOption</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
-<td class="itemdesc"><p>Options for <a class="normal" href="OSM.MapControl.TMapMarkList.html#Find">TMapMarkList.Find</a>.</p></td>
+<td class="itemdesc"><p>Options for <a class="normal" href="OSM.MapControl.TMapMarkList.html#Find-Pointer-">TMapMarkList.Find</a>.</p></td>
 </tr>
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#TMapMarkFindOptions">TMapMarkFindOptions</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
-<td class="itemdesc"><p>If not set (default), consider all mapmarks</p></td>
+<td class="itemdesc"><p>&nbsp;</p></td>
 </tr>
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#TMapMarkGlyphShape">TMapMarkGlyphShape</a></td>
@@ -113,46 +113,51 @@
 <td class="itemdesc"><p>Base class for network client object.</p></td>
 </tr>
 <tr class="list2">
-<td class="itemname"><a class="bold" href="OSM.MapControl.html#TOnDrawMapMark">TOnDrawMapMark</a></td>
+<td class="itemname"><a class="bold" href="OSM.MapControl.html#TOnDrawMapMark-TMapControl-TCanvas-TPoint-TMapMark-Boolean-">TOnDrawMapMark</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
-<td class="itemdesc"><p>Callback to custom draw a mapmark.</p></td>
+<td class="itemdesc"><p>Callback to custom draw a mapmark or just a glyph with center point <code>Point</code>.</p></td>
 </tr>
 <tr class="list">
-<td class="itemname"><a class="bold" href="OSM.MapControl.html#TOnDrawTile">TOnDrawTile</a></td>
+<td class="itemname"><a class="bold" href="OSM.MapControl.html#TOnDrawTile-TMapControl-Cardinal-Cardinal-TPoint-TCanvas-Boolean-">TOnDrawTile</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
 <td class="itemdesc"><p>Callback to draw an image of a single tile having number (<code>TileHorzNum</code>;<code>TileVertNum</code>) at point <code>TopLeft</code> on canvas <code>Canvas</code>.</p></td>
 </tr>
 <tr class="list2">
-<td class="itemname"><a class="bold" href="OSM.MapControl.html#TOnGetTile">TOnGetTile</a></td>
+<td class="itemname"><a class="bold" href="OSM.MapControl.html#TOnGetTile-TMapControl-Cardinal-Cardinal-">TOnGetTile</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
 <td class="itemdesc"><p>Callback to get an image of a single tile having number (<code>TileHorzNum</code>;<code>TileVertNum</code>).</p></td>
 </tr>
 <tr class="list">
-<td class="itemname"><a class="bold" href="OSM.MapControl.html#TOnItemNotify">TOnItemNotify</a></td>
+<td class="itemname"><a class="bold" href="OSM.MapControl.html#TOnItemNotify-TObject-TMapMark-TListNotification-">TOnItemNotify</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
 <td class="itemdesc"><p>Notification of an action over a mapmark in a list</p></td>
 </tr>
 <tr class="list2">
-<td class="itemname"><a class="bold" href="OSM.MapControl.html#TOnMapMarkMouseButtonEvent">TOnMapMarkMouseButtonEvent</a></td>
+<td class="itemname"><a class="bold" href="OSM.MapControl.html#TOnMapMarkMouseButtonEvent-TMapControl-TMapMark-TMouseButton-TShiftState-">TOnMapMarkMouseButtonEvent</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
 <td class="itemdesc"><p>Callback to react on mouse button press/release</p></td>
 </tr>
 <tr class="list">
-<td class="itemname"><a class="bold" href="OSM.MapControl.html#TOnSelectionBox">TOnSelectionBox</a></td>
+<td class="itemname"><a class="bold" href="OSM.MapControl.html#TOnSelectionBox-TMapControl-TGeoRect-Boolean-">TOnSelectionBox</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
 <td class="itemdesc"><p>Callback to react on selection by mouse</p></td>
 </tr>
 <tr class="list2">
+<td class="itemname"><a class="bold" href="OSM.MapControl.html#TOpacity">TOpacity</a></td>
+<td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
+<td class="itemdesc"><p>Opacity level, from 0 (transparent) to $FF (non-transparent)</p></td>
+</tr>
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.TilesProvider.html#TTilesProviderClass">TTilesProviderClass</a></td>
 <td class="itemunit"><a class="bold" href="OSM.TilesProvider.html">OSM.TilesProvider</a></td>
 <td class="itemdesc"><p>&nbsp;</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.TileStorage.html#TTileStorageOption">TTileStorageOption</a></td>
 <td class="itemunit"><a class="bold" href="OSM.TileStorage.html">OSM.TileStorage</a></td>
 <td class="itemdesc"><p>Flags for <a class="normal" href="OSM.TileStorage.TTileStorage.html">TTileStorage</a></p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.TileStorage.html#TTileStorageOptions">TTileStorageOptions</a></td>
 <td class="itemunit"><a class="bold" href="OSM.TileStorage.html">OSM.TileStorage</a></td>
 <td class="itemdesc"><p>&nbsp;</p></td>

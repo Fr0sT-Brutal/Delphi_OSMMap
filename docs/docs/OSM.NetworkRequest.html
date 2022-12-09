@@ -39,16 +39,16 @@ Generic (no real network implementation) classes and declarations for requesting
 <span id="PasDoc-FuncsProcs"></span><h3 class="summary">Functions and Procedures</h3>
 <table class="summary wide_list">
 <tr class="list">
-<td class="itemcode"><code>procedure <strong><a href="OSM.NetworkRequest.html#CheckEngineCap">CheckEngineCap</a></strong>(NeededCap: <a href="OSM.NetworkRequest.html#THttpRequestCapability">THttpRequestCapability</a>; Caps: <a href="OSM.NetworkRequest.html#THttpRequestCapabilities">THttpRequestCapabilities</a>);</code></td>
+<td class="itemcode"><code>procedure <strong><a href="OSM.NetworkRequest.html#CheckEngineCap-THttpRequestCapability-THttpRequestCapabilities-">CheckEngineCap</a></strong>(NeededCap: <a href="OSM.NetworkRequest.html#THttpRequestCapability">THttpRequestCapability</a>; Caps: <a href="OSM.NetworkRequest.html#THttpRequestCapabilities">THttpRequestCapabilities</a>);</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code>procedure <strong><a href="OSM.NetworkRequest.html#CheckEngineCaps">CheckEngineCaps</a></strong>(RequestProps: <a href="OSM.NetworkRequest.THttpRequestProps.html">THttpRequestProps</a>; EngineCapabilities: <a href="OSM.NetworkRequest.html#THttpRequestCapabilities">THttpRequestCapabilities</a>);</code></td>
+<td class="itemcode"><code>procedure <strong><a href="OSM.NetworkRequest.html#CheckEngineCaps-THttpRequestProps-THttpRequestCapabilities-">CheckEngineCaps</a></strong>(RequestProps: <a href="OSM.NetworkRequest.THttpRequestProps.html">THttpRequestProps</a>; EngineCapabilities: <a href="OSM.NetworkRequest.html#THttpRequestCapabilities">THttpRequestCapabilities</a>);</code></td>
 </tr>
 <tr class="list">
-<td class="itemcode"><code>function <strong><a href="OSM.NetworkRequest.html#IsHTTPError">IsHTTPError</a></strong>(ResponseCode: Word): Boolean;</code></td>
+<td class="itemcode"><code>function <strong><a href="OSM.NetworkRequest.html#IsHTTPError-Word-">IsHTTPError</a></strong>(ResponseCode: Word): Boolean;</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code>procedure <strong><a href="OSM.NetworkRequest.html#CheckHTTPError">CheckHTTPError</a></strong>(ResponseCode: Word; const ResponseText: string);</code></td>
+<td class="itemcode"><code>procedure <strong><a href="OSM.NetworkRequest.html#CheckHTTPError-Word-string-">CheckHTTPError</a></strong>(ResponseCode: Word; const ResponseText: string);</code></td>
 </tr>
 </table>
 <span id="PasDoc-Types"></span><h3 class="summary">Types</h3>
@@ -63,10 +63,10 @@ Generic (no real network implementation) classes and declarations for requesting
 <td class="itemcode"><code><strong><a href="OSM.NetworkRequest.html#TNetworkClient">TNetworkClient</a></strong> = TObject;</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code><strong><a href="OSM.NetworkRequest.html#TBlockingNetworkRequestProc">TBlockingNetworkRequestProc</a></strong> = procedure (RequestProps: <a href="OSM.NetworkRequest.THttpRequestProps.html">THttpRequestProps</a>; ResponseStm: TStream; var Client: <a href="OSM.NetworkRequest.html#TNetworkClient">TNetworkClient</a>);</code></td>
+<td class="itemcode"><code><strong><a href="OSM.NetworkRequest.html#TBlockingNetworkRequestProc-THttpRequestProps-TStream-TNetworkClient-">TBlockingNetworkRequestProc</a></strong> = procedure (RequestProps: <a href="OSM.NetworkRequest.THttpRequestProps.html">THttpRequestProps</a>; ResponseStm: TStream; var Client: <a href="OSM.NetworkRequest.html#TNetworkClient">TNetworkClient</a>);</code></td>
 </tr>
 <tr class="list">
-<td class="itemcode"><code><strong><a href="OSM.NetworkRequest.html#TGotTileCallbackBgThr">TGotTileCallbackBgThr</a></strong> = procedure (const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>; Ms: TMemoryStream; const Error: string) of object;</code></td>
+<td class="itemcode"><code><strong><a href="OSM.NetworkRequest.html#TGotTileCallbackBgThr-TTile-TMemoryStream-string-">TGotTileCallbackBgThr</a></strong> = procedure (const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>; Ms: TMemoryStream; const Error: string) of object;</code></td>
 </tr>
 </table>
 <span id="PasDoc-Constants"></span><h3 class="summary">Constants</h3>
@@ -99,7 +99,7 @@ Generic (no real network implementation) classes and declarations for requesting
 <h3 class="detail">Functions and Procedures</h3>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="CheckEngineCap"></span><code>procedure <strong>CheckEngineCap</strong>(NeededCap: <a href="OSM.NetworkRequest.html#THttpRequestCapability">THttpRequestCapability</a>; Caps: <a href="OSM.NetworkRequest.html#THttpRequestCapabilities">THttpRequestCapabilities</a>);</code></td>
+<td class="itemcode"><span id="CheckEngineCap-THttpRequestCapability-THttpRequestCapabilities-"></span><code>procedure <strong>CheckEngineCap</strong>(NeededCap: <a href="OSM.NetworkRequest.html#THttpRequestCapability">THttpRequestCapability</a>; Caps: <a href="OSM.NetworkRequest.html#THttpRequestCapabilities">THttpRequestCapabilities</a>);</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
@@ -108,7 +108,7 @@ Check if capability is in set of capabilities and raise exception if not</p>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="CheckEngineCaps"></span><code>procedure <strong>CheckEngineCaps</strong>(RequestProps: <a href="OSM.NetworkRequest.THttpRequestProps.html">THttpRequestProps</a>; EngineCapabilities: <a href="OSM.NetworkRequest.html#THttpRequestCapabilities">THttpRequestCapabilities</a>);</code></td>
+<td class="itemcode"><span id="CheckEngineCaps-THttpRequestProps-THttpRequestCapabilities-"></span><code>procedure <strong>CheckEngineCaps</strong>(RequestProps: <a href="OSM.NetworkRequest.THttpRequestProps.html">THttpRequestProps</a>; EngineCapabilities: <a href="OSM.NetworkRequest.html#THttpRequestCapabilities">THttpRequestCapabilities</a>);</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
@@ -117,7 +117,7 @@ Check if a network engine is capable of handling all the request properties. Che
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="IsHTTPError"></span><code>function <strong>IsHTTPError</strong>(ResponseCode: Word): Boolean;</code></td>
+<td class="itemcode"><span id="IsHTTPError-Word-"></span><code>function <strong>IsHTTPError</strong>(ResponseCode: Word): Boolean;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
@@ -126,7 +126,7 @@ Return true if response code means HTTP error</p>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="CheckHTTPError"></span><code>procedure <strong>CheckHTTPError</strong>(ResponseCode: Word; const ResponseText: string);</code></td>
+<td class="itemcode"><span id="CheckHTTPError-Word-string-"></span><code>procedure <strong>CheckHTTPError</strong>(ResponseCode: Word; const ResponseText: string);</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
@@ -146,7 +146,7 @@ Capabilities that a network engine has</p>
 <li>
 <span id="htcProxy">htcProxy</span>: Support HTTP proxy</li>
 <li>
-<span id="htcDirect">htcDirect</span>: Support direct connect bypassing OS-wide proxy. In fact,</li>
+<span id="htcDirect">htcDirect</span>: Support direct connect bypassing OS-wide proxy. In fact, only WinInet-based engines (WinInet, RTL in Windows) use OS-wide proxy by default. In other engines and in Linux the proxy must be set explicitly so this cap is actual for all engines.</li>
 <li>
 <span id="htcSystemProxy">htcSystemProxy</span>: Can use OS-wide proxy</li>
 <li>
@@ -169,7 +169,7 @@ Capabilities that a network engine has</p>
 <td class="itemcode"><span id="THttpRequestCapabilities"></span><code><strong>THttpRequestCapabilities</strong> = set of <a href="OSM.NetworkRequest.html#THttpRequestCapability">THttpRequestCapability</a>;</code></td>
 </tr>
 <tr><td colspan="1">
-&nbsp;</td></tr>
+<p class="nodescription">This item has no description.</p></td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
@@ -182,7 +182,7 @@ Base class for network client object. Used when request queue is performed throu
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="TBlockingNetworkRequestProc"></span><code><strong>TBlockingNetworkRequestProc</strong> = procedure (RequestProps: <a href="OSM.NetworkRequest.THttpRequestProps.html">THttpRequestProps</a>; ResponseStm: TStream; var Client: <a href="OSM.NetworkRequest.html#TNetworkClient">TNetworkClient</a>);</code></td>
+<td class="itemcode"><span id="TBlockingNetworkRequestProc-THttpRequestProps-TStream-TNetworkClient-"></span><code><strong>TBlockingNetworkRequestProc</strong> = procedure (RequestProps: <a href="OSM.NetworkRequest.THttpRequestProps.html">THttpRequestProps</a>; ResponseStm: TStream; var Client: <a href="OSM.NetworkRequest.html#TNetworkClient">TNetworkClient</a>);</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
@@ -197,7 +197,7 @@ Generic type of blocking network request procedure. Procedure must:
   <li><p>Free all resources it has allocated</p></li>
 </ul>
 
-<p>    the same client, this parameter is the current client object. Request properties are supposed to remain unchanged throughout the whole queue (only URL changes) so it's enough to assign them at client creation only <br> IN: client object to use for requests. <br> OUT: newly created client object if Client was <code>Nil</code> at input. </p>
+<p>    </p>
 <h6 class="description_section">Parameters</h6>
 <dl class="parameters">
 <dt>RequestProps</dt>
@@ -205,7 +205,7 @@ Generic type of blocking network request procedure. Procedure must:
 <dt>ResponseStm</dt>
 <dd>- stream that accepts response data</dd>
 <dt>Client</dt>
-<dd>- [IN/OUT] If the engine supports multiple requests inside</dd>
+<dd>- [IN/OUT] If the engine supports multiple requests inside the same client, this parameter is the current client object. Request properties are supposed to remain unchanged throughout the whole queue (only <a class="normal" href="OSM.NetworkRequest.THttpRequestProps.html#URL">URL</a> changes) so it's enough to assign them at client creation only <br> IN: client object to use for requests. <br> OUT: newly created client object if <code>Client</code> was <code>Nil</code> at input.</dd>
 </dl>
 <h6 class="description_section">Exceptions raised</h6>
 <dl class="exceptions_raised">
@@ -216,7 +216,7 @@ Generic type of blocking network request procedure. Procedure must:
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="TGotTileCallbackBgThr"></span><code><strong>TGotTileCallbackBgThr</strong> = procedure (const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>; Ms: TMemoryStream; const Error: string) of object;</code></td>
+<td class="itemcode"><span id="TGotTileCallbackBgThr-TTile-TMemoryStream-string-"></span><code><strong>TGotTileCallbackBgThr</strong> = procedure (const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>; Ms: TMemoryStream; const Error: string) of object;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
@@ -226,7 +226,7 @@ Generic type of method to call when request is completed <br> ! <strong>Called f
 <dt>Tile</dt>
 <dd>- tile that has been received</dd>
 <dt>Ms</dt>
-<dd>- stream with tile image data. In case of error, it could be <code>Nil</code> even if Error is empty</dd>
+<dd>- stream with tile image data. In case of error, it could be <code>Nil</code> even if <code>Error</code> is empty</dd>
 <dt>Error</dt>
 <dd>- error description if any</dd>
 </dl>
@@ -239,7 +239,7 @@ Generic type of method to call when request is completed <br> ! <strong>Called f
 </tr>
 <tr><td colspan="1">
 <p>
-Prefix to add to proxy URLs if it only contains host:port - some URL parsers handle such inputs as proto:path</p>
+Prefix to add to proxy URLs if it only contains <code>host:port</code> - some URL parsers handle such inputs as <code>proto:path</code></p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -247,7 +247,7 @@ Prefix to add to proxy URLs if it only contains host:port - some URL parsers han
 <td class="itemcode"><span id="HTTPTLSProto"></span><code><strong>HTTPTLSProto</strong> = 'https';</code></td>
 </tr>
 <tr><td colspan="1">
-&nbsp;</td></tr>
+<p class="nodescription">This item has no description.</p></td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
@@ -272,7 +272,7 @@ Timeout for connect and request</p>
 <td class="itemcode"><span id="SampleUserAgent"></span><code><strong>SampleUserAgent</strong> = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0';</code></td>
 </tr>
 <tr><td colspan="1">
-&nbsp;</td></tr>
+<p class="nodescription">This item has no description.</p></td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
@@ -285,7 +285,7 @@ Timeout for connect and request</p>
 </tr>
 <tr><td colspan="1">
 <p>
-Headers that you could add to <a class="normal" href="OSM.NetworkRequest.TNetworkRequestQueue.html">TNetworkRequestQueue</a>. F.ex., openstreetmap.org dislikes requests without user-agent.</p>
+Headers that you could add to <a class="normal" href="OSM.NetworkRequest.THttpRequestProps.html#HeaderLines">TNetworkRequestQueue.RequestProps.HeaderLines</a>. F.ex., openstreetmap.org dislikes requests without user-agent.</p>
 </td></tr>
 </table>
 <h2 class="authors">Author</h2>

@@ -56,19 +56,25 @@ Visual control displaying a map. Data for the map (tile images) must be supplied
 <span id="PasDoc-FuncsProcs"></span><h3 class="summary">Functions and Procedures</h3>
 <table class="summary wide_list">
 <tr class="list">
-<td class="itemcode"><code>function <strong><a href="OSM.MapControl.html#ToInnerCoords">ToInnerCoords</a></strong>(const StartPt, Pt: TPoint): TPoint; overload; inline;</code></td>
+<td class="itemcode"><code>function <strong><a href="OSM.MapControl.html#ToInnerCoords-TPoint-TPoint-">ToInnerCoords</a></strong>(const StartPt, Pt: TPoint): TPoint; overload; inline;</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code>function <strong><a href="OSM.MapControl.html#ToOuterCoords">ToOuterCoords</a></strong>(const StartPt, Pt: TPoint): TPoint; overload; inline;</code></td>
+<td class="itemcode"><code>function <strong><a href="OSM.MapControl.html#ToOuterCoords-TPoint-TPoint-">ToOuterCoords</a></strong>(const StartPt, Pt: TPoint): TPoint; overload; inline;</code></td>
 </tr>
 <tr class="list">
-<td class="itemcode"><code>function <strong><a href="OSM.MapControl.html#ToInnerCoords">ToInnerCoords</a></strong>(const StartPt: TPoint; const Rect: TRect): TRect; overload; inline;</code></td>
+<td class="itemcode"><code>function <strong><a href="OSM.MapControl.html#ToInnerCoords-TPoint-TRect-">ToInnerCoords</a></strong>(const StartPt: TPoint; const Rect: TRect): TRect; overload; inline;</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code>function <strong><a href="OSM.MapControl.html#ToOuterCoords">ToOuterCoords</a></strong>(const StartPt: TPoint; const Rect: TRect): TRect; overload; inline;</code></td>
+<td class="itemcode"><code>function <strong><a href="OSM.MapControl.html#ToOuterCoords-TPoint-TRect-">ToOuterCoords</a></strong>(const StartPt: TPoint; const Rect: TRect): TRect; overload; inline;</code></td>
 </tr>
 <tr class="list">
-<td class="itemcode"><code>function <strong><a href="OSM.MapControl.html#ShiftStateIs">ShiftStateIs</a></strong>(Current, Desired: TShiftState): Boolean;</code></td>
+<td class="itemcode"><code>procedure <strong><a href="OSM.MapControl.html#Triangle-TCanvas-TRect-">Triangle</a></strong>(Canvas: TCanvas; const Rect: TRect);</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>function <strong><a href="OSM.MapControl.html#RectByCenterAndSize-TPoint-Integer-">RectByCenterAndSize</a></strong>(const CenterPt: TPoint; Size: Integer): TRect;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>function <strong><a href="OSM.MapControl.html#ShiftStateIs-TShiftState-TShiftState-">ShiftStateIs</a></strong>(Current, Desired: TShiftState): Boolean;</code></td>
 </tr>
 </table>
 <span id="PasDoc-Types"></span><h3 class="summary">Types</h3>
@@ -77,55 +83,58 @@ Visual control displaying a map. Data for the map (tile images) must be supplied
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#TMapMarkGlyphShape">TMapMarkGlyphShape</a></strong> = (...);</code></td>
 </tr>
 <tr class="list2">
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOpacity">TOpacity</a></strong> = Byte;</code></td>
+</tr>
+<tr class="list">
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#PMapMarkGlyphStyle">PMapMarkGlyphStyle</a></strong> = &circ;<a href="OSM.MapControl.TMapMarkGlyphStyle.html">TMapMarkGlyphStyle</a>;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#PMapMarkCaptionStyle">PMapMarkCaptionStyle</a></strong> = &circ;<a href="OSM.MapControl.TMapMarkCaptionStyle.html">TMapMarkCaptionStyle</a>;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#TMapMarkCustomProp">TMapMarkCustomProp</a></strong> = (...);</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#TMapMarkCustomProps">TMapMarkCustomProps</a></strong> = set of <a href="OSM.MapControl.html#TMapMarkCustomProp">TMapMarkCustomProp</a>;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#TMapLayer">TMapLayer</a></strong> = Byte;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#TMapLayers">TMapLayers</a></strong> = set of Byte;</code></td>
 </tr>
-<tr class="list2">
-<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnItemNotify">TOnItemNotify</a></strong> = procedure (Sender: TObject; Item: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; Action: TListNotification) of object;</code></td>
-</tr>
 <tr class="list">
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnItemNotify-TObject-TMapMark-TListNotification-">TOnItemNotify</a></strong> = procedure (Sender: TObject; Item: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; Action: TListNotification) of object;</code></td>
+</tr>
+<tr class="list2">
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#TMapMarkFindOption">TMapMarkFindOption</a></strong> = (...);</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#TMapMarkFindOptions">TMapMarkFindOptions</a></strong> = set of <a href="OSM.MapControl.html#TMapMarkFindOption">TMapMarkFindOption</a>;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#TMapOption">TMapOption</a></strong> = (...);</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#TMapOptions">TMapOptions</a></strong> = set of <a href="OSM.MapControl.html#TMapOption">TMapOption</a>;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#TMapMouseMode">TMapMouseMode</a></strong> = (...);</code></td>
 </tr>
+<tr class="list">
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnGetTile-TMapControl-Cardinal-Cardinal-">TOnGetTile</a></strong> = function (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; TileHorzNum, TileVertNum: Cardinal): TBitmap of object;</code></td>
+</tr>
 <tr class="list2">
-<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnGetTile">TOnGetTile</a></strong> = function (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; TileHorzNum, TileVertNum: Cardinal): TBitmap of object;</code></td>
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnDrawTile-TMapControl-Cardinal-Cardinal-TPoint-TCanvas-Boolean-">TOnDrawTile</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas; var Handled: Boolean) of object;</code></td>
 </tr>
 <tr class="list">
-<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnDrawTile">TOnDrawTile</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas; var Handled: Boolean) of object;</code></td>
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnDrawMapMark-TMapControl-TCanvas-TPoint-TMapMark-Boolean-">TOnDrawMapMark</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; Canvas: TCanvas; const Point: TPoint; MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; var Handled: Boolean) of object;</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnDrawMapMark">TOnDrawMapMark</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; Canvas: TCanvas; const Point: TPoint; MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; var Handled: Boolean) of object;</code></td>
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnSelectionBox-TMapControl-TGeoRect-Boolean-">TOnSelectionBox</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; const GeoRect: <a href="OSM.SlippyMapUtils.TGeoRect.html">TGeoRect</a>; Finished: Boolean) of object;</code></td>
 </tr>
 <tr class="list">
-<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnSelectionBox">TOnSelectionBox</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; const GeoRect: <a href="OSM.SlippyMapUtils.TGeoRect.html">TGeoRect</a>; Finished: Boolean) of object;</code></td>
-</tr>
-<tr class="list2">
-<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnMapMarkMouseButtonEvent">TOnMapMarkMouseButtonEvent</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; Button: TMouseButton; Shift: TShiftState) of object;</code></td>
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnMapMarkMouseButtonEvent-TMapControl-TMapMark-TMouseButton-TShiftState-">TOnMapMarkMouseButtonEvent</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; Button: TMouseButton; Shift: TShiftState) of object;</code></td>
 </tr>
 </table>
 <span id="PasDoc-Constants"></span><h3 class="summary">Constants</h3>
@@ -148,6 +157,7 @@ Visual control displaying a map. Data for the map (tile images) must be supplied
     Size: 20;
     BorderColor: clWindowFrame;
     BgColor: clSkyBlue;
+    Opacity: High(<a href="OSM.MapControl.html#TOpacity">TOpacity</a>);
   );</code></td>
 </tr>
 <tr class="list2">
@@ -173,7 +183,7 @@ Visual control displaying a map. Data for the map (tile images) must be supplied
 <h3 class="detail">Functions and Procedures</h3>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="ToInnerCoords"></span><code>function <strong>ToInnerCoords</strong>(const StartPt, Pt: TPoint): TPoint; overload; inline;</code></td>
+<td class="itemcode"><span id="ToInnerCoords-TPoint-TPoint-"></span><code>function <strong>ToInnerCoords</strong>(const StartPt, Pt: TPoint): TPoint; overload; inline;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
@@ -182,7 +192,7 @@ Convert absolute map coords to a point inside a viewport having given top-left p
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="ToOuterCoords"></span><code>function <strong>ToOuterCoords</strong>(const StartPt, Pt: TPoint): TPoint; overload; inline;</code></td>
+<td class="itemcode"><span id="ToOuterCoords-TPoint-TPoint-"></span><code>function <strong>ToOuterCoords</strong>(const StartPt, Pt: TPoint): TPoint; overload; inline;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
@@ -191,7 +201,7 @@ Convert a point inside a viewport having given top-left point to absolute map co
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="ToInnerCoords"></span><code>function <strong>ToInnerCoords</strong>(const StartPt: TPoint; const Rect: TRect): TRect; overload; inline;</code></td>
+<td class="itemcode"><span id="ToInnerCoords-TPoint-TRect-"></span><code>function <strong>ToInnerCoords</strong>(const StartPt: TPoint; const Rect: TRect): TRect; overload; inline;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
@@ -200,7 +210,7 @@ Convert absolute map rect to a rect inside a viewport having given top-left poin
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="ToOuterCoords"></span><code>function <strong>ToOuterCoords</strong>(const StartPt: TPoint; const Rect: TRect): TRect; overload; inline;</code></td>
+<td class="itemcode"><span id="ToOuterCoords-TPoint-TRect-"></span><code>function <strong>ToOuterCoords</strong>(const StartPt: TPoint; const Rect: TRect): TRect; overload; inline;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
@@ -209,7 +219,25 @@ Convert a rect inside a viewport having given top-left point to absolute map rec
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="ShiftStateIs"></span><code>function <strong>ShiftStateIs</strong>(Current, Desired: TShiftState): Boolean;</code></td>
+<td class="itemcode"><span id="Triangle-TCanvas-TRect-"></span><code>procedure <strong>Triangle</strong>(Canvas: TCanvas; const Rect: TRect);</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Draw <code>triangle</code> on canvas</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="RectByCenterAndSize-TPoint-Integer-"></span><code>function <strong>RectByCenterAndSize</strong>(const CenterPt: TPoint; Size: Integer): TRect;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Return rectangle with center point in CenterPt and with size Size</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="ShiftStateIs-TShiftState-TShiftState-"></span><code>function <strong>ShiftStateIs</strong>(Current, Desired: TShiftState): Boolean;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
@@ -237,17 +265,26 @@ Shape of mapmark glyph</p>
 </table>
 <table class="detail wide_list">
 <tr class="list">
+<td class="itemcode"><span id="TOpacity"></span><code><strong>TOpacity</strong> = Byte;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Opacity level, from 0 (transparent) to $FF (non-transparent)</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
 <td class="itemcode"><span id="PMapMarkGlyphStyle"></span><code><strong>PMapMarkGlyphStyle</strong> = &circ;<a href="OSM.MapControl.TMapMarkGlyphStyle.html">TMapMarkGlyphStyle</a>;</code></td>
 </tr>
 <tr><td colspan="1">
-&nbsp;</td></tr>
+<p class="nodescription">This item has no description.</p></td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
 <td class="itemcode"><span id="PMapMarkCaptionStyle"></span><code><strong>PMapMarkCaptionStyle</strong> = &circ;<a href="OSM.MapControl.TMapMarkCaptionStyle.html">TMapMarkCaptionStyle</a>;</code></td>
 </tr>
 <tr><td colspan="1">
-&nbsp;</td></tr>
+<p class="nodescription">This item has no description.</p></td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
@@ -272,7 +309,7 @@ Flags to indicate which properties must be taken from MapMark object when drawin
 <td class="itemcode"><span id="TMapMarkCustomProps"></span><code><strong>TMapMarkCustomProps</strong> = set of <a href="OSM.MapControl.html#TMapMarkCustomProp">TMapMarkCustomProp</a>;</code></td>
 </tr>
 <tr><td colspan="1">
-&nbsp;</td></tr>
+<p class="nodescription">This item has no description.</p></td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
@@ -288,11 +325,11 @@ Number of a layer</p>
 <td class="itemcode"><span id="TMapLayers"></span><code><strong>TMapLayers</strong> = set of Byte;</code></td>
 </tr>
 <tr><td colspan="1">
-&nbsp;</td></tr>
+<p class="nodescription">This item has no description.</p></td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="TOnItemNotify"></span><code><strong>TOnItemNotify</strong> = procedure (Sender: TObject; Item: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; Action: TListNotification) of object;</code></td>
+<td class="itemcode"><span id="TOnItemNotify-TObject-TMapMark-TListNotification-"></span><code><strong>TOnItemNotify</strong> = procedure (Sender: TObject; Item: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; Action: TListNotification) of object;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
@@ -305,13 +342,13 @@ Notification of an action over a mapmark in a list</p>
 </tr>
 <tr><td colspan="1">
 <p>
-Options for <a class="normal" href="OSM.MapControl.TMapMarkList.html#Find">TMapMarkList.Find</a>. Default is empty set</p>
+Options for <a class="normal" href="OSM.MapControl.TMapMarkList.html#Find-Pointer-">TMapMarkList.Find</a>. Default is empty set</p>
 <h6 class="description_section">Values</h6>
 <ul>
 <li>
-<span id="mfoConsiderGlyphSize">mfoConsiderGlyphSize</span>: If set (for map pixels only): consider mapmark glyph size as well. <br></li>
+<span id="mfoConsiderGlyphSize">mfoConsiderGlyphSize</span>: If set (for map pixels only): consider mapmark glyph size as well. If not set (default): search by exact coords.</li>
 <li>
-<span id="mfoOnlyVisible">mfoOnlyVisible</span>: If set: consider only visible mapmarks. <br></li>
+<span id="mfoOnlyVisible">mfoOnlyVisible</span>: If set: consider only visible mapmarks. If not set (default), consider all mapmarks</li>
 </ul>
 </td></tr>
 </table>
@@ -320,9 +357,7 @@ Options for <a class="normal" href="OSM.MapControl.TMapMarkList.html#Find">TMapM
 <td class="itemcode"><span id="TMapMarkFindOptions"></span><code><strong>TMapMarkFindOptions</strong> = set of <a href="OSM.MapControl.html#TMapMarkFindOption">TMapMarkFindOption</a>;</code></td>
 </tr>
 <tr><td colspan="1">
-<p>
-If not set (default), consider all mapmarks</p>
-</td></tr>
+<p class="nodescription">This item has no description.</p></td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
@@ -345,7 +380,7 @@ Options of map control</p>
 <td class="itemcode"><span id="TMapOptions"></span><code><strong>TMapOptions</strong> = set of <a href="OSM.MapControl.html#TMapOption">TMapOption</a>;</code></td>
 </tr>
 <tr><td colspan="1">
-&nbsp;</td></tr>
+<p class="nodescription">This item has no description.</p></td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
@@ -367,7 +402,7 @@ Mode of current handling of mouse events:</p>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="TOnGetTile"></span><code><strong>TOnGetTile</strong> = function (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; TileHorzNum, TileVertNum: Cardinal): TBitmap of object;</code></td>
+<td class="itemcode"><span id="TOnGetTile-TMapControl-Cardinal-Cardinal-"></span><code><strong>TOnGetTile</strong> = function (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; TileHorzNum, TileVertNum: Cardinal): TBitmap of object;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
@@ -376,7 +411,7 @@ Callback to get an image of a single tile having number (<code>TileHorzNum</code
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="TOnDrawTile"></span><code><strong>TOnDrawTile</strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas; var Handled: Boolean) of object;</code></td>
+<td class="itemcode"><span id="TOnDrawTile-TMapControl-Cardinal-Cardinal-TPoint-TCanvas-Boolean-"></span><code><strong>TOnDrawTile</strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas; var Handled: Boolean) of object;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
@@ -385,16 +420,16 @@ Callback to draw an image of a single tile having number (<code>TileHorzNum</cod
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="TOnDrawMapMark"></span><code><strong>TOnDrawMapMark</strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; Canvas: TCanvas; const Point: TPoint; MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; var Handled: Boolean) of object;</code></td>
+<td class="itemcode"><span id="TOnDrawMapMark-TMapControl-TCanvas-TPoint-TMapMark-Boolean-"></span><code><strong>TOnDrawMapMark</strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; Canvas: TCanvas; const Point: TPoint; MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; var Handled: Boolean) of object;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
-Callback to custom draw a mapmark. It is called before default drawing. If <code>Handled</code> is not set to <code>True</code>, default drawing will be done.</p>
+Callback to custom draw a mapmark or just a glyph with center point <code>Point</code>. It is called before default drawing. If <code>Handled</code> is not set to <code>True</code>, default drawing will be done.</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="TOnSelectionBox"></span><code><strong>TOnSelectionBox</strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; const GeoRect: <a href="OSM.SlippyMapUtils.TGeoRect.html">TGeoRect</a>; Finished: Boolean) of object;</code></td>
+<td class="itemcode"><span id="TOnSelectionBox-TMapControl-TGeoRect-Boolean-"></span><code><strong>TOnSelectionBox</strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; const GeoRect: <a href="OSM.SlippyMapUtils.TGeoRect.html">TGeoRect</a>; Finished: Boolean) of object;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
@@ -403,7 +438,7 @@ Callback to react on selection by mouse</p>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="TOnMapMarkMouseButtonEvent"></span><code><strong>TOnMapMarkMouseButtonEvent</strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; Button: TMouseButton; Shift: TShiftState) of object;</code></td>
+<td class="itemcode"><span id="TOnMapMarkMouseButtonEvent-TMapControl-TMapMark-TMouseButton-TShiftState-"></span><code><strong>TOnMapMarkMouseButtonEvent</strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; Button: TMouseButton; Shift: TShiftState) of object;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
@@ -425,7 +460,7 @@ Default Width (Horizontal dimension) and Height (Vertical dimension) of cache im
 <td class="itemcode"><span id="DefaultCacheImageTilesVert"></span><code><strong>DefaultCacheImageTilesVert</strong> = 8;</code></td>
 </tr>
 <tr><td colspan="1">
-&nbsp;</td></tr>
+<p class="nodescription">This item has no description.</p></td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
@@ -452,6 +487,7 @@ Default size of margin for labels on map, in pixels</p>
     Size: 20;
     BorderColor: clWindowFrame;
     BgColor: clSkyBlue;
+    Opacity: High(<a href="OSM.MapControl.html#TOpacity">TOpacity</a>);
   );</code></td>
 </tr>
 <tr><td colspan="1">
