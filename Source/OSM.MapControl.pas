@@ -142,9 +142,9 @@ type
     function Find(const GeoRect: TGeoRect; Options: TMapMarkFindOptions = []; StartIndex: Integer = -1): Integer; overload;
     // The same as above but searches by map point in pixels
     function Find(const MapPt: TPoint; Options: TMapMarkFindOptions; StartIndex: Integer): Integer; overload;
-    // Find map mark by its @link(TMapMark.Data Data) field
+    // Find map mark by its [Data](#TMapMark.Data) field
     //   @param Data - value to search for
-    //   @returns index of mapmark in the list having @link(TMapMark.Data Data)  \
+    //   @returns index of mapmark in the list having [Data](#TMapMark.Data)  \
     //     field same as `Data`, `-1` if not found.
     function Find(Data: Pointer): Integer; overload;
     // Create TMapMark object and initially assign values from owner map's fields

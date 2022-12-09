@@ -98,7 +98,7 @@ type
   //   @param Client - [IN/OUT] If the engine supports multiple requests inside       \
   //     the same client, this parameter is the current client object. Request        \
   //     properties are supposed to remain unchanged throughout the whole queue       \
-  //     (only @link(THttpRequestProps.URL URL) changes) so it's enough to assign     \
+  //     (only [URL](#THttpRequestProps.URL) changes) so it's enough to assign     \
   //     them at client creation only @br \
   //     IN: client object to use for requests.                                   @br \
   //     OUT: newly created client object if `Client` was @nil at input.
@@ -161,7 +161,7 @@ type
 
     // Common network request props applied to all requests in current queue.
     // Changing the properties won't take effect until queue gets empty.
-    // @link(THttpRequestProps.URL URL) field is ignored.
+    // [URL](#THttpRequestProps.URL) field is ignored.
     property RequestProps: THttpRequestProps read FRequestProps write FRequestProps;
     // If set: disable all smart ordering facilities. Queue will retrieve all added tiles
     // one by one.
@@ -178,7 +178,7 @@ type
 
 const
   SampleUserAgent = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0';
-  // Headers that you could add to @link(THttpRequestProps.HeaderLines TNetworkRequestQueue.RequestProps.HeaderLines).
+  // Headers that you could add to [TNetworkRequestQueue.RequestProps.HeaderLines](#THttpRequestProps.HeaderLines).
   // F.ex., openstreetmap.org dislikes requests without user-agent.
   SampleHeaders: array[0..2] of string =
   (
