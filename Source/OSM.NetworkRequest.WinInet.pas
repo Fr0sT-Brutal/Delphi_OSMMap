@@ -36,6 +36,8 @@ type
   TWinInetClient = class(TNetworkClient)
   private
     hInet: HINTERNET;
+    const
+    Agent = 'OSMMap.WinInet.Agent';
   public
     constructor Create(RequestProps: THttpRequestProps);
     destructor Destroy; override;
@@ -105,7 +107,7 @@ begin
     end
   else
     dwAccessType := INTERNET_OPEN_TYPE_DIRECT;
-  hInet := InternetOpen('Foo', dwAccessType, PChar(Proxy), nil, 0);
+  hInet := InternetOpen(Agent, dwAccessType, PChar(Proxy), nil, 0);
   if hInet = nil then
     raise WinInetErr;
   // Set options
@@ -126,10 +128,15 @@ end;
 
 procedure NetworkRequest(RequestProps: THttpRequestProps;
   ResponseStm: TStream; var Client: TNetworkClient);
+const
+  Flags = INTERNET_FLAG_EXISTING_CONNECT or INTERNET_FLAG_KEEP_CONNECTION or // Try to prolong the connection
+    INTERNET_FLAG_IGNORE_REDIRECT_TO_HTTPS or  // transparently redirects from HTTP to HTTPS URLs
+    INTERNET_FLAG_NO_CACHE_WRITE or // Don't need tiles cached
+    INTERNET_FLAG_NO_UI;            // No dialogs
 var
   Headers: string;
   hFile: HINTERNET;
-  Buf: array[0..1024-1] of Byte;
+  Buf: array[0..8192-1] of Byte;
   read: DWORD;
 begin
   hFile := nil;
@@ -142,18 +149,18 @@ begin
       Headers := RequestProps.HeaderLines.Text;
 
     // Open address
-    hFile := InternetOpenUrl(TWinInetClient(Client).hInet, PChar(RequestProps.URL), PChar(Headers), 0,
-                             INTERNET_FLAG_NO_CACHE_WRITE or INTERNET_FLAG_NO_COOKIES or INTERNET_FLAG_NO_UI or INTERNET_FLAG_EXISTING_CONNECT,
-                             0);
+    hFile := InternetOpenUrl(TWinInetClient(Client).hInet, PChar(RequestProps.URL),
+      PChar(Headers), 0, Flags, 0);
     if hFile = nil then
       raise WinInetErr;
 
     // Read the URL
-    while InternetReadFile(hFile, @Buf, SizeOf(Buf), read) do
-    begin
+    repeat
+      if not InternetReadFile(hFile, @Buf, SizeOf(Buf), read) then
+        raise WinInetErr;
       if read = 0 then Break;
       ResponseStm.Write(Buf, read);
-    end;
+    until False;
   finally
     InternetCloseHandle(hFile);
   end;
