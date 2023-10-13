@@ -183,53 +183,57 @@ Control displaying a map or its visible part.</p>
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#MouseMode">MouseMode</a></strong>: <a href="OSM.MapControl.html#TMapMouseMode">TMapMouseMode</a> read FMouseMode write SetMouseMode;</code></td>
+<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#Tracks">Tracks</a></strong>: TList&lt;<a href="OSM.MapControl.TTrack.html">TTrack</a>&gt; read FTracks;</code></td>
 </tr>
 <tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#MouseMode">MouseMode</a></strong>: <a href="OSM.MapControl.html#TMapMouseMode">TMapMouseMode</a> read FMouseMode write SetMouseMode;</code></td>
+</tr>
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#LabelMargin">LabelMargin</a></strong>: Cardinal read FLabelMargin write SetLabelMargin;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#ViewRect">ViewRect</a></strong>: TRect read ViewAreaRect;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#VisibleLayers">VisibleLayers</a></strong>: <a href="OSM.MapControl.html#TMapLayers">TMapLayers</a> read FVisibleLayers write SetVisibleLayers;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnGetTile">OnGetTile</a></strong>: TOnGetTile read FOnGetTile write FOnGetTile;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnDrawTile">OnDrawTile</a></strong>: TOnDrawTile read FOnDrawTile write FOnDrawTile;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnDrawTileLoading">OnDrawTileLoading</a></strong>: TOnDrawTile read FOnDrawTileLoading write FOnDrawTileLoading;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnZoomChanged">OnZoomChanged</a></strong>: TNotifyEvent read FOnZoomChanged write FOnZoomChanged;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnDrawMapMark">OnDrawMapMark</a></strong>: TOnDrawMapMark read FOnDrawMapMark write FOnDrawMapMark;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnDrawMapMarkGlyph">OnDrawMapMarkGlyph</a></strong>: TOnDrawMapMark read FOnDrawMapMarkGlyph write FOnDrawMapMarkGlyph;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnSelectionBox">OnSelectionBox</a></strong>: TOnSelectionBox read FOnSelectionBox write FOnSelectionBox;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnMapMarkMouseDown">OnMapMarkMouseDown</a></strong>: TOnMapMarkMouseButtonEvent read FOnMapMarkMouseDown write FOnMapMarkMouseDown;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnMapMarkMouseUp">OnMapMarkMouseUp</a></strong>: TOnMapMarkMouseButtonEvent read FOnMapMarkMouseUp write FOnMapMarkMouseUp;</code></td>
 </tr>
@@ -651,6 +655,16 @@ Maximal zoom level. Zoom couldn't be set to a value greater than this value</p>
 <tr><td colspan="2">
 <p>
 List of mapmarks on a map</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Tracks"></span><code>property <strong>Tracks</strong>: TList&lt;<a href="OSM.MapControl.TTrack.html">TTrack</a>&gt; read FTracks;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+List of <code>tracks</code></p>
 </td></tr>
 </table>
 <table class="detail wide_list">

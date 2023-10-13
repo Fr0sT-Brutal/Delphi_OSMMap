@@ -23,6 +23,16 @@
 <td class="itemdesc"><p>Calculates distance between two geo points in meters</p></td>
 </tr>
 <tr class="list2">
+<td class="itemname"><a class="bold" href="OSM.TrackPointUtils.html#CalcLine-TPoint-TPoint-">CalcLine</a></td>
+<td class="itemunit"><a class="bold" href="OSM.TrackPointUtils.html">OSM.TrackPointUtils</a></td>
+<td class="itemdesc"><p>Create line segment record from 2 points in cartesian and calc line equation coeffs</p></td>
+</tr>
+<tr class="list">
+<td class="itemname"><a class="bold" href="OSM.TrackPointUtils.html#CalcRectLines-TRect-">CalcRectLines</a></td>
+<td class="itemunit"><a class="bold" href="OSM.TrackPointUtils.html">OSM.TrackPointUtils</a></td>
+<td class="itemdesc"><p>Create line segment array for rect in cartesian</p></td>
+</tr>
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.NetworkRequest.html#CheckEngineCap-THttpRequestCapability-THttpRequestCapabilities-">CheckEngineCap</a></td>
 <td class="itemunit"><a class="bold" href="OSM.NetworkRequest.html">OSM.NetworkRequest</a></td>
 <td class="itemdesc"><p>Check if capability is in set of capabilities and raise exception if not</p></td>
@@ -73,29 +83,39 @@
 <td class="itemdesc"><p>Default pattern of tile file path.</p></td>
 </tr>
 <tr class="list2">
+<td class="itemname"><a class="bold" href="OSM.MapControl.html#DefLineDrawProps">DefLineDrawProps</a></td>
+<td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
+<td class="itemdesc"><p>Default style of track line.</p></td>
+</tr>
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.NetworkRequest.RTL.html#EngineCapabilities">EngineCapabilities</a></td>
 <td class="itemunit"><a class="bold" href="OSM.NetworkRequest.RTL.html">OSM.NetworkRequest.RTL</a></td>
 <td class="itemdesc"><p>Capabilities of RTL engine.</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.NetworkRequest.Synapse.html#EngineCapabilities">EngineCapabilities</a></td>
 <td class="itemunit"><a class="bold" href="OSM.NetworkRequest.Synapse.html">OSM.NetworkRequest.Synapse</a></td>
 <td class="itemdesc"><p>Capabilities of Synapse engine</p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.NetworkRequest.WinInet.html#EngineCapabilities">EngineCapabilities</a></td>
 <td class="itemunit"><a class="bold" href="OSM.NetworkRequest.WinInet.html">OSM.NetworkRequest.WinInet</a></td>
 <td class="itemdesc"><p>Capabilities of WinInet engine</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#EnsureInMap-TMapZoomLevel-TRect-">EnsureInMap</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Ensures rect <code>Rc</code> is inside a map at zoom level <code>Zoom</code>, corrects values if necessary </p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#EnsureInMap-TMapZoomLevel-TPoint-">EnsureInMap</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Ensures point <code>Pt</code> is inside a map at zoom level <code>Zoom</code>, corrects values if necessary </p></td>
+</tr>
+<tr class="list2">
+<td class="itemname"><a class="bold" href="OSM.TrackPointUtils.html#FindLineSegmentInRect-TRect-TRectLines-TLine-TPoint-TPoint-TPoint-">FindLineSegmentInRect</a></td>
+<td class="itemunit"><a class="bold" href="OSM.TrackPointUtils.html">OSM.TrackPointUtils</a></td>
+<td class="itemdesc"><p>Determine segment of line segment that is contained inside given rect, return True if found.</p></td>
 </tr>
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.TilesProvider.html#FormatTileURL-string-TTile-TTilesProvider-">FormatTileURL</a></td>
@@ -118,14 +138,14 @@
 <td class="itemdesc"><p>Number of GDI handles per <code>TPngImage</code></p></td>
 </tr>
 <tr class="list">
-<td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#GeoCoordsToMap-TMapZoomLevel-TGeoPoint-">GeoCoordsToMap</a></td>
-<td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Converts geo point in degrees to map point in pixels</p></td>
-</tr>
-<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#GeoCoordsToMap-TMapZoomLevel-TGeoRect-">GeoCoordsToMap</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Converts geo rect in degrees to map rect in pixels</p></td>
+</tr>
+<tr class="list2">
+<td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#GeoCoordsToMap-TMapZoomLevel-TGeoPoint-">GeoCoordsToMap</a></td>
+<td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
+<td class="itemdesc"><p>Converts geo point in degrees to map point in pixels</p></td>
 </tr>
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#GetScaleBarParams-TMapZoomLevel-Cardinal-Cardinal-Cardinal-string-string-">GetScaleBarParams</a></td>
@@ -193,19 +213,39 @@
 <td class="itemdesc"><p>Returns height of map at zoom level <code>Zoom</code> in pixels</p></td>
 </tr>
 <tr class="list2">
-<td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MapToGeoCoords-TMapZoomLevel-TRect-">MapToGeoCoords</a></td>
-<td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Converts map rect in pixels to geo rect in degrees</p></td>
-</tr>
-<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MapToGeoCoords-TMapZoomLevel-TPoint-">MapToGeoCoords</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Converts map point in pixels to geo point in degrees</p></td>
+</tr>
+<tr class="list">
+<td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MapToGeoCoords-TMapZoomLevel-TRect-">MapToGeoCoords</a></td>
+<td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
+<td class="itemdesc"><p>Converts map rect in pixels to geo rect in degrees</p></td>
 </tr>
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MapWidth-TMapZoomLevel-">MapWidth</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Returns width of map at zoom level <code>Zoom</code> in pixels</p></td>
+</tr>
+<tr class="list">
+<td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MaxLat">MaxLat</a></td>
+<td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
+<td class="itemdesc"><p>&nbsp;</p></td>
+</tr>
+<tr class="list2">
+<td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MaxLong">MaxLong</a></td>
+<td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
+<td class="itemdesc"><p>&nbsp;</p></td>
+</tr>
+<tr class="list">
+<td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MinLat">MinLat</a></td>
+<td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
+<td class="itemdesc"><p>&nbsp;</p></td>
+</tr>
+<tr class="list2">
+<td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MinLong">MinLong</a></td>
+<td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
+<td class="itemdesc"><p>&nbsp;</p></td>
 </tr>
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.NetworkRequest.RTL.html#NetworkRequest-THttpRequestProps-TStream-TNetworkClient-">NetworkRequest</a></td>
@@ -409,6 +449,16 @@ Level   Degree  Area            m / pixel       ~Scale          # Tiles
 <td class="itemdesc"><p>Width of map tile in pixels</p></td>
 </tr>
 <tr class="list2">
+<td class="itemname"><a class="bold" href="OSM.TrackPointUtils.TLine.html">TLine</a></td>
+<td class="itemunit"><a class="bold" href="OSM.TrackPointUtils.html">OSM.TrackPointUtils</a></td>
+<td class="itemdesc"><p>Line segment data determined by 2 end points and coeffs of line equation <a class="normal" href="OSM.TrackPointUtils.TLine.html#A">A</a>*x+<a class="normal" href="OSM.TrackPointUtils.TLine.html#B">B</a>*y+<a class="normal" href="OSM.TrackPointUtils.TLine.html#C">C</a>=0</p></td>
+</tr>
+<tr class="list">
+<td class="itemname"><a class="bold" href="OSM.MapControl.TLineDrawProps.html">TLineDrawProps</a></td>
+<td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
+<td class="itemdesc"><p>Options for drawing track lines</p></td>
+</tr>
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.MapControl.TMapControl.html">TMapControl</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
 <td class="itemdesc"><p>Control displaying a map or its visible part.</p></td>
@@ -499,49 +549,49 @@ Level   Degree  Area            m / pixel       ~Scale          # Tiles
 <td class="itemdesc"><p>Queuer of network requests.</p></td>
 </tr>
 <tr class="list2">
+<td class="itemname"><a class="bold" href="OSM.TrackPointUtils.html#ToCartesian-TPoint-">ToCartesian</a></td>
+<td class="itemunit"><a class="bold" href="OSM.TrackPointUtils.html">OSM.TrackPointUtils</a></td>
+<td class="itemdesc"><p>From pixel coords (Y axis 0..Max from top to bottom) to cartesian (Y axis 0..-Max from top to bottom)</p></td>
+</tr>
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#ToInnerCoords-TPoint-TPoint-">ToInnerCoords</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
 <td class="itemdesc"><p>Convert absolute map coords to a point inside a viewport having given top-left point</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#ToInnerCoords-TPoint-TRect-">ToInnerCoords</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
 <td class="itemdesc"><p>Convert absolute map rect to a rect inside a viewport having given top-left point</p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#TOnDrawMapMark-TMapControl-TCanvas-TPoint-TMapMark-Boolean-">TOnDrawMapMark</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
 <td class="itemdesc"><p>Callback to custom draw a mapmark or just a glyph with center point <code>Point</code>.</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#TOnDrawTile-TMapControl-Cardinal-Cardinal-TPoint-TCanvas-Boolean-">TOnDrawTile</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
 <td class="itemdesc"><p>Callback to draw an image of a single tile having number (<code>TileHorzNum</code>;<code>TileVertNum</code>) at point <code>TopLeft</code> on canvas <code>Canvas</code>.</p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#TOnGetTile-TMapControl-Cardinal-Cardinal-">TOnGetTile</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
 <td class="itemdesc"><p>Callback to get an image of a single tile having number (<code>TileHorzNum</code>;<code>TileVertNum</code>).</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#TOnItemNotify-TObject-TMapMark-TListNotification-">TOnItemNotify</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
 <td class="itemdesc"><p>Notification of an action over a mapmark in a list</p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#TOnMapMarkMouseButtonEvent-TMapControl-TMapMark-TMouseButton-TShiftState-">TOnMapMarkMouseButtonEvent</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
 <td class="itemdesc"><p>Callback to react on mouse button press/release</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#TOnSelectionBox-TMapControl-TGeoRect-Boolean-">TOnSelectionBox</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
 <td class="itemdesc"><p>Callback to react on selection by mouse</p></td>
-</tr>
-<tr class="list2">
-<td class="itemname"><a class="bold" href="OSM.MapControl.html#ToOuterCoords-TPoint-TRect-">ToOuterCoords</a></td>
-<td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
-<td class="itemdesc"><p>Convert a rect inside a viewport having given top-left point to absolute map rect</p></td>
 </tr>
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#ToOuterCoords-TPoint-TPoint-">ToOuterCoords</a></td>
@@ -549,14 +599,24 @@ Level   Degree  Area            m / pixel       ~Scale          # Tiles
 <td class="itemdesc"><p>Convert a point inside a viewport having given top-left point to absolute map coords</p></td>
 </tr>
 <tr class="list2">
+<td class="itemname"><a class="bold" href="OSM.MapControl.html#ToOuterCoords-TPoint-TRect-">ToOuterCoords</a></td>
+<td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
+<td class="itemdesc"><p>Convert a rect inside a viewport having given top-left point to absolute map rect</p></td>
+</tr>
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#TOpacity">TOpacity</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
 <td class="itemdesc"><p>Opacity level, from 0 (transparent) to $FF (non-transparent)</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.TilesProvider.OpenTopoMap.TOpenTopoMapTilesProvider.html">TOpenTopoMapTilesProvider</a></td>
 <td class="itemunit"><a class="bold" href="OSM.TilesProvider.OpenTopoMap.html">OSM.TilesProvider.OpenTopoMap</a></td>
 <td class="itemdesc"><p>OpenStreetMap tile image provider</p></td>
+</tr>
+<tr class="list">
+<td class="itemname"><a class="bold" href="OSM.TrackPointUtils.html#ToPixel-TPoint-">ToPixel</a></td>
+<td class="itemunit"><a class="bold" href="OSM.TrackPointUtils.html">OSM.TrackPointUtils</a></td>
+<td class="itemdesc"><p>From cartesian coords to pixel</p></td>
 </tr>
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.TilesProvider.OSM.TOSMTilesProvider.html">TOSMTilesProvider</a></td>
@@ -587,6 +647,16 @@ Level   Degree  Area            m / pixel       ~Scale          # Tiles
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#ToTileWidthLesser-Cardinal-">ToTileWidthLesser</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Floor horizontal map coord to tile size</p></td>
+</tr>
+<tr class="list2">
+<td class="itemname"><a class="bold" href="OSM.TrackPointUtils.html#TRectLines">TRectLines</a></td>
+<td class="itemunit"><a class="bold" href="OSM.TrackPointUtils.html">OSM.TrackPointUtils</a></td>
+<td class="itemdesc"><p>Lines of rectangle</p></td>
+</tr>
+<tr class="list">
+<td class="itemname"><a class="bold" href="OSM.TrackPointUtils.html#TRectSide">TRectSide</a></td>
+<td class="itemunit"><a class="bold" href="OSM.TrackPointUtils.html">OSM.TrackPointUtils</a></td>
+<td class="itemdesc"><p>Side of rectangle</p></td>
 </tr>
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#Triangle-TCanvas-TRect-">Triangle</a></td>
@@ -627,6 +697,11 @@ Level   Degree  Area            m / pixel       ~Scale          # Tiles
 <td class="itemname"><a class="bold" href="OSM.TileStorage.html#TTileStorageOptions">TTileStorageOptions</a></td>
 <td class="itemunit"><a class="bold" href="OSM.TileStorage.html">OSM.TileStorage</a></td>
 <td class="itemdesc"><p>&nbsp;</p></td>
+</tr>
+<tr class="list2">
+<td class="itemname"><a class="bold" href="OSM.MapControl.TTrack.html">TTrack</a></td>
+<td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
+<td class="itemdesc"><p>Track data</p></td>
 </tr>
 </table>
 <hr><span class="appinfo"><em>Generated by <a href="https://pasdoc.github.io/">PasDoc 0.16.0</a>. </em>

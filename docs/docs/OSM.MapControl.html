@@ -49,6 +49,14 @@ Visual control displaying a map. Data for the map (tile images) must be supplied
 <td class="itemdesc">List of mapmarks.</td>
 </tr>
 <tr class="list">
+<td class="itemname">Record&nbsp;<a class="bold" href="OSM.MapControl.TLineDrawProps.html"><code>TLineDrawProps</code></a></td>
+<td class="itemdesc">Options for drawing track lines</td>
+</tr>
+<tr class="list2">
+<td class="itemname">Record&nbsp;<a class="bold" href="OSM.MapControl.TTrack.html"><code>TTrack</code></a></td>
+<td class="itemdesc">Track data</td>
+</tr>
+<tr class="list">
 <td class="itemname">Class&nbsp;<a class="bold" href="OSM.MapControl.TMapControl.html"><code>TMapControl</code></a></td>
 <td class="itemdesc">Control displaying a map or its visible part.</td>
 </tr>
@@ -170,12 +178,19 @@ Visual control displaying a map. Data for the map (tile images) must be supplied
   );</code></td>
 </tr>
 <tr class="list">
-<td class="itemcode"><code><strong><a href="OSM.MapControl.html#LayersAll">LayersAll</a></strong>: <a href="OSM.MapControl.html#TMapLayers">TMapLayers</a> = [Low(<a href="OSM.MapControl.html#TMapLayer">TMapLayer</a>)..High(<a href="OSM.MapControl.html#TMapLayer">TMapLayer</a>)];</code></td>
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#DefLineDrawProps">DefLineDrawProps</a></strong>: <a href="OSM.MapControl.TLineDrawProps.html">TLineDrawProps</a> = (
+    Width: 3;
+    Style: psSolid;
+    Color: clBlue
+  );</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code><strong><a href="OSM.MapControl.html#LayersNone">LayersNone</a></strong>: <a href="OSM.MapControl.html#TMapLayers">TMapLayers</a> = [];</code></td>
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#LayersAll">LayersAll</a></strong>: <a href="OSM.MapControl.html#TMapLayers">TMapLayers</a> = [Low(<a href="OSM.MapControl.html#TMapLayer">TMapLayer</a>)..High(<a href="OSM.MapControl.html#TMapLayer">TMapLayer</a>)];</code></td>
 </tr>
 <tr class="list">
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#LayersNone">LayersNone</a></strong>: <a href="OSM.MapControl.html#TMapLayers">TMapLayers</a> = [];</code></td>
+</tr>
+<tr class="list2">
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#S_Lbl_Loading">S_Lbl_Loading</a></strong> = 'Loading [%d : %d]...';</code></td>
 </tr>
 </table>
@@ -508,6 +523,19 @@ Default style of mapmark glyph. <a class="normal" href="OSM.MapControl.TMapContr
 <tr><td colspan="1">
 <p>
 Default style of mapmark caption. <a class="normal" href="OSM.MapControl.TMapControl.html#MapMarkGlyphStyle">TMapControl.MapMarkGlyphStyle</a> is init-ed with this value</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="DefLineDrawProps"></span><code><strong>DefLineDrawProps</strong>: <a href="OSM.MapControl.TLineDrawProps.html">TLineDrawProps</a> = (
+    Width: 3;
+    Style: psSolid;
+    Color: clBlue
+  );</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Default style of track line.</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
