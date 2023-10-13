@@ -108,6 +108,10 @@ const
     0.298,
     0.149
   );
+  MinLong: Double = -180;
+  MaxLong: Double = 180;
+  MinLat: Double = -85.1;
+  MaxLat: Double = 85.1;
 
 // Construct `TRect` from two `TPoint`-s
 function RectFromPoints(const TopLeft, BottomRight: TPoint): TRect; inline;
@@ -172,6 +176,10 @@ procedure GetScaleBarParams(Zoom: TMapZoomLevel;
   out Text: string);
 
 implementation
+
+resourcestring
+  S_Err_ValueIsNotInRangeF = 'Invalid value %f, must be in range [%f..%f]';
+  S_Err_ValueIsNotInRangeI = 'Invalid value %d, must be in range [%d..%d]';
 
 function RectFromPoints(const TopLeft, BottomRight: TPoint): TRect;
 begin
@@ -283,26 +291,30 @@ begin
   );
 end;
 
-//~ Coord checking
+//~ Coord checking, raise exception on invalid value
 
 procedure CheckValidLong(Longitude: Double); inline;
 begin
-  Assert(InRange(Longitude, -180, 180));
+  if not InRange(Longitude, MinLong, MaxLong) then
+    raise Exception.CreateFmt(S_Err_ValueIsNotInRangeF, [Longitude, MinLong, MaxLong]);
 end;
 
 procedure CheckValidLat(Latitude: Double); inline;
 begin
-  Assert(InRange(Latitude, -85.1, 85.1));
+  if not InRange(Latitude, MinLat, MaxLat) then
+    raise Exception.CreateFmt(S_Err_ValueIsNotInRangeF, [Latitude, MinLat, MaxLat]);
 end;
 
 procedure CheckValidMapX(Zoom: TMapZoomLevel; X: Cardinal); inline;
 begin
-  Assert(InRange(X, 0, MapWidth(Zoom)));
+  if not InRange(X, 0, MapWidth(Zoom)) then
+    raise Exception.CreateFmt(S_Err_ValueIsNotInRangeI, [X, 0, MapWidth(Zoom)]);
 end;
 
 procedure CheckValidMapY(Zoom: TMapZoomLevel; Y: Cardinal); inline;
 begin
-  Assert(InRange(Y, 0, MapHeight(Zoom)));
+  if not InRange(Y, 0, MapHeight(Zoom)) then
+    raise Exception.CreateFmt(S_Err_ValueIsNotInRangeI, [Y, 0, MapHeight(Zoom)]);
 end;
 
 {~ TGeoPoint }
