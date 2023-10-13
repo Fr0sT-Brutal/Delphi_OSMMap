@@ -199,7 +199,7 @@ procedure CheckHTTPError(ResponseCode: Word; const ResponseText: string);
 
 implementation
 
-const
+resourcestring
   S_EMsg_UnsuppCap = 'Required capability "%s" is not supported by network engine';
   S_EMsg_HTTPErr = 'HTTP error: %d %s';
 
