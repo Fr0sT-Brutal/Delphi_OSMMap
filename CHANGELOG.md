@@ -1,3 +1,22 @@
+0.11.0
+======
+
+`Added`
+
+- OSM.MapControl.pas: Add long-awaited feature to add and paint tracks! Use them via TMapControl.Tracks
+- OSM.MapControl.pas, TMapMarkGlyphStyle.Opacity
+- OSM.MapControl.pas, TMapControl.OnDrawMapMarkGlyph to custom draw glyph only
+- OSM.MapControl.pas, Triangle, RectByCenterAndSize functions made public
+- OSM.MapControl.pas, TMapControl.DrawMapMark, supports opacity and custom drawing for glyphs. However, simple Canvas.Draw(Bitmap, Opacity) didn't work. Needs additional manipulations
+
+`Changed`
+
+- Source/OSM.SlippyMapUtils.pas: CheckValid* raise exceptions on invalid values so will do all functions using these checks
+
+`Fixed`
+
+- OSM.NetworkRequest.WinInet.pas: NetworkRequest, tune some flags, enlarge buffer, add check for errors during reading the file
+
 0.10.0
 ======
 
