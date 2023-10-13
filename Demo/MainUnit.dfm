@@ -146,7 +146,7 @@ object MainForm: TMainForm
         end
         item
           SizeStyle = ssAbsolute
-          Value = 160.000000000000000000
+          Value = 200.000000000000000000
         end
         item
           SizeStyle = ssAbsolute
@@ -155,6 +155,9 @@ object MainForm: TMainForm
         item
           SizeStyle = ssAbsolute
           Value = 50.000000000000000000
+        end
+        item
+          SizeStyle = ssAuto
         end>
       TabOrder = 0
       object Panel3: TPanel
@@ -370,10 +373,13 @@ object MainForm: TMainForm
         Left = 1
         Top = 261
         Width = 226
-        Height = 160
+        Height = 200
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 3
+        DesignSize = (
+          226
+          200)
         object Label6: TLabel
           Left = 3
           Top = 144
@@ -381,7 +387,7 @@ object MainForm: TMainForm
           Height = 16
           Caption = 'Visible Layers'
         end
-        object Button1: TButton
+        object btnSaveView: TButton
           AlignWithMargins = True
           Left = 3
           Top = 39
@@ -390,9 +396,9 @@ object MainForm: TMainForm
           Align = alTop
           Caption = 'Save current view'
           TabOrder = 0
-          OnClick = Button1Click
+          OnClick = btnSaveViewClick
         end
-        object Button2: TButton
+        object btnAddRandomMapMarks: TButton
           AlignWithMargins = True
           Left = 3
           Top = 75
@@ -401,7 +407,7 @@ object MainForm: TMainForm
           Align = alTop
           Caption = 'Add 100 random marks'
           TabOrder = 1
-          OnClick = Button2Click
+          OnClick = btnAddRandomMapMarksClick
         end
         object btnTest: TButton
           AlignWithMargins = True
@@ -462,7 +468,7 @@ object MainForm: TMainForm
           TabOrder = 6
           OnClick = chbLayer1Click
         end
-        object Button3: TButton
+        object btnSaveMap: TButton
           AlignWithMargins = True
           Left = 3
           Top = 3
@@ -471,12 +477,22 @@ object MainForm: TMainForm
           Align = alTop
           Caption = 'Save whole map'
           TabOrder = 7
-          OnClick = Button3Click
+          OnClick = btnSaveMapClick
+        end
+        object btnAddRoute: TButton
+          Left = 3
+          Top = 167
+          Width = 220
+          Height = 30
+          Anchors = []
+          Caption = 'Add random route'
+          TabOrder = 8
+          OnClick = btnAddRouteClick
         end
       end
       object Panel7: TPanel
         Left = 1
-        Top = 421
+        Top = 461
         Width = 226
         Height = 140
         Align = alClient
@@ -527,7 +543,7 @@ object MainForm: TMainForm
           Left = 3
           Top = 101
           Width = 220
-          Height = 36
+          Height = 33
           Align = alClient
           Caption = 'Navigate'
           TabOrder = 2
@@ -536,7 +552,7 @@ object MainForm: TMainForm
       end
       object Panel8: TPanel
         Left = 1
-        Top = 561
+        Top = 601
         Width = 226
         Height = 50
         Align = alClient

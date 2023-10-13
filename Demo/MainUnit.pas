@@ -83,8 +83,8 @@ type
     rgProxy: TRadioGroup;
     eProxyAddr: TEdit;
     Panel6: TPanel;
-    Button1: TButton;
-    Button2: TButton;
+    btnSaveView: TButton;
+    btnAddRandomMapMarks: TButton;
     btnTest: TButton;
     Panel7: TPanel;
     Panel8: TPanel;
@@ -100,15 +100,16 @@ type
     chbLayer2: TCheckBox;
     chbLayer3: TCheckBox;
     chbLayer4: TCheckBox;
-    Button3: TButton;
+    btnSaveMap: TButton;
     cbProvider: TComboBox;
+    btnAddRoute: TButton;
     procedure btnGoLatLongClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure btnZoomInClick(Sender: TObject);
     procedure btnZoomOutClick(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
+    procedure btnSaveMapClick(Sender: TObject);
     procedure MsgGotTile(var Message: TMessage); message MSG_GOTTILE;
     procedure NetReqGotTileBgThr(const Tile: TTile; Ms: TMemoryStream; const Error: string);
     procedure mMapMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -117,15 +118,16 @@ type
     procedure mMapDrawTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas; var Handled: Boolean);
     procedure mMapZoomChanged(Sender: TObject);
     procedure mMapSelectionBox(Sender: TMapControl; const GeoRect: TGeoRect; Finish: Boolean);
-    procedure Button2Click(Sender: TObject);
+    procedure btnAddRandomMapMarksClick(Sender: TObject);
     procedure btnMouseModePanClick(Sender: TObject);
     procedure btnMouseModeSelClick(Sender: TObject);
     procedure btnTestClick(Sender: TObject);
     procedure chbCacheUseFilesClick(Sender: TObject);
     procedure chbCacheSaveFilesClick(Sender: TObject);
     procedure chbLayer1Click(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
+    procedure btnSaveViewClick(Sender: TObject);
     procedure cbProviderChange(Sender: TObject);
+    procedure btnAddRouteClick(Sender: TObject);
   private
     NetRequest: TNetworkRequestQueue;
     TileStorage: TTileStorage;
@@ -161,6 +163,20 @@ implementation
 {$ELSE}
   {$R *.dfm}
 {$ENDIF}
+
+function RandomGeoPoint: TGeoPoint;
+begin
+  Result := TGeoPoint.Create(
+    RandomRange(Trunc(MinLong), Trunc(MaxLong)),
+    RandomRange(Trunc(MinLat), Trunc(MaxLat)))
+end;
+
+function RandomColor: TColor;
+const
+  Colors: array[0..6] of TColor = (clRed, clYellow, clGreen, clBlue, clBlack, clLime, clPurple);
+begin
+  Result := Colors[Random(High(Colors) + 1)];
+end;
 
 { TTestSuite }
 
@@ -444,7 +460,7 @@ begin
   mMap.SetZoom(mMap.Zoom - 1, mMap.ViewRect.CenterPoint);
 end;
 
-procedure TMainForm.Button3Click(Sender: TObject);
+procedure TMainForm.btnSaveMapClick(Sender: TObject);
 var bmp: TBitmap;
 begin
   bmp := mMap.SaveToBitmap([], False);
@@ -453,20 +469,18 @@ begin
   FreeAndNil(bmp);
 end;
 
-procedure TMainForm.Button2Click(Sender: TObject);
-const
-  Colors: array[0..6] of TColor = (clRed, clYellow, clGreen, clBlue, clBlack, clLime, clPurple);
+procedure TMainForm.btnAddRandomMapMarksClick(Sender: TObject);
 var
   i: Integer;
 begin
   Randomize;
   for i := 1 to 100 do
   begin
-    with mMap.MapMarks.Add(TGeoPoint.Create(RandomRange(-180, 180), RandomRange(-85, 85)), 'Mapmark #' + IntToStr(i), Random(MaxLayer) + 1) do
+    with mMap.MapMarks.Add(RandomGeoPoint, 'Mapmark #' + IntToStr(i), Random(MaxLayer) + 1) do
     begin
       CustomProps := [propGlyphStyle, propCaptionStyle];
       GlyphStyle.Shape := TMapMarkGlyphShape(Random(Ord(High(TMapMarkGlyphShape)) + 1));
-      CaptionStyle.Color := Colors[Random(High(Colors) + 1)];
+      CaptionStyle.Color := RandomColor;
     end;
   end;
 
@@ -527,7 +541,7 @@ begin
       mMap.VisibleLayers := mMap.VisibleLayers - [TMapLayer(Tag)]
 end;
 
-procedure TMainForm.Button1Click(Sender: TObject);
+procedure TMainForm.btnSaveViewClick(Sender: TObject);
 var bmp: TBitmap;
 begin
   bmp := mMap.SaveToBitmap(mMap.ViewRect, [], True);
@@ -539,6 +553,25 @@ end;
 procedure TMainForm.cbProviderChange(Sender: TObject);
 begin
   SetTilesProvider(TilesProviders[(Sender as TComboBox).ItemIndex]);
+end;
+
+procedure TMainForm.btnAddRouteClick(Sender: TObject);
+const
+  Points = 30;
+var
+  Track: TTrack;
+  i: Integer;
+begin
+  // gen track
+  SetLength(Track.Points, Points);
+  Randomize;
+  for i := 0 to Points - 1 do
+    Track.Points[i] := RandomGeoPoint;
+  Track.LineDrawProps := DefLineDrawProps;
+  Track.LineDrawProps.Color := RandomColor;
+  mMap.Tracks.Add(Track);
+
+  mMap.Invalidate;
 end;
 
 end.
