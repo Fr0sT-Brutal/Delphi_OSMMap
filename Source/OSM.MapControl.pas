@@ -72,7 +72,7 @@ type
     Caption: string;                     // Label
     Visible: Boolean;                    // Visibility flag
     Data: Pointer;                       // User data
-    Layer: TMapLayer;                    // Layer number
+    Layer: TMapLayer;                    // Number of layer the mapmark belongs to
     //~ Visual style
     CustomProps: TMapMarkCustomProps;    // Set of properties that differ from map's global values
     GlyphStyle: TMapMarkGlyphStyle;
@@ -177,6 +177,7 @@ type
   // Track data
   TTrack = record
     Visible: Boolean;              // Visibility flag
+    Layer: TMapLayer;              // Number of layer the track belongs to
     Points: array of TGeoPoint;    // Geo points that form a track
     LineDrawProps: TLineDrawProps; // Drawing options
   end;
@@ -1861,7 +1862,9 @@ var
   Line: TLine;
   IntP1, IntP2, LineP1, LineP2: TPoint;
 begin
-  if not Track.Visible then Exit;  
+  if not Track.Visible then Exit;
+  if not (Track.Layer in VisibleLayers) then Exit;
+
   if Length(Track.Points) <= 1 then Exit;
 
   Canvas.Pen.Color := Track.LineDrawProps.Color;
