@@ -146,7 +146,7 @@ object MainForm: TMainForm
         end
         item
           SizeStyle = ssAbsolute
-          Value = 200.000000000000000000
+          Value = 250.000000000000000000
         end
         item
           SizeStyle = ssAbsolute
@@ -173,7 +173,7 @@ object MainForm: TMainForm
           Left = 3
           Top = 3
           Width = 108
-          Height = 47
+          Height = 44
           Align = alClient
           Alignment = taCenter
           AutoSize = False
@@ -244,7 +244,7 @@ object MainForm: TMainForm
           Left = 3
           Top = 3
           Width = 108
-          Height = 47
+          Height = 44
           Align = alClient
           Alignment = taCenter
           Caption = 'Mouse mode'
@@ -373,13 +373,13 @@ object MainForm: TMainForm
         Left = 1
         Top = 261
         Width = 226
-        Height = 200
+        Height = 250
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 3
         DesignSize = (
           226
-          200)
+          250)
         object Label6: TLabel
           Left = 3
           Top = 144
@@ -405,7 +405,7 @@ object MainForm: TMainForm
           Width = 220
           Height = 30
           Align = alTop
-          Caption = 'Add 100 random marks'
+          Caption = 'Add random mapmarks'
           TabOrder = 1
           OnClick = btnAddRandomMapMarksClick
         end
@@ -481,7 +481,7 @@ object MainForm: TMainForm
         end
         object btnAddRoute: TButton
           Left = 3
-          Top = 167
+          Top = 166
           Width = 220
           Height = 30
           Anchors = []
@@ -489,10 +489,19 @@ object MainForm: TMainForm
           TabOrder = 8
           OnClick = btnAddRouteClick
         end
+        object chbCustomPaint: TCheckBox
+          Left = 8
+          Top = 200
+          Width = 209
+          Height = 17
+          Caption = 'Enable custom paint'
+          TabOrder = 9
+          OnClick = chbCustomPaintClick
+        end
       end
       object Panel7: TPanel
         Left = 1
-        Top = 461
+        Top = 511
         Width = 226
         Height = 140
         Align = alClient
@@ -501,7 +510,7 @@ object MainForm: TMainForm
         object Label4: TLabel
           AlignWithMargins = True
           Left = 3
-          Top = 52
+          Top = 55
           Width = 220
           Height = 16
           Align = alTop
@@ -519,31 +528,29 @@ object MainForm: TMainForm
         object editLatitude: TEdit
           AlignWithMargins = True
           Left = 3
-          Top = 71
+          Top = 77
           Width = 220
           Height = 24
           Align = alTop
           TabOrder = 1
-          Text = '-31.953512'
           TextHint = 'Latitude'
         end
         object editLongitude: TEdit
           AlignWithMargins = True
           Left = 3
-          Top = 22
+          Top = 25
           Width = 220
           Height = 24
           Align = alTop
           TabOrder = 0
-          Text = '115.857048'
           TextHint = 'Longitude'
         end
         object btnGoLatLong: TButton
           AlignWithMargins = True
           Left = 3
-          Top = 101
+          Top = 107
           Width = 220
-          Height = 33
+          Height = 30
           Align = alClient
           Caption = 'Navigate'
           TabOrder = 2
@@ -552,7 +559,7 @@ object MainForm: TMainForm
       end
       object Panel8: TPanel
         Left = 1
-        Top = 601
+        Top = 651
         Width = 226
         Height = 50
         Align = alClient
@@ -570,7 +577,7 @@ object MainForm: TMainForm
         object Label2: TLabel
           AlignWithMargins = True
           Left = 3
-          Top = 22
+          Top = 25
           Width = 220
           Height = 16
           Align = alTop

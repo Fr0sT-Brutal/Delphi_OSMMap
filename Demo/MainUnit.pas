@@ -103,6 +103,7 @@ type
     btnSaveMap: TButton;
     cbProvider: TComboBox;
     btnAddRoute: TButton;
+    chbCustomPaint: TCheckBox;
     procedure btnGoLatLongClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -118,6 +119,7 @@ type
     procedure mMapDrawTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas; var Handled: Boolean);
     procedure mMapZoomChanged(Sender: TObject);
     procedure mMapSelectionBox(Sender: TMapControl; const GeoRect: TGeoRect; Finish: Boolean);
+    procedure mMapPaint(Sender: TMapControl; Canvas: TCanvas; const DCClipViewRect, MapInViewRect: TRect);
     procedure btnAddRandomMapMarksClick(Sender: TObject);
     procedure btnMouseModePanClick(Sender: TObject);
     procedure btnMouseModeSelClick(Sender: TObject);
@@ -128,6 +130,7 @@ type
     procedure btnSaveViewClick(Sender: TObject);
     procedure cbProviderChange(Sender: TObject);
     procedure btnAddRouteClick(Sender: TObject);
+    procedure chbCustomPaintClick(Sender: TObject);
   private
     NetRequest: TNetworkRequestQueue;
     TileStorage: TTileStorage;
@@ -163,6 +166,11 @@ implementation
 {$ELSE}
   {$R *.dfm}
 {$ENDIF}
+
+const
+  // Just a random point to init "locate coord" edits
+  LocateLong = 115.8570;
+  LocateLat = -31.9535;
 
 function RandomGeoPoint: TGeoPoint;
 begin
@@ -285,6 +293,7 @@ begin
   mMap.OnDrawTile := mMapDrawTile;
   mMap.OnZoomChanged := mMapZoomChanged;
   mMap.OnSelectionBox := mMapSelectionBox;
+  mMap.OnPaint := mMapPaint;
   mMap.MapMarkCaptionFont.Style := [fsItalic, fsBold];
   // Memory/disc cache of tile images
   // You probably won't need it if you have another fast storage (f.e. database)
@@ -293,6 +302,8 @@ begin
     cbProvider.Items.Add(tpc.Name);
   cbProvider.ItemIndex := 0;
   cbProvider.OnChange(cbProvider);
+  editLongitude.Text := FloatToStr(LocateLong);
+  editLatitude.Text := FloatToStr(LocateLat);
   mMap.SetZoom(1);
 end;
 
@@ -474,7 +485,7 @@ var
   i: Integer;
 begin
   Randomize;
-  for i := 1 to 100 do
+  for i := 1 to 20 do
   begin
     with mMap.MapMarks.Add(RandomGeoPoint, 'Mapmark #' + IntToStr(i), Random(MaxLayer) + 1) do
     begin
@@ -501,9 +512,9 @@ procedure TMainForm.btnGoLatLongClick(Sender: TObject);
 var
   LGeoPoint: TGeoPoint;
 begin
-  mMap.SetZoom(13);
   LGeoPoint.Long := StrToFloat(editLongitude.Text);
   LGeoPoint.Lat := StrToFloat(editLatitude.Text);
+  mMap.SetZoom(10);
   mMap.CenterPoint := LGeoPoint;
 end;
 
@@ -567,10 +578,39 @@ begin
   Randomize;
   for i := 0 to Points - 1 do
     Track.Points[i] := RandomGeoPoint;
+  Track.Layer := Random(MaxLayer) + 1;
   Track.LineDrawProps := DefLineDrawProps;
   Track.LineDrawProps.Color := RandomColor;
   mMap.Tracks.Add(Track);
 
+  mMap.Invalidate;
+end;
+
+procedure TMainForm.mMapPaint(Sender: TMapControl; Canvas: TCanvas; const DCClipViewRect, MapInViewRect: TRect);
+const
+  RectSize = 30; // Initial rect size at zoom = 1
+var
+  MapPt: TPoint;
+  MapRect, ViewRect: TRect;
+  CurrRectSize: Integer;
+begin
+  if not chbCustomPaint.Checked then Exit;
+
+  // Convert geo coords to map coords
+  MapPt := GeoCoordsToMap(Sender.Zoom, TGeoPoint.Create(0, 0));
+  CurrRectSize := (RectSize * MapWidth(Sender.Zoom)) div MapWidth(0);
+  MapRect := TRect.Create(MapPt, CurrRectSize, CurrRectSize);
+
+  // Convert map coords to canvas coords
+  ViewRect := Sender.MapToCanvas(MapRect, Canvas);
+
+  // Paint
+  Canvas.Brush.Color := clGreen;
+  Canvas.FrameRect(ViewRect);
+end;
+
+procedure TMainForm.chbCustomPaintClick(Sender: TObject);
+begin
   mMap.Invalidate;
 end;
 
