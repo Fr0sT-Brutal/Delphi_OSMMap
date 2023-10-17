@@ -209,6 +209,12 @@ type
   TOnDrawMapMark = procedure (Sender: TMapControl; Canvas: TCanvas; const Point: TPoint;
     MapMark: TMapMark; var Handled: Boolean) of object;
 
+  // Callback to custom draw whole map view. `CanvasRect` is rectangle of current view in DC coords
+  // (use it in paint functions) and `MapInViewRect` is rectangle of current view in map coords
+  // (use it to check visibility of objects).
+  TOnPaint = procedure (Sender: TMapControl; Canvas: TCanvas; const CanvasRect,
+    MapInViewRect: TRect) of object;
+
   // Callback to react on selection by mouse
   TOnSelectionBox = procedure (Sender: TMapControl; const GeoRect: TGeoRect; Finished: Boolean) of object;
 
@@ -248,6 +254,7 @@ type
     FOnZoomChanged: TNotifyEvent;
     FOnDrawMapMark: TOnDrawMapMark;
     FOnDrawMapMarkGlyph: TOnDrawMapMark;
+    FOnPaint: TOnPaint;
     FOnSelectionBox: TOnSelectionBox;
     FOnMapMarkMouseDown: TOnMapMarkMouseButtonEvent;
     FOnMapMarkMouseUp: TOnMapMarkMouseButtonEvent;
@@ -441,6 +448,8 @@ type
     // Glyph rounding rectangle could be calculated with RectByCenterAndSize function
     // and effective glyph style.
     property OnDrawMapMarkGlyph: TOnDrawMapMark read FOnDrawMapMarkGlyph write FOnDrawMapMarkGlyph;
+    // Callback to custom draw whole map view. Called after all built-in drawing routines
+    property OnPaint: TOnPaint read FOnPaint write FOnPaint;
     // Called when selection with mouse changes
     property OnSelectionBox: TOnSelectionBox read FOnSelectionBox write FOnSelectionBox;
     // Called when user presses a mouse button above a mapmark
@@ -528,6 +537,8 @@ end;
 
 resourcestring
   S_Err_OptionNotAllowed = 'TMapMarkList.Find: option is not allowed in this mode';
+  S_Err_TileUnavail = 'Tile image unavailable: %d * [%d : %d]';
+  S_Err_AssignInst = 'TMapControl.SetTilesProvider, assigning an instance of %s is prohibited. Assign nil instead.';
 
 // *** Utils ***
 
@@ -872,16 +883,11 @@ end;
 // *** overrides - events ***
 
 // Main drawing routine
-// ! Compiler-specific input !
-// DC here varies:
-//   - Delphi: dimensions of current display res and top-left at viewport's top-left
-//   - LCL: dimensions somewhat larger than client area and top-left at control top-left
-// Canvas.ClipRect helps avoiding defines here
 procedure TMapControl.PaintWindow(DC: HDC);
 var
   ViewRect, MapInViewRect: TRect;
   Canvas: TCanvas;
-  DCClipViewRect: TRect;
+  CanvasRect: TRect;
 begin
   // if view area lays within cached image, no update required
   if not ViewInCache then
@@ -897,11 +903,11 @@ begin
   try
     Canvas.Handle := DC;
     // View rect in DC coords
-    DCClipViewRect := TRect.Create(Canvas.ClipRect.TopLeft, ViewRect.Width, ViewRect.Height);
+    CanvasRect := MapToCanvas(ViewAreaRect, Canvas);
 
     // draw cache (map background)
     Canvas.CopyRect(
-      DCClipViewRect,
+      CanvasRect,
       FCacheImage.Canvas,
       ViewRect
     );
@@ -910,7 +916,10 @@ begin
     MapInViewRect := EnsureInMap(FZoom, ViewAreaRect);
     DrawMapMarks(Canvas, MapInViewRect);
     DrawTracks(Canvas, MapInViewRect);
-    DrawLabels(Canvas, DCClipViewRect, FMapOptions);
+    DrawLabels(Canvas, CanvasRect, FMapOptions);
+
+    if Assigned(FOnPaint) then
+      FOnPaint(Self, Canvas, CanvasRect, MapInViewRect);
   finally
     FreeAndNil(Canvas);
   end;
@@ -1223,7 +1232,11 @@ begin
   {$ENDIF}
 end;
 
-//~ See the note for TMapControl.PaintWindow regarding ClipRect
+// ! Compiler-specific input !
+// Canvas here varies:
+//   - Delphi: dimensions of current display res and top-left is at viewport's top-left
+//   - LCL: dimensions somewhat larger than client area and top-left is at control top-left
+// Canvas.ClipRect helps avoiding defines here
 function TMapControl.MapToCanvas(const MapPt: TPoint; Canvas: TCanvas): TPoint;
 begin
   Result := MapToView(MapPt);
@@ -1550,9 +1563,7 @@ var
 begin
   // Assigning Dummy is prohibited - we only do it internally
   if Value is TDummyTilesProvider then
-    raise Exception.CreateFmt('TMapControl.SetTilesProvider, assigning an ' +
-      'instance of %s is prohibited. Assign nil instead.',
-      [TDummyTilesProvider.ClassName]);
+    raise Exception.CreateFmt(S_Err_AssignInst, [TDummyTilesProvider.ClassName]);
 
   // First initial call - the only moment when tile provider is not assigned.
   // Save this flag to assign properties unconditionally
@@ -1946,7 +1957,7 @@ begin
         Point(horz*TILE_IMAGE_WIDTH, vert*TILE_IMAGE_HEIGHT), Result.Canvas) then
       begin
         FreeAndNil(Result);
-        raise Exception.CreateFmt('Tile image unavailable: %d * [%d : %d]',
+        raise Exception.CreateFmt(S_Err_TileUnavail,
           [FZoom, horz*TILE_IMAGE_WIDTH, vert*TILE_IMAGE_HEIGHT]);
       end;
 
