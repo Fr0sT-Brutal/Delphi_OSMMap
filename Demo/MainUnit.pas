@@ -117,7 +117,7 @@ type
     procedure mMapDrawTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas; var Handled: Boolean);
     procedure mMapZoomChanged(Sender: TObject);
     procedure mMapSelectionBox(Sender: TMapControl; const GeoRect: TGeoRect; Finish: Boolean);
-    procedure mMapPaint(Sender: TMapControl; Canvas: TCanvas; const DCClipViewRect, MapInViewRect: TRect);
+    procedure mMapPaint(Sender: TMapControl; Canvas: TCanvas; const CanvasRect, MapInViewRect: TRect);
     procedure btnAddRandomMapMarksClick(Sender: TObject);
     procedure btnMouseModePanClick(Sender: TObject);
     procedure btnMouseModeSelClick(Sender: TObject);
@@ -584,7 +584,7 @@ begin
   mMap.Invalidate;
 end;
 
-procedure TMainForm.mMapPaint(Sender: TMapControl; Canvas: TCanvas; const DCClipViewRect, MapInViewRect: TRect);
+procedure TMainForm.mMapPaint(Sender: TMapControl; Canvas: TCanvas; const CanvasRect, MapInViewRect: TRect);
 const
   RectSize = 30; // Initial rect size at zoom = 1
 var
