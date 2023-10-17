@@ -44,13 +44,12 @@ procedure NetworkRequest(RequestProps: THttpRequestProps;
 
 implementation
 
-const
-  SEMsg_HTTPErr = 'HTTP error: %d %s';
-  {$IFDEF DCC}
-    {$IFDEF MSWINDOWS}
+{$IFDEF DCC}
+  {$IFDEF MSWINDOWS}
+  const
     DirectConnection = 'http://direct'; // Magic constant to bypass proxy for Delphi on Windows
-    {$ENDIF}
   {$ENDIF}
+{$ENDIF}
 
 // Procedure executing a network request. See description of
 // OSM.NetworkRequest.TBlockingNetworkRequestProc type.
