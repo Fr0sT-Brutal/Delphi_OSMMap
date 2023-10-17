@@ -278,6 +278,8 @@ type
     procedure DrawMapMark(Canvas: TCanvas; MapMark: TMapMark);
     procedure DrawMapMarks(Canvas: TCanvas; const Rect: TRect);
     procedure DrawLabels(Canvas: TCanvas; const Rect: TRect; DrawOptions: TMapOptions);
+    function MapToInner(const MapPt: TPoint): TPoint;
+    function InnerToMap(const Pt: TPoint): TPoint;
     //~ getters/setters
     procedure SetNWPoint(const MapPt: TPoint); overload;
     function GetCenterPoint: TGeoPoint;
@@ -331,10 +333,10 @@ type
     function MapToView(const MapPt: TPoint): TPoint; overload;
     // Convert a rect from map coords to view area coords
     function MapToView(const MapRect: TRect): TRect; overload;
-    // Convert map points to scrollbox inner coordinates (not client!)
-    function MapToInner(const MapPt: TPoint): TPoint;
-    // Convert scrollbox inner coordinates (not client!) to map points
-    function InnerToMap(const Pt: TPoint): TPoint;
+    // Convert a point from map coords to view area's canvas coords
+    function MapToCanvas(const MapPt: TPoint; Canvas: TCanvas): TPoint; overload;
+    // Convert a rect from map coords to view area's canvas coords
+    function MapToCanvas(const MapRect: TRect; Canvas: TCanvas): TRect; overload;
 
     // Delta move the view area
     procedure ScrollMapBy(DeltaHorz, DeltaVert: Integer);
@@ -771,8 +773,10 @@ var i: Integer;
 begin
   Result := MapMark;
   // Add the item in sort order
-  FList.BinarySearch(MapMark, i);
-  FList.Insert(i, Result);
+  if FList.BinarySearch(MapMark, i) then
+    FList.Insert(i, Result)
+  else
+    FList.Add(Result);
 
   if FUpdateCount = 0 then // redraw map view if update is not held back
     FMap.Invalidate;
@@ -1208,6 +1212,7 @@ begin
   {$ENDIF}
 end;
 
+// Convert scrollbox inner coordinates (not client!) to map points
 function TMapControl.InnerToMap(const Pt: TPoint): TPoint;
 begin
   {$IFDEF FPC}
@@ -1216,6 +1221,19 @@ begin
   {$IFDEF DCC}
   Result := ViewToMap(Pt); // scrollbox coords = current view coords
   {$ENDIF}
+end;
+
+//~ See the note for TMapControl.PaintWindow regarding ClipRect
+function TMapControl.MapToCanvas(const MapPt: TPoint; Canvas: TCanvas): TPoint;
+begin
+  Result := MapToView(MapPt);
+  Result.Offset(Canvas.ClipRect.TopLeft);
+end;
+
+function TMapControl.MapToCanvas(const MapRect: TRect; Canvas: TCanvas): TRect;
+begin
+  Result := MapToView(MapRect);
+  Result.Offset(Canvas.ClipRect.TopLeft);
 end;
 
 // View area position and size in map coords
@@ -1707,9 +1725,7 @@ var
   CapFont: TFont;
   bmpGlyph: TBitmap;
 begin
-  MMPt := MapToView(GeoCoordsToMap(MapMark.Coord));
-  // ! Consider Canvas.ClipRect
-  MMPt.Offset(Canvas.ClipRect.TopLeft);
+  MMPt := MapToCanvas(GeoCoordsToMap(MapMark.Coord), Canvas);
 
   // Let the user modify properties or handle drawing completely
   if Assigned(FOnDrawMapMark) then
@@ -1748,7 +1764,7 @@ begin
       bmpGlyph.TransparentColor := clWhite;
       bmpGlyph.SetSize(GlyphRect.Width, GlyphRect.Height);
       DrawGlyph(bmpGlyph.Canvas, GlyphRect, pEffGlStyle^);
-      Canvas.Draw(MapMarkRect.Left, MapMarkRect.Top, bmpGlyph, pEffGlStyle.Opacity);
+      Canvas.Draw(MapMarkRect.Left, MapMarkRect.Top, bmpGlyph{$IFDEF DCC}, pEffGlStyle.Opacity{$ENDIF});
       FreeAndNil(bmpGlyph);
     end
     else
@@ -1848,7 +1864,7 @@ begin
   if not (moDontDrawScale in DrawOptions) then
   begin
     Canvas.Draw(
-      Rect.Top + Integer(FLabelMargin),
+      Rect.Left + Integer(FLabelMargin),
       Rect.Bottom - FScaleLine.Height - Integer(FLabelMargin),
       FScaleLine
     );
