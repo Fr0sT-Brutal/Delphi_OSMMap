@@ -24,7 +24,7 @@ uses
   {$ENDIF}
   Messages, SysUtils, Classes, Graphics, Controls, ExtCtrls, Forms,
   Math, Types, Generics.Collections, Generics.Defaults,
-  OSM.SlippyMapUtils, OSM.TrackPointUtils, OSM.TilesProvider;
+  OSM.SlippyMapUtils, OSM.TilesProvider;
 
 type
   // Shape of mapmark glyph
@@ -280,8 +280,8 @@ type
     function DrawTileImage(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas): Boolean;
     procedure DrawTileLoading(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas);
     procedure DrawTile(TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas);
-    procedure DrawTrack(Canvas: TCanvas; const CartRect: TRect; const RectLines: TRectLines; const Track: TTrack);
-    procedure DrawTracks(Canvas: TCanvas; const Rect: TRect);
+    procedure DrawTrack(Canvas: TCanvas; const Track: TTrack);
+    procedure DrawTracks(Canvas: TCanvas);
     procedure DrawMapMark(Canvas: TCanvas; MapMark: TMapMark);
     procedure DrawMapMarks(Canvas: TCanvas; const Rect: TRect);
     procedure DrawLabels(Canvas: TCanvas; const Rect: TRect; DrawOptions: TMapOptions);
@@ -915,7 +915,7 @@ begin
     // Draw mapmarks and tracks inside view (map could be smaller than view!)
     MapInViewRect := EnsureInMap(FZoom, ViewAreaRect);
     DrawMapMarks(Canvas, MapInViewRect);
-    DrawTracks(Canvas, MapInViewRect);
+    DrawTracks(Canvas);
     DrawLabels(Canvas, CanvasRect, FMapOptions);
 
     if Assigned(FOnPaint) then
@@ -1883,11 +1883,10 @@ begin
 end;
 
 // Draw one track on canvas inside specified rect
-procedure TMapControl.DrawTrack(Canvas: TCanvas; const CartRect: TRect; const RectLines: TRectLines; const Track: TTrack);
+procedure TMapControl.DrawTrack(Canvas: TCanvas; const Track: TTrack);
 var
   Idx: Integer;
-  Line: TLine;
-  IntP1, IntP2, LineP1, LineP2: TPoint;
+  NextPt: TPoint;
 begin
   if not Track.Visible then Exit;
   if not (Track.Layer in VisibleLayers) then Exit;
@@ -1897,40 +1896,21 @@ begin
   Canvas.Pen.Color := Track.LineDrawProps.Color;
   Canvas.Pen.Width := Track.LineDrawProps.Width;
   Canvas.Pen.Style := Track.LineDrawProps.Style;
-  Canvas.PenPos := MapToView(GeoCoordsToMap(Track.Points[0]));
+  Canvas.PenPos := MapToCanvas(GeoCoordsToMap(Track.Points[0]), Canvas);
 
   for Idx := Low(Track.Points) + 1 to High(Track.Points) do
   begin
-    LineP1 := (GeoCoordsToMap(Track.Points[Idx - 1]));
-    LineP2 := (GeoCoordsToMap(Track.Points[Idx]));
-    // ! Consider Canvas.ClipRect
-//    LineP1.Offset(Canvas.ClipRect.TopLeft);
-//    LineP2.Offset(Canvas.ClipRect.TopLeft);
-
-    Line := CalcLine(ToCartesian(LineP1), ToCartesian(LineP2));
-    if FindLineSegmentInRect(CartRect, RectLines, Line, IntP1, IntP2) then
-    begin
-      IntP1 := MapToView(ToPixel(IntP1));
-      IntP2 := MapToView(ToPixel(IntP2));
-      Canvas.PenPos := IntP1;
-      Canvas.LineTo(IntP2.X, IntP2.Y);
-    end;
+    NextPt := MapToCanvas(GeoCoordsToMap(Track.Points[Idx]), Canvas);
+    Canvas.LineTo(NextPt.X, NextPt.Y);
   end;
 end;
 
 // Draw all tracks on canvas inside specified rect
-procedure TMapControl.DrawTracks(Canvas: TCanvas; const Rect: TRect);
-var 
-  Idx: Integer;
-  CartRect: TRect; 
-  RectLines: TRectLines;
+procedure TMapControl.DrawTracks(Canvas: TCanvas);
+var Idx: Integer;
 begin
-  // Pre-calculate values for speedup
-  CartRect := TRect.Create(ToCartesian(Rect.TopLeft), ToCartesian(Rect.BottomRight));
-  RectLines := CalcRectLines(CartRect);
-  
   for Idx := 0 to Tracks.Count - 1 do
-    DrawTrack(Canvas, CartRect, RectLines, Tracks[Idx]);
+    DrawTrack(Canvas, Tracks[Idx]);
 end;
 
 function TMapControl.SaveToBitmap(const SaveRect: TRect; DrawOptions: TMapOptions; DrawMapMarks: Boolean): TBitmap;
