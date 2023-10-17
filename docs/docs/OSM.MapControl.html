@@ -139,9 +139,12 @@ Visual control displaying a map. Data for the map (tile images) must be supplied
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnDrawMapMark-TMapControl-TCanvas-TPoint-TMapMark-Boolean-">TOnDrawMapMark</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; Canvas: TCanvas; const Point: TPoint; MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; var Handled: Boolean) of object;</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnSelectionBox-TMapControl-TGeoRect-Boolean-">TOnSelectionBox</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; const GeoRect: <a href="OSM.SlippyMapUtils.TGeoRect.html">TGeoRect</a>; Finished: Boolean) of object;</code></td>
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnPaint-TMapControl-TCanvas-TRect-TRect-">TOnPaint</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; Canvas: TCanvas; const CanvasRect, MapInViewRect: TRect) of object;</code></td>
 </tr>
 <tr class="list">
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnSelectionBox-TMapControl-TGeoRect-Boolean-">TOnSelectionBox</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; const GeoRect: <a href="OSM.SlippyMapUtils.TGeoRect.html">TGeoRect</a>; Finished: Boolean) of object;</code></td>
+</tr>
+<tr class="list2">
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnMapMarkMouseButtonEvent-TMapControl-TMapMark-TMouseButton-TShiftState-">TOnMapMarkMouseButtonEvent</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; Button: TMouseButton; Shift: TShiftState) of object;</code></td>
 </tr>
 </table>
@@ -440,6 +443,15 @@ Callback to draw an image of a single tile having number (<code>TileHorzNum</cod
 <tr><td colspan="1">
 <p>
 Callback to custom draw a mapmark or just a glyph with center point <code>Point</code>. It is called before default drawing. If <code>Handled</code> is not set to <code>True</code>, default drawing will be done.</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TOnPaint-TMapControl-TCanvas-TRect-TRect-"></span><code><strong>TOnPaint</strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; Canvas: TCanvas; const CanvasRect, MapInViewRect: TRect) of object;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Callback to custom draw whole map view. <code>CanvasRect</code> is rectangle of current view in DC coords (use it in paint functions) and <code>MapInViewRect</code> is rectangle of current view in map coords (use it to check visibility of objects).</p>
 </td></tr>
 </table>
 <table class="detail wide_list">

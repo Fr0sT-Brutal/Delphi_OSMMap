@@ -96,11 +96,11 @@ Control displaying a map or its visible part.</p>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapControl.html#MapToInner-TPoint-">MapToInner</a></strong>(const MapPt: TPoint): TPoint;</code></td>
+<td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapControl.html#MapToCanvas-TPoint-TCanvas-">MapToCanvas</a></strong>(const MapPt: TPoint; Canvas: TCanvas): TPoint; overload;</code></td>
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapControl.html#InnerToMap-TPoint-">InnerToMap</a></strong>(const Pt: TPoint): TPoint;</code></td>
+<td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapControl.html#MapToCanvas-TRect-TCanvas-">MapToCanvas</a></strong>(const MapRect: TRect; Canvas: TCanvas): TRect; overload;</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
@@ -227,13 +227,17 @@ Control displaying a map or its visible part.</p>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnSelectionBox">OnSelectionBox</a></strong>: TOnSelectionBox read FOnSelectionBox write FOnSelectionBox;</code></td>
+<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnPaint">OnPaint</a></strong>: TOnPaint read FOnPaint write FOnPaint;</code></td>
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnMapMarkMouseDown">OnMapMarkMouseDown</a></strong>: TOnMapMarkMouseButtonEvent read FOnMapMarkMouseDown write FOnMapMarkMouseDown;</code></td>
+<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnSelectionBox">OnSelectionBox</a></strong>: TOnSelectionBox read FOnSelectionBox write FOnSelectionBox;</code></td>
 </tr>
 <tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnMapMarkMouseDown">OnMapMarkMouseDown</a></strong>: TOnMapMarkMouseButtonEvent read FOnMapMarkMouseDown write FOnMapMarkMouseDown;</code></td>
+</tr>
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnMapMarkMouseUp">OnMapMarkMouseUp</a></strong>: TOnMapMarkMouseButtonEvent read FOnMapMarkMouseUp write FOnMapMarkMouseUp;</code></td>
 </tr>
@@ -400,15 +404,15 @@ Convert a rect from map coords to view area coords</p>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="MapToInner-TPoint-"></span><code>function <strong>MapToInner</strong>(const MapPt: TPoint): TPoint;</code></td>
+<td class="itemcode"><span id="MapToCanvas-TPoint-TCanvas-"></span><code>function <strong>MapToCanvas</strong>(const MapPt: TPoint; Canvas: TCanvas): TPoint; overload;</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
-Convert map points to scrollbox inner coordinates (not client!) <br> ! Compiler-specific ! <br> TScrollBox is different in different compilers. </p>
+Convert a point from map coords to view area's canvas coords ! Compiler-specific input ! Canvas here varies: </p>
 
 <ul class="paragraph_spacing">
-  <li><p>FPC considers internal area just as scrollbars' range are set (that is, whole scrollable area inside the box).</p></li>
-  <li><p>Delphi considers control bounds only (just a visible area) So this method converts map points to scrollbox inner coordinates (not client!)</p></li>
+  <li><p>Delphi: dimensions of current display res and top-left is at viewport's top-left</p></li>
+  <li><p>LCL: dimensions somewhat larger than client area and top-left is at control top-left Canvas.ClipRect helps avoiding defines here</p></li>
 </ul>
 
 <p></p>
@@ -417,11 +421,11 @@ Convert map points to scrollbox inner coordinates (not client!) <br> ! Compiler-
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="InnerToMap-TPoint-"></span><code>function <strong>InnerToMap</strong>(const Pt: TPoint): TPoint;</code></td>
+<td class="itemcode"><span id="MapToCanvas-TRect-TCanvas-"></span><code>function <strong>MapToCanvas</strong>(const MapRect: TRect; Canvas: TCanvas): TRect; overload;</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
-Convert scrollbox inner coordinates (not client!) to map points</p>
+Convert a rect from map coords to view area's canvas coords</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -767,6 +771,16 @@ Callback to custom draw a mapmark. It is called before default drawing. If <code
 <tr><td colspan="2">
 <p>
 Callback to custom draw a mapmark's glyph. It is called before default drawing. If <code>Handled</code> is not set to <code>True</code>, default drawing will be done. <br> Glyph rounding rectangle could be calculated with <a class="normal" href="OSM.MapControl.html#RectByCenterAndSize-TPoint-Integer-">RectByCenterAndSize</a> function and effective glyph style.</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="OnPaint"></span><code>property <strong>OnPaint</strong>: TOnPaint read FOnPaint write FOnPaint;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Callback to custom draw whole map view. Called after all built-in drawing routines</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
