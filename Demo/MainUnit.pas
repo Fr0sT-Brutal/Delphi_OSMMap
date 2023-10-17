@@ -572,6 +572,8 @@ var
   i: Integer;
 begin
   // gen track
+  Track := Default(TTrack);
+  Track.Visible := True;
   SetLength(Track.Points, Points);
   Randomize;
   for i := 0 to Points - 1 do
