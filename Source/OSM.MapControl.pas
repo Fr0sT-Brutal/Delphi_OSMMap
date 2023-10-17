@@ -258,7 +258,7 @@ type
     FOnSelectionBox: TOnSelectionBox;
     FOnMapMarkMouseDown: TOnMapMarkMouseButtonEvent;
     FOnMapMarkMouseUp: TOnMapMarkMouseButtonEvent;
-  strict protected
+  protected
     //~ overrides
     procedure PaintWindow(DC: HDC); override;
     procedure Resize; override;
@@ -269,6 +269,7 @@ type
     procedure DragOver(Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean); override;
     procedure DoEndDrag(Target: TObject; X, Y: Integer); override;
     procedure KeyDown(var Key: Word; Shift: TShiftState); override;
+  strict protected
     procedure WMHScroll(var Message: TWMHScroll); message WM_HSCROLL;
     procedure WMVScroll(var Message: TWMVScroll); message WM_VSCROLL;
     procedure WMPaint(var Message: TWMPaint); message WM_PAINT;
