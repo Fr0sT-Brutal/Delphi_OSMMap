@@ -1,17 +1,38 @@
+0.11.1
+======
+
+`Added`
+
+- OSM.MapControl.pas: Track now could be assigned to a layer. TTrack.Layer added
+- OSM.MapControl.pas: TMapControl.MapToCanvas, CanvasToMap methods that consider ClipRect differences in Delphi & Lazarus as the only point of converting map coords to canvas coords. 
+- OSM.MapControl.pas: TMapControl.OnPaint - Callback to custom draw whole map view
+- Demo: demo of custom painting
+
+`Changed`
+
+- OSM.MapControl.pas: TMapControl.MapToInner, InnerToMap moved to protected section (required only internally)
+- Demo: Fully tested with Lazarus on Windows
+
+`Fixed`
+
+- OSM.MapControl.pas: tracks drawing now doesn't use custom clipping - fixed issues on large zoom levels
+- OSM.MapControl.pas: TMapMarkList.Add, fix addition to empty list
+- OSM.MapControl.pas: TMapControl.DrawLabels, fix scale label positioning bug
+
 0.11.0
 ======
 
 `Added`
 
 - OSM.MapControl.pas: Add long-awaited feature to add and paint tracks! Use them via TMapControl.Tracks
-- OSM.MapControl.pas, TMapMarkGlyphStyle.Opacity
-- OSM.MapControl.pas, TMapControl.OnDrawMapMarkGlyph to custom draw glyph only
-- OSM.MapControl.pas, Triangle, RectByCenterAndSize functions made public
-- OSM.MapControl.pas, TMapControl.DrawMapMark, supports opacity and custom drawing for glyphs. However, simple Canvas.Draw(Bitmap, Opacity) didn't work. Needs additional manipulations
+- OSM.MapControl.pas: TMapMarkGlyphStyle.Opacity
+- OSM.MapControl.pas: TMapControl.OnDrawMapMarkGlyph to custom draw glyph only
+- OSM.MapControl.pas: Triangle, RectByCenterAndSize functions made public
+- OSM.MapControl.pas: TMapControl.DrawMapMark, supports opacity and custom drawing for glyphs. However, simple Canvas.Draw(Bitmap, Opacity) didn't work. Needs additional manipulations
 
 `Changed`
 
-- Source/OSM.SlippyMapUtils.pas: CheckValid* raise exceptions on invalid values so will do all functions using these checks
+- OSM.SlippyMapUtils.pas: CheckValid* raise exceptions on invalid values so will do all functions using these checks
 
 `Fixed`
 
@@ -39,13 +60,13 @@
 
 `Added`
 
-- OSM.MapControl.pas, TMapMarkCaptionStyle.Visible to control display of the caption
-- OSM.MapControl.pas, TMapMarkList gets upgrades: enumerator to use in for-in loops, Find(Pointer) to search by .Data field, Delete(Integer) to remove item by index, default Items property to get rid of writing Get().
-- OSM.MapControl.pas, TMapMarkList.Find(TPoint), overload that allows considering glyph size with mfoConsiderGlyphSize option set
-- OSM.MapControl.pas, TMapMarkFindOptions, mfoOnlyVisible option to allow skipping invisible marks. Method calls TMapControl.MapMarkVisible to determine effective visibility considering not only Visible flag but also visibility of mapmark layer.
-- OSM.MapControl.pas, TMapControl.MapMarkAtPos method to find topmost visible mapmark at given pixel coords.
+- OSM.MapControl.pas: TMapMarkCaptionStyle.Visible to control display of the caption
+- OSM.MapControl.pas: TMapMarkList gets upgrades: enumerator to use in for-in loops, Find(Pointer) to search by .Data field, Delete(Integer) to remove item by index, default Items property to get rid of writing Get().
+- OSM.MapControl.pas: TMapMarkList.Find(TPoint), overload that allows considering glyph size with mfoConsiderGlyphSize option set
+- OSM.MapControl.pas: TMapMarkFindOptions, mfoOnlyVisible option to allow skipping invisible marks. Method calls TMapControl.MapMarkVisible to determine effective visibility considering not only Visible flag but also visibility of mapmark layer.
+- OSM.MapControl.pas: TMapControl.MapMarkAtPos method to find topmost visible mapmark at given pixel coords.
 - OSM.MapControl.pas: TMapControl.MapMarkVisible - Returns mapmark visibility based on mapmark's own property and also on currently selected visible layers of the map. TMapMarkList.Find methods all use this method.
-- OSM.MapControl.pas, TOnSelectionBox now is called on every selection box change to reflect changes on-the-fly. Added parameter "Finished"
+- OSM.MapControl.pas: TOnSelectionBox now is called on every selection box change to reflect changes on-the-fly. Added parameter "Finished"
 - OSM.MapControl.pas: TMapControl.OnMapMarkMouse(Down|Up) events
 - OSM.MapControl.pas: TMapControl.SelectionShiftState, DragShiftState properties that set combination to enter selection/dragging state on mouse down. Assigning these properties removes necessity of handling MouseDown event just for changing map state
 - OSM.MapControl.pas: ShiftStateIs function for correct comparison of shift states (to use in MouseUp|Move|Down event handlers)
@@ -54,7 +75,7 @@
 
 - OSM.SlippyMapUtils.pas: EnsureInMap, ensures negative coords as well
 - OSM.MapControl.pas: TMapControl.SetZoom, cancels selection/dragging
-- OSM.NetworkRequest.pas, request props are cloned and assigned to every TNetworkRequestThread in its c-tor to avoid multithread access issues.
+- OSM.NetworkRequest.pas: request props are cloned and assigned to every TNetworkRequestThread in its c-tor to avoid multithread access issues.
 
 `Fixed`
 
@@ -68,7 +89,7 @@
 
 - Major redesign of NetworkRequest. Reuse connections to speedup downloads and reduce server load. Engine capabilities are checked against request details. API changes for implementations of NetworkRequest only, no changes visible to end-user.
 
-- OSM.NetworkRequest.pas, TBlockingNetworkRequestFunc => TBlockingNetworkRequestProc, must raise exception on error thus removing excess ErrMsg and result flag; add Client parameter. API changes for implementations of NetworkRequest only, no changes visible to end-user.
+- OSM.NetworkRequest.pas: TBlockingNetworkRequestFunc => TBlockingNetworkRequestProc, must raise exception on error thus removing excess ErrMsg and result flag; add Client parameter. API changes for implementations of NetworkRequest only, no changes visible to end-user.
 
   **End-user code required changes**: none except for custom implementations of NetworkRequest. For those:
   
@@ -79,9 +100,9 @@
 
 `Added`
 
-- OSM.NetworkRequest.Synapse.pas, to use SSL, define `SynapseSSL` in project options.
+- OSM.NetworkRequest.Synapse.pas: to use SSL, define `SynapseSSL` in project options.
 - Updated Synapse to the last release version with original file structure. Added SSL libs from Synapse site (untested!)
-- OSM.NetworkRequest.Synapse.pas, supports System proxy
+- OSM.NetworkRequest.Synapse.pas: supports System proxy
 
 0.9.3
 =====
@@ -91,7 +112,7 @@
 `Added`
 
 - OpenTopoMap tile provider
-- OSM.TilesProvider.*.pas, use new template-base system for retrieval of tile URL
+- OSM.TilesProvider.*.pas: use new template-base system for retrieval of tile URL
 
 0.9.2
 =====
@@ -106,8 +127,8 @@
 
 `Fixed`
 
-- OSM.TileStorage.pas, `TTileStorage`, clear cache on file path change
-- OSM.MapControl.pas, `TMapControl`, fixes to change tiles provider properly
+- OSM.TileStorage.pas: `TTileStorage`, clear cache on file path change
+- OSM.MapControl.pas: `TMapControl`, fixes to change tiles provider properly
 
 0.9.1
 =====
@@ -125,8 +146,8 @@
 
 `[BREAKING]`
 
-- OSM.NetworkRequest.pas, uses `TileProvider` object. `TNetworkRequestQueue.Create`, 3rd parameter is `TTilesProvider` and `GotTile` callback must be set via `OnGotTileBgThr` property
-- OSM.MapControl.pas, uses `TileProvider` object. New `TMapControl.TilesProvider` property
+- OSM.NetworkRequest.pas: uses `TileProvider` object. `TNetworkRequestQueue.Create`, 3rd parameter is `TTilesProvider` and `GotTile` callback must be set via `OnGotTileBgThr` property
+- OSM.MapControl.pas: uses `TileProvider` object. New `TMapControl.TilesProvider` property
 
 0.8.0
 =====
@@ -151,7 +172,7 @@
 
 `Added`
 
-- OSM.SlippyMapUtils.pas, add `ToTileHeightGreater`, `ToTileHeightLesser`, `ToTileWidthGreater`, `ToTileWidthLesser`, `ToTileBoundary` functions
+- OSM.SlippyMapUtils.pas: add `ToTileHeightGreater`, `ToTileHeightLesser`, `ToTileWidthGreater`, `ToTileWidthLesser`, `ToTileBoundary` functions
 - Network requester allows to set current viewport of a map by `TNetworkRequestQueue.SetCurrentViewRect` method so that extraction of queued tiles first looks for those in this area. This removed time lag before current view area is fully downloaded and shown. `TNetworkRequestQueue.DumbQueueOrder` property set to `True` returns old behavior
 
 `Changed`

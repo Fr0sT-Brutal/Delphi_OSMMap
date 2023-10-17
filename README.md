@@ -6,6 +6,16 @@ Demo project implements downloading map tiles from network.
 
 :exclamation: **Alpha version, interface could change** :exclamation:
 
+Features
+--------
+
+- Multiple tile providers
+- Multiple network request engines
+- Layers to control visibility easily
+- Customizable map marks
+- Customizable routes (called tracks)
+- Custom paint on the view area (allows drawing any regions, shapes, images etc)
+
 Compatibility
 -------------
 
@@ -39,6 +49,10 @@ Third party
 
 If you wish to use **Synapse** network engine and don't have it yet, you can take it from **Releases** section.
 
+Screen shows Demo app built with Delphi and running on Windows using OSM tiles with random map marks, random track and square painted from callback.
+
 ![screen1](https://raw.githubusercontent.com/Fr0sT-Brutal/Delphi_OSMMap/master/Screen/screen1.png)
+
+Screen shows Demo app built with Delphi and running on Windows using Google tiles
 
 ![screen2](https://raw.githubusercontent.com/Fr0sT-Brutal/Delphi_OSMMap/master/Screen/screen2.png)
