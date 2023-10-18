@@ -63,6 +63,49 @@ type
   TMapLayer = Byte;
   TMapLayers = set of Byte;
 
+  TMapControl = class;
+
+  // Notification that item is added to the list or removed from it
+  TOnItemNotify<T: class> = procedure (Sender: TObject; Item: T; Action: TListNotification) of object;
+
+  // Base wrapper for list of map's child objects (mapmarks, tracks).
+  // List is linked to map and controls redrawing when an item is added or removed
+  TChildObjList<T: class> = class
+  strict private
+    FList: TObjectList<T>;
+    FUpdateCount: Integer;
+
+    FOnItemNotify: TOnItemNotify<T>;
+  strict protected
+    FMap: TMapControl;
+    procedure ListNotify(Sender: TObject; const Item: T; Action: TCollectionNotification);
+  protected
+    function GetComparer: IComparer<T>; virtual; abstract;
+  public
+    constructor Create(Map: TMapControl);
+    destructor Destroy; override;
+    procedure BeginUpdate;
+    procedure EndUpdate;
+    function GetEnumerator: TObjectList<T>.TEnumerator; inline;
+    function Get(Index: Integer): T; inline;
+    // Add an item
+    function Add(Item: T): T;
+    // Remove item by index
+    procedure Delete(Ind: Integer); overload;
+    // Remove given item
+    procedure Delete(Item: T); overload;
+    // Re-sort the list after modification of items' properties
+    procedure Sort;
+    // Return count of elements in list
+    function Count: Integer; inline;
+    // Remove all elements
+    procedure Clear;
+    // Assigning a handler for this event allows implementing custom init, disposal
+    // of allocated memory and so on
+    property OnItemNotify: TOnItemNotify<T> read FOnItemNotify write FOnItemNotify;
+    property Items[Index: Integer]: T read Get; default;
+  end;
+
   // Class representing a single mapmark.
   // It is recommended to create mapmarks by TMapMarkList.NewItem that assigns
   // visual properties from map's values
@@ -84,11 +127,6 @@ type
     destructor Destroy; override;
   end;
 
-  TMapControl = class;
-
-  // Notification of an action over a mapmark in a list
-  TOnItemNotify = procedure (Sender: TObject; Item: TMapMark; Action: TListNotification) of object;
-
   // Options for TMapMarkList.Find. Default is empty set
   TMapMarkFindOption = (
     // If set (for map pixels only): consider mapmark glyph size as well.
@@ -102,22 +140,10 @@ type
 
   // List of mapmarks.
   // Items are sorted by layer number and painted in this order, ascending
-  TMapMarkList = class
-  strict private
-    FMap: TMapControl;
-    FList: TObjectList<TMapMark>;
-    FUpdateCount: Integer;
-
-    FOnItemNotify: TOnItemNotify;
-  strict protected
-    procedure ListNotify(Sender: TObject; const Item: TMapMark; Action: TCollectionNotification);
+  TMapMarkList = class(TChildObjList<TMapMark>)
+  protected
+    function GetComparer: IComparer<TMapMark>; override;
   public
-    constructor Create(Map: TMapControl);
-    destructor Destroy; override;
-    procedure BeginUpdate;
-    procedure EndUpdate;
-    function GetEnumerator: TObjectList<TMapMark>.TEnumerator; inline;
-    function Get(Index: Integer): TMapMark; inline;
     // Find the next map mark that is near specified coordinates.
     //   @param GeoCoords - coordinates to search
     //   @param Options - set of search options
@@ -153,20 +179,6 @@ type
     function NewItem: TMapMark;
     // Simple method to add a mapmark by coords, caption and layer
     function Add(const GeoCoords: TGeoPoint; const Caption: string; Layer: TMapLayer = 0): TMapMark; overload;
-    // Add a mapmark with fully customizable properties. `MapMark` should be init-ed by NewItem
-    function Add(MapMark: TMapMark): TMapMark; overload;
-    // Remove mapmark object by index
-    procedure Delete(Ind: Integer); overload;
-    // Remove given mapmark object
-    procedure Delete(MapMark: TMapMark); overload;
-    // Return count of elements in list
-    function Count: Integer; inline;
-    // Remove all elements
-    procedure Clear;
-    // Assigning a handler for this event allows implementing custom init, disposal
-    // of allocated memory and so on
-    property OnItemNotify: TOnItemNotify read FOnItemNotify write FOnItemNotify;
-    property Items[Index: Integer]: TMapMark read Get; default;
   end;
 
   // Options for drawing track lines
@@ -184,6 +196,13 @@ type
     LineDrawProps: TLineDrawProps; // Drawing options
 
     constructor Create;
+  end;
+
+  // List of tracks.
+  // Items are sorted by layer number and painted in this order, ascending
+  TTrackList = class(TChildObjList<TTrack>)
+  protected
+    function GetComparer: IComparer<TTrack>; override;
   end;
 
   // Options of map control
@@ -250,7 +269,7 @@ type
     FCacheImageTilesV,
     FCacheMarginSize: Cardinal;
     FLabelMargin: Cardinal;
-    FTracks: TObjectList<TTrack>;
+    FTracks: TTrackList;
 
     FOnGetTile: TOnGetTile;
     FOnDrawTile: TOnDrawTile;
@@ -409,7 +428,7 @@ type
     property MapMarks: TMapMarkList read FMapMarkList;
     // List of tracks. After any modifications call TMapControl.Invalidate or Refresh
     // to display changes.
-    property Tracks: TObjectList<TTrack> read FTracks;
+    property Tracks: TTrackList read FTracks;
     // Mode of handling left mouse button press
     property MouseMode: TMapMouseMode read FMouseMode write SetMouseMode;
     // Size of margin for labels on map, in pixels
@@ -606,6 +625,104 @@ begin
     (Current*Buttons = Desired*Buttons);
 end;
 
+{~ TChildObjList<T> }
+
+constructor TChildObjList<T>.Create(Map: TMapControl);
+begin
+  FMap := Map;
+  // List is always sorted
+  FList := TObjectList<T>.Create(GetComparer, True);
+  FList.OnNotify := ListNotify;
+  FList.OwnsObjects := True;
+end;
+
+destructor TChildObjList<T>.Destroy;
+begin
+  BeginUpdate; // No sense in redrawing deletion of each item
+  Clear;
+  EndUpdate;
+  FreeAndNil(FList);
+  inherited;
+end;
+
+procedure TChildObjList<T>.ListNotify(Sender: TObject; const Item: T; Action: TCollectionNotification);
+begin
+  if Assigned(FOnItemNotify) then
+    case Action of
+      cnAdded     : FOnItemNotify(Self, Item, lnAdded);
+      cnRemoved   : FOnItemNotify(Self, Item, lnDeleted);
+      cnExtracted : FOnItemNotify(Self, Item, lnExtracted);
+    end;
+
+  if FUpdateCount = 0 then // redraw map view if update is not held back
+    FMap.Invalidate;
+end;
+
+procedure TChildObjList<T>.BeginUpdate;
+begin
+  Inc(FUpdateCount);
+end;
+
+procedure TChildObjList<T>.EndUpdate;
+begin
+  if FUpdateCount > 0 then
+    Dec(FUpdateCount);
+  if FUpdateCount = 0 then // redraw map view if update is not held back
+    FMap.Invalidate;
+end;
+
+function TChildObjList<T>.GetEnumerator: TObjectList<T>.TEnumerator;
+begin
+  Result := FList.GetEnumerator;
+end;
+
+function TChildObjList<T>.Get(Index: Integer): T;
+begin
+  Result := FList[Index];
+end;
+
+function TChildObjList<T>.Add(Item: T): T;
+var i: Integer;
+begin
+  Result := Item;
+  // Add the item in sort order
+  if FList.BinarySearch(Item, i) then
+    FList.Insert(i, Result)
+  else
+    FList.Add(Result);
+end;
+
+procedure TChildObjList<T>.Delete(Item: T);
+var i: Integer;
+begin
+  // Binary search is faster
+  if FList.BinarySearch(Item, i) then
+    FList.Delete(i);
+end;
+
+procedure TChildObjList<T>.Delete(Ind: Integer);
+begin
+  FList.Delete(Ind);
+end;
+
+procedure TChildObjList<T>.Sort;
+begin
+  FList.Sort;
+end;
+
+function TChildObjList<T>.Count: Integer;
+begin
+  Result := FList.Count;
+end;
+
+procedure TChildObjList<T>.Clear;
+begin
+  FList.Clear;
+
+  if FUpdateCount = 0 then // redraw map view if update is not held back
+    FMap.Invalidate;
+end;
+
 {~ TMapMark }
 
 constructor TMapMark.Create;
@@ -621,63 +738,14 @@ end;
 
 {~ TMapMarkList }
 
-// Sort the list by Layer currently
-function ListSortCompare(const Left, Right: TMapMark): Integer;
+// Return comparer that sorts the list by Layer
+function TMapMarkList.GetComparer: IComparer<TMapMark>;
 begin
-  Result := CompareValue(Left.Layer, Right.Layer);
-end;
-
-constructor TMapMarkList.Create(Map: TMapControl);
-begin
-  FMap := Map;
-  // List is always sorted
-  FList := TObjectList<TMapMark>.Create(TComparer<TMapMark>.Construct(ListSortCompare), True);
-  FList.OnNotify := ListNotify;
-end;
-
-destructor TMapMarkList.Destroy;
-begin
-  BeginUpdate; // No sense in redrawing deletion of each item
-  Clear;
-  EndUpdate;
-  FreeAndNil(FList);
-  inherited;
-end;
-
-procedure TMapMarkList.BeginUpdate;
-begin
-  Inc(FUpdateCount);
-end;
-
-procedure TMapMarkList.EndUpdate;
-begin
-  if FUpdateCount > 0 then
-    Dec(FUpdateCount);
-  if FUpdateCount = 0 then // redraw map view if update is not held back
-    FMap.Invalidate;
-end;
-
-function TMapMarkList.Count: Integer;
-begin
-  Result := FList.Count;
-end;
-
-procedure TMapMarkList.Clear;
-begin
-  FList.Clear;
-
-  if FUpdateCount = 0 then // redraw map view if update is not held back
-    FMap.Invalidate;
-end;
-
-function TMapMarkList.Get(Index: Integer): TMapMark;
-begin
-  Result := FList[Index];
-end;
-
-function TMapMarkList.GetEnumerator: TObjectList<TMapMark>.TEnumerator;
-begin
-  Result := FList.GetEnumerator;
+  Result := TComparer<TMapMark>.Construct(
+    function (const Left, Right: TMapMark): Integer
+    begin
+      Result := CompareValue(Left.Layer, Right.Layer);
+    end);
 end;
 
 function TMapMarkList.Find(const GeoCoords: TGeoPoint; Options: TMapMarkFindOptions; StartIndex: Integer): Integer;
@@ -793,51 +861,23 @@ begin
   Result := Add(MapMark);
 end;
 
-function TMapMarkList.Add(MapMark: TMapMark): TMapMark;
-var i: Integer;
-begin
-  Result := MapMark;
-  // Add the item in sort order
-  if FList.BinarySearch(MapMark, i) then
-    FList.Insert(i, Result)
-  else
-    FList.Add(Result);
-
-  if FUpdateCount = 0 then // redraw map view if update is not held back
-    FMap.Invalidate;
-end;
-
-procedure TMapMarkList.Delete(Ind: Integer);
-begin
-  FList.Delete(Ind);
-
-  if FUpdateCount = 0 then // redraw map view if update is not held back
-    FMap.Invalidate;
-end;
-
-procedure TMapMarkList.Delete(MapMark: TMapMark);
-var i: Integer;
-begin
-  // Binary search is faster
-  if FList.BinarySearch(MapMark, i) then
-    FList.Delete(i);
-end;
-
-procedure TMapMarkList.ListNotify(Sender: TObject; const Item: TMapMark; Action: TCollectionNotification);
-begin
-  if Assigned(FOnItemNotify) then
-    case Action of
-      cnAdded     : FOnItemNotify(Self, Item, lnAdded);
-      cnRemoved   : FOnItemNotify(Self, Item, lnDeleted);
-      cnExtracted : FOnItemNotify(Self, Item, lnExtracted);
-    end;
-end;
-
 {~ TTrack }
 
 constructor TTrack.Create;
 begin
   Visible := True;
+end;
+
+{~ TTrackList }
+
+// Return comparer that sorts the list by Layer
+function TTrackList.GetComparer: IComparer<TTrack>;
+begin
+  Result := TComparer<TTrack>.Construct(
+    function (const Left, Right: TTrack): Integer
+    begin
+      Result := CompareValue(Left.Layer, Right.Layer);
+    end);
 end;
 
 {~ TMapControl }
@@ -868,8 +908,7 @@ begin
   FSelectionBox.Pen.Style := psDashDot;
 
   FMapMarkList := TMapMarkList.Create(Self);
-  FTracks := TObjectList<TTrack>.Create;
-  FTracks.OwnsObjects := True;
+  FTracks := TTrackList.Create(Self);
 
   // The map is visual control so we can't change c-tor but tile provider is needed
   // to know some properties on creation (zoom range, etc). We can't wait for user
