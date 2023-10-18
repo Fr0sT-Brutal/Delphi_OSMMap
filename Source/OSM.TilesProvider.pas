@@ -67,6 +67,9 @@ type
     // Method to get URL of specified tile. Uses TileURLPatt
     function GetTileURL(const Tile: TTile): string; virtual; abstract;
 
+    // Create clone of provider instance copying all data.
+    function Clone: TTilesProvider; virtual;
+
     // Provider features / capabilities / requirements
     property Features: TTileProviderFeatures read FFeatures;
     // Minimal zoom level. Usually `0`
@@ -111,6 +114,14 @@ function FormatTileURL(const Template: string; const Tile: TTile; Provider: TTil
 implementation
 
 {~ TTilesProvider }
+
+function TTilesProvider.Clone: TTilesProvider;
+begin
+  Result := TTilesProviderClass(Self.ClassType).Create;
+  Result.TilesCopyright := Self.TilesCopyright;
+  Result.TileURLPatt := Self.TileURLPatt;
+  Result.APIKey := Self.APIKey;
+end;
 
 //~ These functions better be abstract but then all instances of descendants that
 // are not overriding them will emit warning about creating abstract class.
