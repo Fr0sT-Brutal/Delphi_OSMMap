@@ -12,45 +12,22 @@
 <h2><a href="index.html">OSM Map control</a></h2><ul><li><a href="AllUnits.html">Units</a></li><li><a href="ClassHierarchy.html">Class Hierarchy</a></li><li><a href="AllClasses.html">Classes, Interfaces, Objects and Records</a></li><li><a href="AllTypes.html">Types</a></li><li><a href="AllVariables.html">Variables</a></li><li><a href="AllConstants.html">Constants</a></li><li><a href="AllFunctions.html">Functions and Procedures</a></li><li><a href="AllIdentifiers.html">Identifiers</a></li></ul></div><div class="content">
 <span id="TMapMarkList"></span><h1 class="cio">Class TMapMarkList</h1>
 <div class="sections">
-<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section"><a class="section" href="#PasDoc-Hierarchy">Hierarchy</a></div><div class="one_section">Fields</div><div class="one_section"><a class="section" href="#PasDoc-Methods">Methods</a></div><div class="one_section"><a class="section" href="#PasDoc-Properties">Properties</a></div></div>
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section"><a class="section" href="#PasDoc-Hierarchy">Hierarchy</a></div><div class="one_section">Fields</div><div class="one_section"><a class="section" href="#PasDoc-Methods">Methods</a></div><div class="one_section">Properties</div></div>
 <span id="PasDoc-Description"></span><h2 class="unit">Unit</h2>
 <p class="unitlink">
 <a href="OSM.MapControl.html">OSM.MapControl</a></p>
 <h2 class="declaration">Declaration</h2>
 <p class="declaration">
-<code>type TMapMarkList = class(TObject)</code></p>
+<code>type TMapMarkList = class(<a class="normal" href="OSM.MapControl.TChildObjList.html">TChildObjList&lt;TMapMark&gt;</a>)</code></p>
 <h2 class="description">Description</h2>
 <p>
 List of mapmarks. Items are sorted by layer number and painted in this order, ascending</p>
 <span id="PasDoc-Hierarchy"></span><h2 class="hierarchy">Hierarchy</h2>
 <ul class="hierarchy"><li class="ancestor">TObject</li>
+<li class="ancestor"><a class="normal" href="OSM.MapControl.TChildObjList.html">TChildObjList</a></li>
 <li class="thisitem">TMapMarkList</li></ul><h2 class="overview">Overview</h2>
 <span id="PasDoc-Methods"></span><h3 class="summary">Methods</h3>
 <table class="summary wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>constructor <strong><a href="OSM.MapControl.TMapMarkList.html#Create-TMapControl-">Create</a></strong>(Map: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>);</code></td>
-</tr>
-<tr class="list2">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>destructor <strong><a href="OSM.MapControl.TMapMarkList.html#Destroy">Destroy</a></strong>; override;</code></td>
-</tr>
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>procedure <strong><a href="OSM.MapControl.TMapMarkList.html#BeginUpdate">BeginUpdate</a></strong>;</code></td>
-</tr>
-<tr class="list2">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>procedure <strong><a href="OSM.MapControl.TMapMarkList.html#EndUpdate">EndUpdate</a></strong>;</code></td>
-</tr>
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapMarkList.html#GetEnumerator">GetEnumerator</a></strong>: TObjectList&lt;<a href="OSM.MapControl.TMapMark.html">TMapMark</a>&gt;.TEnumerator; inline;</code></td>
-</tr>
-<tr class="list2">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapMarkList.html#Get-Integer-">Get</a></strong>(Index: Integer): <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; inline;</code></td>
-</tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapMarkList.html#Find-TGeoPoint-TMapMarkFindOptions-Integer-">Find</a></strong>(const GeoCoords: <a href="OSM.SlippyMapUtils.TGeoPoint.html">TGeoPoint</a>; Options: <a href="OSM.MapControl.html#TMapMarkFindOptions">TMapMarkFindOptions</a> = []; StartIndex: Integer = -1): Integer; overload;</code></td>
@@ -75,88 +52,9 @@ List of mapmarks. Items are sorted by layer number and painted in this order, as
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapMarkList.html#Add-TGeoPoint-string-TMapLayer-">Add</a></strong>(const GeoCoords: <a href="OSM.SlippyMapUtils.TGeoPoint.html">TGeoPoint</a>; const Caption: string; Layer: <a href="OSM.MapControl.html#TMapLayer">TMapLayer</a> = 0): <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; overload;</code></td>
 </tr>
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapMarkList.html#Add-TMapMark-">Add</a></strong>(MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>): <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; overload;</code></td>
-</tr>
-<tr class="list2">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>procedure <strong><a href="OSM.MapControl.TMapMarkList.html#Delete-Integer-">Delete</a></strong>(Ind: Integer); overload;</code></td>
-</tr>
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>procedure <strong><a href="OSM.MapControl.TMapMarkList.html#Delete-TMapMark-">Delete</a></strong>(MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>); overload;</code></td>
-</tr>
-<tr class="list2">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>function <strong><a href="OSM.MapControl.TMapMarkList.html#Count">Count</a></strong>: Integer; inline;</code></td>
-</tr>
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>procedure <strong><a href="OSM.MapControl.TMapMarkList.html#Clear">Clear</a></strong>;</code></td>
-</tr>
-</table>
-<span id="PasDoc-Properties"></span><h3 class="summary">Properties</h3>
-<table class="summary wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapMarkList.html#OnItemNotify">OnItemNotify</a></strong>: TOnItemNotify read FOnItemNotify write FOnItemNotify;</code></td>
-</tr>
-<tr class="list2">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapMarkList.html#Items">Items</a></strong>[Index: Integer]: <a href="OSM.MapControl.TMapMark.html">TMapMark</a> read <a href="OSM.MapControl.TMapMarkList.html#Get-Integer-">Get</a>;</code></td>
-</tr>
 </table>
 <h2 class="description">Description</h2>
 <h3 class="detail">Methods</h3>
-<table class="detail wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="Create-TMapControl-"></span><code>constructor <strong>Create</strong>(Map: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>);</code></td>
-</tr>
-<tr><td colspan="2">
-<p class="nodescription">This item has no description.</p></td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="Destroy"></span><code>destructor <strong>Destroy</strong>; override;</code></td>
-</tr>
-<tr><td colspan="2">
-<p class="nodescription">This item has no description.</p></td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="BeginUpdate"></span><code>procedure <strong>BeginUpdate</strong>;</code></td>
-</tr>
-<tr><td colspan="2">
-<p class="nodescription">This item has no description.</p></td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="EndUpdate"></span><code>procedure <strong>EndUpdate</strong>;</code></td>
-</tr>
-<tr><td colspan="2">
-<p class="nodescription">This item has no description.</p></td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="GetEnumerator"></span><code>function <strong>GetEnumerator</strong>: TObjectList&lt;<a href="OSM.MapControl.TMapMark.html">TMapMark</a>&gt;.TEnumerator; inline;</code></td>
-</tr>
-<tr><td colspan="2">
-<p class="nodescription">This item has no description.</p></td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="Get-Integer-"></span><code>function <strong>Get</strong>(Index: Integer): <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; inline;</code></td>
-</tr>
-<tr><td colspan="2">
-<p class="nodescription">This item has no description.</p></td></tr>
-</table>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
@@ -256,75 +154,6 @@ Create <a class="normal" href="OSM.MapControl.TMapMark.html">TMapMark</a> object
 <p>
 Simple method to add a mapmark by coords, caption and layer</p>
 </td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="Add-TMapMark-"></span><code>function <strong>Add</strong>(MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>): <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; overload;</code></td>
-</tr>
-<tr><td colspan="2">
-<p>
-Add a mapmark with fully customizable properties. <code>MapMark</code> should be init-ed by <a class="normal" href="OSM.MapControl.TMapMarkList.html#NewItem">NewItem</a></p>
-</td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="Delete-Integer-"></span><code>procedure <strong>Delete</strong>(Ind: Integer); overload;</code></td>
-</tr>
-<tr><td colspan="2">
-<p>
-Remove mapmark object by index</p>
-</td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="Delete-TMapMark-"></span><code>procedure <strong>Delete</strong>(MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>); overload;</code></td>
-</tr>
-<tr><td colspan="2">
-<p>
-Remove given mapmark object</p>
-</td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="Count"></span><code>function <strong>Count</strong>: Integer; inline;</code></td>
-</tr>
-<tr><td colspan="2">
-<p>
-Return count of elements in list</p>
-</td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="Clear"></span><code>procedure <strong>Clear</strong>;</code></td>
-</tr>
-<tr><td colspan="2">
-<p>
-Remove all elements</p>
-</td></tr>
-</table>
-<h3 class="detail">Properties</h3>
-<table class="detail wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="OnItemNotify"></span><code>property <strong>OnItemNotify</strong>: TOnItemNotify read FOnItemNotify write FOnItemNotify;</code></td>
-</tr>
-<tr><td colspan="2">
-<p>
-Assigning a handler for this event allows implementing custom init, disposal of allocated memory and so on</p>
-</td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="Items"></span><code>property <strong>Items</strong>[Index: Integer]: <a href="OSM.MapControl.TMapMark.html">TMapMark</a> read <a href="OSM.MapControl.TMapMarkList.html#Get-Integer-">Get</a>;</code></td>
-</tr>
-<tr><td colspan="2">
-<p class="nodescription">This item has no description.</p></td></tr>
 </table>
 <hr><span class="appinfo"><em>Generated by <a href="https://pasdoc.github.io/">PasDoc 0.16.0</a>. </em>
 </span>

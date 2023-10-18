@@ -41,20 +41,28 @@ Visual control displaying a map. Data for the map (tile images) must be supplied
 <td class="itemdesc">Visual properties of mapmark's caption</td>
 </tr>
 <tr class="list">
+<td class="itemname">Class&nbsp;<a class="bold" href="OSM.MapControl.TChildObjList.html"><code>TChildObjList</code></a></td>
+<td class="itemdesc">Base wrapper for list of map's child objects (mapmarks, tracks).</td>
+</tr>
+<tr class="list2">
 <td class="itemname">Class&nbsp;<a class="bold" href="OSM.MapControl.TMapMark.html"><code>TMapMark</code></a></td>
 <td class="itemdesc">Class representing a single mapmark.</td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname">Class&nbsp;<a class="bold" href="OSM.MapControl.TMapMarkList.html"><code>TMapMarkList</code></a></td>
 <td class="itemdesc">List of mapmarks.</td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname">Record&nbsp;<a class="bold" href="OSM.MapControl.TLineDrawProps.html"><code>TLineDrawProps</code></a></td>
 <td class="itemdesc">Options for drawing track lines</td>
 </tr>
-<tr class="list2">
-<td class="itemname">Record&nbsp;<a class="bold" href="OSM.MapControl.TTrack.html"><code>TTrack</code></a></td>
+<tr class="list">
+<td class="itemname">Class&nbsp;<a class="bold" href="OSM.MapControl.TTrack.html"><code>TTrack</code></a></td>
 <td class="itemdesc">Track data</td>
+</tr>
+<tr class="list2">
+<td class="itemname">Class&nbsp;<a class="bold" href="OSM.MapControl.TTrackList.html"><code>TTrackList</code></a></td>
+<td class="itemdesc">List of tracks.</td>
 </tr>
 <tr class="list">
 <td class="itemname">Class&nbsp;<a class="bold" href="OSM.MapControl.TMapControl.html"><code>TMapControl</code></a></td>
@@ -112,7 +120,7 @@ Visual control displaying a map. Data for the map (tile images) must be supplied
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#TMapLayers">TMapLayers</a></strong> = set of Byte;</code></td>
 </tr>
 <tr class="list">
-<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnItemNotify-TObject-TMapMark-TListNotification-">TOnItemNotify</a></strong> = procedure (Sender: TObject; Item: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; Action: TListNotification) of object;</code></td>
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnItemNotify-TObject-T-TListNotification-">TOnItemNotify</a></strong> = procedure (Sender: TObject; Item: T; Action: TListNotification) of object;</code></td>
 </tr>
 <tr class="list2">
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#TMapMarkFindOption">TMapMarkFindOption</a></strong> = (...);</code></td>
@@ -139,7 +147,7 @@ Visual control displaying a map. Data for the map (tile images) must be supplied
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnDrawMapMark-TMapControl-TCanvas-TPoint-TMapMark-Boolean-">TOnDrawMapMark</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; Canvas: TCanvas; const Point: TPoint; MapMark: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; var Handled: Boolean) of object;</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnPaint-TMapControl-TCanvas-TRect-TRect-">TOnPaint</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; Canvas: TCanvas; const CanvasRect, MapInViewRect: TRect) of object;</code></td>
+<td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnDrawLayer-TMapControl-TMapLayer-TCanvas-TRect-TRect-">TOnDrawLayer</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; Layer: <a href="OSM.MapControl.html#TMapLayer">TMapLayer</a>; Canvas: TCanvas; const CanvasRect, MapInViewRect: TRect) of object;</code></td>
 </tr>
 <tr class="list">
 <td class="itemcode"><code><strong><a href="OSM.MapControl.html#TOnSelectionBox-TMapControl-TGeoRect-Boolean-">TOnSelectionBox</a></strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; const GeoRect: <a href="OSM.SlippyMapUtils.TGeoRect.html">TGeoRect</a>; Finished: Boolean) of object;</code></td>
@@ -335,7 +343,7 @@ Flags to indicate which properties must be taken from MapMark object when drawin
 </tr>
 <tr><td colspan="1">
 <p>
-Number of a layer</p>
+Number of a layer. <code>0</code> means default, base layer.</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -347,11 +355,11 @@ Number of a layer</p>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="TOnItemNotify-TObject-TMapMark-TListNotification-"></span><code><strong>TOnItemNotify</strong> = procedure (Sender: TObject; Item: <a href="OSM.MapControl.TMapMark.html">TMapMark</a>; Action: TListNotification) of object;</code></td>
+<td class="itemcode"><span id="TOnItemNotify-TObject-T-TListNotification-"></span><code><strong>TOnItemNotify</strong> = procedure (Sender: TObject; Item: T; Action: TListNotification) of object;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
-Notification of an action over a mapmark in a list</p>
+Notification that item is added to the list or removed from it</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -447,11 +455,11 @@ Callback to custom draw a mapmark or just a glyph with center point <code>Point<
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="TOnPaint-TMapControl-TCanvas-TRect-TRect-"></span><code><strong>TOnPaint</strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; Canvas: TCanvas; const CanvasRect, MapInViewRect: TRect) of object;</code></td>
+<td class="itemcode"><span id="TOnDrawLayer-TMapControl-TMapLayer-TCanvas-TRect-TRect-"></span><code><strong>TOnDrawLayer</strong> = procedure (Sender: <a href="OSM.MapControl.TMapControl.html">TMapControl</a>; Layer: <a href="OSM.MapControl.html#TMapLayer">TMapLayer</a>; Canvas: TCanvas; const CanvasRect, MapInViewRect: TRect) of object;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
-Callback to custom draw whole map view. <code>CanvasRect</code> is rectangle of current view in DC coords (use it in paint functions) and <code>MapInViewRect</code> is rectangle of current view in map coords (use it to check visibility of objects).</p>
+Callback to custom draw a visible layer of whole map view. <code>CanvasRect</code> is rectangle of current view in canvas coords (use it in paint functions) and <code>MapInViewRect</code> is rectangle of current view in map coords (use it to check visibility of objects).</p>
 </td></tr>
 </table>
 <table class="detail wide_list">

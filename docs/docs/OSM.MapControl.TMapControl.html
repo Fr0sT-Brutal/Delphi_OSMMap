@@ -183,7 +183,7 @@ Control displaying a map or its visible part.</p>
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#Tracks">Tracks</a></strong>: TList&lt;<a href="OSM.MapControl.TTrack.html">TTrack</a>&gt; read FTracks;</code></td>
+<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#Tracks">Tracks</a></strong>: <a href="OSM.MapControl.TTrackList.html">TTrackList</a> read FTracks;</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
@@ -227,7 +227,7 @@ Control displaying a map or its visible part.</p>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnPaint">OnPaint</a></strong>: TOnPaint read FOnPaint write FOnPaint;</code></td>
+<td class="itemcode"><code>property <strong><a href="OSM.MapControl.TMapControl.html#OnDrawLayer">OnDrawLayer</a></strong>: TOnDrawLayer read FOnDrawLayer write FOnDrawLayer;</code></td>
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
@@ -658,17 +658,17 @@ Maximal zoom level. Zoom couldn't be set to a value greater than this value</p>
 </tr>
 <tr><td colspan="2">
 <p>
-List of mapmarks on a map</p>
+List of mapmarks on a map. Addition and deletion of items automatically redraws the parent map but to reflect any modifications of item properties call Map.Invalidate manually.</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="Tracks"></span><code>property <strong>Tracks</strong>: TList&lt;<a href="OSM.MapControl.TTrack.html">TTrack</a>&gt; read FTracks;</code></td>
+<td class="itemcode"><span id="Tracks"></span><code>property <strong>Tracks</strong>: <a href="OSM.MapControl.TTrackList.html">TTrackList</a> read FTracks;</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
-List of <code>tracks</code></p>
+List of <code>tracks</code>. After any modifications call TMapControl.Invalidate or Refresh to display changes.</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -708,7 +708,7 @@ View area in map coords</p>
 </tr>
 <tr><td colspan="2">
 <p>
-Set of visible layers. You can use <a class="normal" href="OSM.MapControl.html#LayersAll">LayersAll</a> and <a class="normal" href="OSM.MapControl.html#LayersNone">LayersNone</a> constants</p>
+Set of visible layers. Initially includes all layers. Quickly show/hide all layers with <a class="normal" href="OSM.MapControl.html#LayersAll">LayersAll</a> and <a class="normal" href="OSM.MapControl.html#LayersNone">LayersNone</a> constants</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -776,11 +776,11 @@ Callback to custom draw a mapmark's glyph. It is called before default drawing. 
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="OnPaint"></span><code>property <strong>OnPaint</strong>: TOnPaint read FOnPaint write FOnPaint;</code></td>
+<td class="itemcode"><span id="OnDrawLayer"></span><code>property <strong>OnDrawLayer</strong>: TOnDrawLayer read FOnDrawLayer write FOnDrawLayer;</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
-Callback to custom draw whole map view. Called after all built-in drawing routines</p>
+Callback to custom draw a layer of whole map view. It is called for visible layers after drawing tiles and before drawing all objects (mapmarks, <a class="normal" href="OSM.MapControl.TMapControl.html#Tracks">tracks</a>, labels)</p>
 </td></tr>
 </table>
 <table class="detail wide_list">

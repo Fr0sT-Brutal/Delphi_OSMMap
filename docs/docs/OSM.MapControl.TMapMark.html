@@ -21,7 +21,7 @@
 <code>type TMapMark = class(TObject)</code></p>
 <h2 class="description">Description</h2>
 <p>
-Class representing a single mapmark. It is recommended to be created by <a class="normal" href="OSM.MapControl.TMapMarkList.html#NewItem">TMapMarkList.NewItem</a></p>
+Class representing a single mapmark. It is recommended to create mapmarks by <a class="normal" href="OSM.MapControl.TMapMarkList.html#NewItem">TMapMarkList.NewItem</a> that assigns visual properties from map's values</p>
 <span id="PasDoc-Hierarchy"></span><h2 class="hierarchy">Hierarchy</h2>
 <ul class="hierarchy"><li class="ancestor">TObject</li>
 <li class="thisitem">TMapMark</li></ul><h2 class="overview">Overview</h2>
@@ -67,6 +67,10 @@ Class representing a single mapmark. It is recommended to be created by <a class
 <span id="PasDoc-Methods"></span><h3 class="summary">Methods</h3>
 <table class="summary wide_list">
 <tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>constructor <strong><a href="OSM.MapControl.TMapMark.html#Create">Create</a></strong>;</code></td>
+</tr>
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>destructor <strong><a href="OSM.MapControl.TMapMark.html#Destroy">Destroy</a></strong>; override;</code></td>
 </tr>
@@ -158,6 +162,14 @@ Set of properties that differ from map's global values</p>
 <p class="nodescription">This item has no description.</p></td></tr>
 </table>
 <h3 class="detail">Methods</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Create"></span><code>constructor <strong>Create</strong>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
