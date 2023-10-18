@@ -117,7 +117,7 @@ type
     procedure mMapDrawTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal; const TopLeft: TPoint; Canvas: TCanvas; var Handled: Boolean);
     procedure mMapZoomChanged(Sender: TObject);
     procedure mMapSelectionBox(Sender: TMapControl; const GeoRect: TGeoRect; Finish: Boolean);
-    procedure mMapPaint(Sender: TMapControl; Canvas: TCanvas; const CanvasRect, MapInViewRect: TRect);
+    procedure mMapDrawLayer(Sender: TMapControl; Layer: TMapLayer; Canvas: TCanvas; const CanvasRect, MapInViewRect: TRect);
     procedure btnAddRandomMapMarksClick(Sender: TObject);
     procedure btnMouseModePanClick(Sender: TObject);
     procedure btnMouseModeSelClick(Sender: TObject);
@@ -291,7 +291,7 @@ begin
   mMap.OnDrawTile := mMapDrawTile;
   mMap.OnZoomChanged := mMapZoomChanged;
   mMap.OnSelectionBox := mMapSelectionBox;
-  mMap.OnPaint := mMapPaint;
+  mMap.OnDrawLayer := mMapDrawLayer;
   mMap.MapMarkCaptionFont.Style := [fsItalic, fsBold];
   // Memory/disc cache of tile images
   // You probably won't need it if you have another fast storage (f.e. database)
@@ -572,8 +572,7 @@ var
   i: Integer;
 begin
   // gen track
-  Track := Default(TTrack);
-  Track.Visible := True;
+  Track := TTrack.Create;
   SetLength(Track.Points, Points);
   Randomize;
   for i := 0 to Points - 1 do
@@ -582,11 +581,9 @@ begin
   Track.LineDrawProps := DefLineDrawProps;
   Track.LineDrawProps.Color := RandomColor;
   mMap.Tracks.Add(Track);
-
-  mMap.Invalidate;
 end;
 
-procedure TMainForm.mMapPaint(Sender: TMapControl; Canvas: TCanvas; const CanvasRect, MapInViewRect: TRect);
+procedure TMainForm.mMapDrawLayer(Sender: TMapControl; Layer: TMapLayer; Canvas: TCanvas; const CanvasRect, MapInViewRect: TRect);
 const
   RectSize = 30; // Initial rect size at zoom = 1
 var

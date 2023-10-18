@@ -79,7 +79,7 @@ object MainForm: TMainForm
         Left = 5
         Top = 5
         Width = 104
-        Height = 43
+        Height = 40
         Align = alClient
         Alignment = taCenter
         AutoSize = False
@@ -150,7 +150,7 @@ object MainForm: TMainForm
         Left = 5
         Top = 5
         Width = 104
-        Height = 43
+        Height = 40
         Align = alClient
         Alignment = taCenter
         Caption = 'Mouse mode'
@@ -434,7 +434,7 @@ object MainForm: TMainForm
       object Label4: TLabel
         AlignWithMargins = True
         Left = 5
-        Top = 54
+        Top = 57
         Width = 216
         Height = 16
         Align = alTop
@@ -452,7 +452,7 @@ object MainForm: TMainForm
       object editLatitude: TEdit
         AlignWithMargins = True
         Left = 5
-        Top = 73
+        Top = 79
         Width = 216
         Height = 24
         Align = alTop
@@ -462,7 +462,7 @@ object MainForm: TMainForm
       object editLongitude: TEdit
         AlignWithMargins = True
         Left = 5
-        Top = 24
+        Top = 27
         Width = 216
         Height = 24
         Align = alTop
@@ -472,9 +472,9 @@ object MainForm: TMainForm
       object btnGoLatLong: TButton
         AlignWithMargins = True
         Left = 5
-        Top = 103
+        Top = 109
         Width = 216
-        Height = 32
+        Height = 26
         Align = alClient
         Caption = 'Navigate'
         TabOrder = 2
@@ -501,7 +501,7 @@ object MainForm: TMainForm
       object Label2: TLabel
         AlignWithMargins = True
         Left = 5
-        Top = 24
+        Top = 27
         Width = 216
         Height = 16
         Align = alTop
