@@ -1,3 +1,17 @@
+0.11.2
+======
+
+`Added`
+
++ Tracks, MapMarks: .Sort method added for manual resort if key properties of some items were changed
+
+`Changed`
+
+- OSM.MapControl.pas: TTrack is object now
+- OSM.MapControl.pas: Tracks list is full analog of MapMarks with map auto redraw on adding/deleting, items are sorted by layer number, etc.
+- OSM.MapControl.pas: TMapMark, inits Visible to true in c-tor for convenience
+- OSM.MapControl.pas: TMapControl.OnPaint => TMapControl.OnDrawLayer; called BEFORE drawing map objects (mapmarks, tracks, labels)
+
 0.11.1
 ======
 
