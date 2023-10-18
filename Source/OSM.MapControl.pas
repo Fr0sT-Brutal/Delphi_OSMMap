@@ -9,8 +9,10 @@
 }
 unit OSM.MapControl;
 
-{$IFDEF FPC}
+{$IFDEF FPC}  // For FPC enable Delphi mode and lambdas
   {$MODE Delphi}
+  {$MODESWITCH FUNCTIONREFERENCES}
+  {$MODESWITCH ANONYMOUSFUNCTIONS}
 {$ENDIF}
 
 interface
