@@ -347,12 +347,12 @@ begin
   // Queuer of tile image network requests
   // You won't need it if you have another source (f.e. database)
   FreeAndNil(NetRequest);
-  NetRequest := TNetworkRequestQueue.Create(4, 3, NetworkRequest, provider);
+  NetRequest := TNetworkRequestQueue.Create(4, 3, NetworkRequest, provider.Clone);
   NetRequest.RequestProps.HeaderLines := TStringList.Create;
   NetRequest.OnGotTileBgThr := NetReqGotTileBgThr;
   for s in SampleHeaders do
     NetRequest.RequestProps.HeaderLines.Add(s);
-  mMap.TilesProvider := TilesProviderClass.Create;
+  mMap.TilesProvider := provider;
 end;
 
 function TMainForm.mMapGetTile(Sender: TMapControl; TileHorzNum, TileVertNum: Cardinal): TBitmap;
