@@ -218,6 +218,9 @@ type
     FTilesProvider: TTilesProvider;
     FRequestProps: THttpRequestProps;
   public
+    //   @param TilesProvider - object holding properties of current tile provider. \
+    //     Object takes ownership on this object and destroys it on release.
+    //     This is a clone of Owner's object
     constructor Create(Owner: TNetworkRequestQueue; RequestProc: TBlockingNetworkRequestProc;
       TilesProvider: TTilesProvider; RequestProps: THttpRequestProps);
     destructor Destroy; override;
@@ -309,6 +312,7 @@ end;
 destructor TNetworkRequestThread.Destroy;
 begin
   FreeAndNil(FRequestProps);
+  FreeAndNil(FTilesProvider);
   inherited;
 end;
 
@@ -492,7 +496,7 @@ var thr: TNetworkRequestThread;
 begin
   Lock;
   try
-    thr := TNetworkRequestThread.Create(Self, FRequestProc, FTilesProvider, FRequestProps);
+    thr := TNetworkRequestThread.Create(Self, FRequestProc, FTilesProvider.Clone, FRequestProps);
     thr.OnRequestComplete := DoRequestComplete;
     thr.Start;
     FThreads.Add(thr);
