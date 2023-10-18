@@ -59,12 +59,13 @@ type
   TMapMarkCustomProp = (propGlyphStyle, propCaptionStyle, propFont);
   TMapMarkCustomProps = set of TMapMarkCustomProp;
 
-  // Number of a layer
+  // Number of a layer. `0` means default, base layer.
   TMapLayer = Byte;
   TMapLayers = set of Byte;
 
   // Class representing a single mapmark.
-  // It is recommended to be created by TMapMarkList.NewItem
+  // It is recommended to create mapmarks by TMapMarkList.NewItem that assigns
+  // visual properties from map's values
   TMapMark = class
   public
     //~ Mapmark data
@@ -176,11 +177,13 @@ type
   end;
 
   // Track data
-  TTrack = record
+  TTrack = class
     Visible: Boolean;              // Visibility flag
     Layer: TMapLayer;              // Number of layer the track belongs to
     Points: array of TGeoPoint;    // Geo points that form a track
     LineDrawProps: TLineDrawProps; // Drawing options
+
+    constructor Create;
   end;
 
   // Options of map control
@@ -247,7 +250,7 @@ type
     FCacheImageTilesV,
     FCacheMarginSize: Cardinal;
     FLabelMargin: Cardinal;
-    FTracks: TList<TTrack>;
+    FTracks: TObjectList<TTrack>;
 
     FOnGetTile: TOnGetTile;
     FOnDrawTile: TOnDrawTile;
@@ -400,10 +403,13 @@ type
     property MinZoom: TMapZoomLevel index 0 read FMinZoom write SetZoomConstraint;
     // Maximal zoom level. Zoom couldn't be set to a value greater than this value
     property MaxZoom: TMapZoomLevel index 1 read FMaxZoom write SetZoomConstraint;
-    // List of mapmarks on a map
+    // List of mapmarks on a map. Addition and deletion of items automatically
+    // redraws the parent map but to reflect any modifications of item properties
+    // call Map.Invalidate manually.
     property MapMarks: TMapMarkList read FMapMarkList;
-    // List of tracks
-    property Tracks: TList<TTrack> read FTracks;
+    // List of tracks. After any modifications call TMapControl.Invalidate or Refresh
+    // to display changes.
+    property Tracks: TObjectList<TTrack> read FTracks;
     // Mode of handling left mouse button press
     property MouseMode: TMapMouseMode read FMouseMode write SetMouseMode;
     // Size of margin for labels on map, in pixels
@@ -631,7 +637,9 @@ end;
 
 destructor TMapMarkList.Destroy;
 begin
+  BeginUpdate; // No sense in redrawing deletion of each item
   Clear;
+  EndUpdate;
   FreeAndNil(FList);
   inherited;
 end;
@@ -825,6 +833,13 @@ begin
     end;
 end;
 
+{~ TTrack }
+
+constructor TTrack.Create;
+begin
+  Visible := True;
+end;
+
 {~ TMapControl }
 
 const
@@ -853,7 +868,8 @@ begin
   FSelectionBox.Pen.Style := psDashDot;
 
   FMapMarkList := TMapMarkList.Create(Self);
-  FTracks := TList<TTrack>.Create;
+  FTracks := TObjectList<TTrack>.Create;
+  FTracks.OwnsObjects := True;
 
   // The map is visual control so we can't change c-tor but tile provider is needed
   // to know some properties on creation (zoom range, etc). We can't wait for user
