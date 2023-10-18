@@ -22,6 +22,12 @@ uses
   OSM.SlippyMapUtils;
 
 type
+  TTileProviderFeature = (
+    tpfRequiresAPIKey
+  );
+
+  TTileProviderFeatures = set of TTileProviderFeature;
+
   // Abstract base class for tile image provider. Real implementations must
   // inherit from it, assign properties and override methods. @br
   // Note to implementors: take any of the existing implementations as base.
@@ -30,16 +36,22 @@ type
   // between methods and will be easy to modify.
   TTilesProvider = class
   protected
+    //~ Provider constants - must be assigned in c-tor and never change since then
+    FFeatures: TTileProviderFeatures;
+    FMinZoomLevel: TMapZoomLevel;
+    FMaxZoomLevel: TMapZoomLevel;
+
     function GetProperty(const Index: string): string; virtual;
     procedure SetProperty(const Index, Value: string); virtual;
   public
-    // Minimal zoom level. Usually `0`
-    MinZoomLevel: TMapZoomLevel;
-    // Maximal zoom level
-    MaxZoomLevel: TMapZoomLevel;
 {}//~    TileFormat: TTileImage;
-    // [opt] Tile copyright that will be painted in the corner of the map
+    //~ Provider variables - could change any time
+    // [opt] Tile copyright that will be painted in the corner of the map.
+    // Gets default value when instance is created.
     TilesCopyright: string;
+    // Pattern of tile URL. For format see FormatTileURL.
+    // Gets default value when instance is created, unlikely needed to modify
+    TileURLPatt: string;
     // [opt] API key for requesting tiles
     APIKey: string;
 
@@ -52,8 +64,15 @@ type
     // The only recommendation is to keep the name short.
     class function Name: string; virtual; abstract;
 
-    // Method to get URL of specified tile
+    // Method to get URL of specified tile. Uses TileURLPatt
     function GetTileURL(const Tile: TTile): string; virtual; abstract;
+
+    // Provider features / capabilities / requirements
+    property Features: TTileProviderFeatures read FFeatures;
+    // Minimal zoom level. Usually `0`
+    property MinZoomLevel: TMapZoomLevel read FMinZoomLevel;
+    // Maximal zoom level
+    property MaxZoomLevel: TMapZoomLevel read FMaxZoomLevel;
 
     // Generic storage for provider-specific properties. Raises exception in
     // base class, should be implemented in descendants
@@ -93,6 +112,8 @@ implementation
 
 {~ TTilesProvider }
 
+//~ These functions better be abstract but then all instances of descendants that
+// are not overriding them will emit warning about creating abstract class.
 function TTilesProvider.GetProperty(const Index: string): string;
 begin
   raise Exception.Create('Getter for Properties not implemented');
@@ -107,8 +128,8 @@ end;
 
 constructor TDummyTilesProvider.Create;
 begin
-  MinZoomLevel := Low(TMapZoomLevel);
-  MaxZoomLevel := High(TMapZoomLevel);
+  FMinZoomLevel := Low(TMapZoomLevel);
+  FMaxZoomLevel := High(TMapZoomLevel);
   TilesCopyright := DefTilesCopyright;
 end;
 

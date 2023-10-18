@@ -28,9 +28,6 @@ type
     // Default pattern of tile URL
     DefTileURLPatt = 'https://{1-4}.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?apiKey={key}';
   public
-    // Pattern of tile URL. For format see FormatTileURL
-    TileURLPatt: string;
-
     constructor Create; override;
     class function Name: string; override;
     function GetTileURL(const Tile: TTile): string; override;
@@ -40,8 +37,9 @@ implementation
 
 constructor THERETilesProvider.Create;
 begin
-  MinZoomLevel := Low(TMapZoomLevel);
-  MaxZoomLevel := 20;
+  FFeatures := [tpfRequiresAPIKey];
+  FMinZoomLevel := Low(TMapZoomLevel);
+  FMaxZoomLevel := 20;
 //  TileFormat.Format := 'png';
 //  TileFormat.Width := 256;
 //  TileFormat.Height := 256;

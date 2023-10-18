@@ -27,9 +27,6 @@ type
     // Default pattern of tile URL
     DefTileURLPatt = 'http://{a|b|c}.tile.opentopomap.org/{z}/{x}/{y}.png';
   public
-    // Pattern of tile URL. For format see FormatTileURL
-    TileURLPatt: string;
-
     constructor Create; override;
     class function Name: string; override;
     function GetTileURL(const Tile: TTile): string; override;
@@ -39,8 +36,8 @@ implementation
 
 constructor TOpenTopoMapTilesProvider.Create;
 begin
-  MinZoomLevel := Low(TMapZoomLevel);
-  MaxZoomLevel := 15;
+  FMinZoomLevel := Low(TMapZoomLevel);
+  FMaxZoomLevel := 15;
 //  TileFormat.Format := 'png';
 //  TileFormat.Width := 256;
 //  TileFormat.Height := 256;
