@@ -686,7 +686,8 @@ begin
 end;
 
 function TChildObjList<T>.Add(Item: T): T;
-var i: Integer;
+// List<T>.BinarySearch expects different types of output in FPC and Delphi
+var i: {$IFDEF FPC} SizeInt {$ELSE} Integer {$ENDIF};
 begin
   Result := Item;
   // Add the item in sort order
@@ -697,7 +698,8 @@ begin
 end;
 
 procedure TChildObjList<T>.Delete(Item: T);
-var i: Integer;
+// List<T>.BinarySearch expects different types of output in FPC and Delphi
+var i: {$IFDEF FPC} SizeInt {$ELSE} Integer {$ENDIF};
 begin
   // Binary search is faster
   if FList.BinarySearch(Item, i) then
@@ -1235,8 +1237,9 @@ var
   CtrlSize, CacheSize: TSize;
 begin
   // dims of view area in pixels rounded to full tiles
-  CtrlSize.cx := ToTileWidthGreater(ClientWidth);
-  CtrlSize.cy := ToTileHeightGreater(ClientHeight);
+  // Type cast: remove FPC@Linux build error
+  CtrlSize.cx := Integer(ToTileWidthGreater(ClientWidth));
+  CtrlSize.cy := Integer(ToTileHeightGreater(ClientHeight));
 
   // cache dims = Max(control+margins, Min(map, default+margins))
   CacheSize.cx := Min(FMapRect.Width, FCacheImageTilesH*TILE_IMAGE_WIDTH + FCacheMarginSize*TILE_IMAGE_WIDTH);
