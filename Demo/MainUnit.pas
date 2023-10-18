@@ -102,7 +102,6 @@ type
     Label2: TLabel;
     chbCacheUseFiles: TCheckBox;
     chbCacheSaveFiles: TCheckBox;
-    procedure btnGoLatLongClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
@@ -122,6 +121,7 @@ type
     procedure btnMouseModePanClick(Sender: TObject);
     procedure btnMouseModeSelClick(Sender: TObject);
     procedure btnTestClick(Sender: TObject);
+    procedure btnGoLatLongClick(Sender: TObject);
     procedure chbCacheUseFilesClick(Sender: TObject);
     procedure chbCacheSaveFilesClick(Sender: TObject);
     procedure chbLayer1Click(Sender: TObject);
@@ -325,14 +325,29 @@ begin
 end;
 
 procedure TMainForm.SetTilesProvider(TilesProviderClass: TTilesProviderClass);
-var s: string;
+var
+  s: string;
+  provider: TTilesProvider;
 begin
+  // To check provider features, we have to create an instance
+  provider := TilesProviderClass.Create;
+
+  if tpfRequiresAPIKey in provider.Features then
+  begin
+    provider.APIKey := InputBox('API key required', 'Enter API key', '');
+    if provider.APIKey = '' then
+    begin
+      FreeAndNil(provider);
+      Abort;
+    end;
+  end;
+
   TileStorage.FileCacheBaseDir := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) +
     'Map' + PathDelim + TilesProviderClass.Name;
   // Queuer of tile image network requests
   // You won't need it if you have another source (f.e. database)
   FreeAndNil(NetRequest);
-  NetRequest := TNetworkRequestQueue.Create(4, 3, NetworkRequest, TilesProviderClass.Create);
+  NetRequest := TNetworkRequestQueue.Create(4, 3, NetworkRequest, provider);
   NetRequest.RequestProps.HeaderLines := TStringList.Create;
   NetRequest.OnGotTileBgThr := NetReqGotTileBgThr;
   for s in SampleHeaders do
