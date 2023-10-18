@@ -79,6 +79,7 @@ type
     CaptionStyle: TMapMarkCaptionStyle;
     CaptionFont: TFont;
 
+    constructor Create;
     destructor Destroy; override;
   end;
 
@@ -601,6 +602,11 @@ end;
 
 {~ TMapMark }
 
+constructor TMapMark.Create;
+begin
+  Visible := True;
+end;
+
 destructor TMapMark.Destroy;
 begin
   if CaptionFont <> nil then
@@ -765,7 +771,6 @@ end;
 function TMapMarkList.NewItem: TMapMark;
 begin
   Result := TMapMark.Create;
-  Result.Visible := True;
   Result.GlyphStyle := FMap.MapMarkGlyphStyle;
   Result.CaptionStyle := FMap.MapMarkCaptionStyle;
 end;
