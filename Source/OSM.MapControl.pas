@@ -232,10 +232,10 @@ type
   TOnDrawMapMark = procedure (Sender: TMapControl; Canvas: TCanvas; const Point: TPoint;
     MapMark: TMapMark; var Handled: Boolean) of object;
 
-  // Callback to custom draw whole map view. `CanvasRect` is rectangle of current view in DC coords
-  // (use it in paint functions) and `MapInViewRect` is rectangle of current view in map coords
-  // (use it to check visibility of objects).
-  TOnPaint = procedure (Sender: TMapControl; Canvas: TCanvas; const CanvasRect,
+  // Callback to custom draw a visible layer of whole map view. `CanvasRect` is rectangle of current view in
+  // canvas coords (use it in paint functions) and `MapInViewRect` is rectangle of current view in map
+  // coords (use it to check visibility of objects).
+  TOnDrawLayer = procedure (Sender: TMapControl; Layer: TMapLayer; Canvas: TCanvas; const CanvasRect,
     MapInViewRect: TRect) of object;
 
   // Callback to react on selection by mouse
@@ -277,7 +277,7 @@ type
     FOnZoomChanged: TNotifyEvent;
     FOnDrawMapMark: TOnDrawMapMark;
     FOnDrawMapMarkGlyph: TOnDrawMapMark;
-    FOnPaint: TOnPaint;
+    FOnDrawLayer: TOnDrawLayer;
     FOnSelectionBox: TOnSelectionBox;
     FOnMapMarkMouseDown: TOnMapMarkMouseButtonEvent;
     FOnMapMarkMouseUp: TOnMapMarkMouseButtonEvent;
@@ -435,7 +435,8 @@ type
     property LabelMargin: Cardinal read FLabelMargin write SetLabelMargin;
     // View area in map coords
     property ViewRect: TRect read ViewAreaRect;
-    // Set of visible layers. You can use LayersAll and LayersNone constants
+    // Set of visible layers. Initially includes all layers. Quickly show/hide all layers
+    // with LayersAll and LayersNone constants
     property VisibleLayers: TMapLayers read FVisibleLayers write SetVisibleLayers;
     //~ events/callbacks
     // Callback to get an image of a single tile having number (`TileHorzNum`;`TileVertNum`).
@@ -475,8 +476,9 @@ type
     // Glyph rounding rectangle could be calculated with RectByCenterAndSize function
     // and effective glyph style.
     property OnDrawMapMarkGlyph: TOnDrawMapMark read FOnDrawMapMarkGlyph write FOnDrawMapMarkGlyph;
-    // Callback to custom draw whole map view. Called after all built-in drawing routines
-    property OnPaint: TOnPaint read FOnPaint write FOnPaint;
+    // Callback to custom draw a layer of whole map view. It is called for visible layers after
+    // drawing tiles and before drawing all objects (mapmarks, tracks, labels)
+    property OnDrawLayer: TOnDrawLayer read FOnDrawLayer write FOnDrawLayer;
     // Called when selection with mouse changes
     property OnSelectionBox: TOnSelectionBox read FOnSelectionBox write FOnSelectionBox;
     // Called when user presses a mouse button above a mapmark
@@ -949,6 +951,7 @@ var
   ViewRect, MapInViewRect: TRect;
   Canvas: TCanvas;
   CanvasRect: TRect;
+  Layer: TMapLayer;
 begin
   // if view area lays within cached image, no update required
   if not ViewInCache then
@@ -975,12 +978,14 @@ begin
 
     // Draw mapmarks and tracks inside view (map could be smaller than view!)
     MapInViewRect := EnsureInMap(FZoom, ViewAreaRect);
+
+    if Assigned(FOnDrawLayer) then
+      for Layer in VisibleLayers do
+        FOnDrawLayer(Self, Layer, Canvas, CanvasRect, MapInViewRect);
+
     DrawMapMarks(Canvas, MapInViewRect);
     DrawTracks(Canvas);
     DrawLabels(Canvas, CanvasRect, FMapOptions);
-
-    if Assigned(FOnPaint) then
-      FOnPaint(Self, Canvas, CanvasRect, MapInViewRect);
   finally
     FreeAndNil(Canvas);
   end;
