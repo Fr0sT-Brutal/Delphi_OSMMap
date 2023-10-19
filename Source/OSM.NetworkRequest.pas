@@ -16,14 +16,19 @@ unit OSM.NetworkRequest;
 interface
 
 uses
+  {$IFDEF MSWINDOWS}
+    Windows, WinInet,
+  {$ENDIF}
   SysUtils, Classes, Contnrs, SyncObjs, Types, TypInfo,
   OSM.SlippyMapUtils, OSM.TilesProvider;
 
 const
+  HTTPProto = 'http';
+  HTTPTLSProto = 'https';
+  ProtoSep = '://';
   // Prefix to add to proxy URLs if it only contains `host:port` - some URL parsers
   // handle such inputs as `proto:path`
-  HTTPProxyProto = 'http://';
-  HTTPTLSProto = 'https';
+  HTTPProxyProto = HTTPProto + ProtoSep;
   // Internal constant to designate OS-wide proxy
   SystemProxy = HTTPProxyProto + 'SYSTEM';
   // Timeout for connect and request
@@ -196,6 +201,12 @@ procedure CheckEngineCaps(RequestProps: THttpRequestProps; EngineCapabilities: T
 function IsHTTPError(ResponseCode: Word): Boolean;
 // Check if response code means HTTP error, raise exception then
 procedure CheckHTTPError(ResponseCode: Word; const ResponseText: string);
+// Retrieve system proxy for given URL (http, https). Only returns HTTP proxies (not Socks).
+// On Windows uses InternetQueryOption, on Linux takes env variables `HTTP(S)_PROXY`.
+// Returns addresses for direct connection in Bypass array.
+function GetSystemProxy(const URL: string; out Bypass: TArray<string>): string; overload;
+// Overload when addresses to bypass proxy are not of interest
+function GetSystemProxy(const URL: string): string; overload;
 
 implementation
 
@@ -220,7 +231,10 @@ type
   public
     //   @param TilesProvider - object holding properties of current tile provider. \
     //     Object takes ownership on this object and destroys it on release.
-    //     This is a clone of Owner's object
+    //     This must be a clone of Owner's object
+    //   @param RequestProps - object holding properties of current network request. \
+    //     Object takes ownership on this object and destroys it on release.
+    //     This must be a clone of Owner's object
     constructor Create(Owner: TNetworkRequestQueue; RequestProc: TBlockingNetworkRequestProc;
       TilesProvider: TTilesProvider; RequestProps: THttpRequestProps);
     destructor Destroy; override;
@@ -230,6 +244,11 @@ type
     property OnRequestComplete: TOnRequestComplete read FOnRequestComplete write FOnRequestComplete;
   end;
 
+function ExtractProtocol(const URL: string): string;
+begin
+  Result := Copy(URL, 1, Pos(ProtoSep, URL) - 1);
+end;
+
 procedure CheckEngineCap(NeededCap: THttpRequestCapability; Caps: THttpRequestCapabilities);
 begin
   if not (NeededCap in Caps) then
@@ -238,7 +257,7 @@ end;
 
 procedure CheckEngineCaps(RequestProps: THttpRequestProps; EngineCapabilities: THttpRequestCapabilities);
 begin
-  if Pos(RequestProps.URL, HTTPTLSProto) = 1 then
+  if ExtractProtocol(RequestProps.URL) = HTTPTLSProto then
     CheckEngineCap(htcTLS, EngineCapabilities);
 
   if (RequestProps.HttpUserName <> '') and (RequestProps.HttpPassword <> '') then
@@ -271,6 +290,132 @@ procedure CheckHTTPError(ResponseCode: Word; const ResponseText: string);
 begin
   if IsHTTPError(ResponseCode) then
     raise Exception.CreateFmt(S_EMsg_HTTPErr, [ResponseCode, ResponseText]);
+end;
+
+function GetSystemProxy(const URL: string; out Bypass: TArray<string>): string;
+
+  {$IFDEF UNIX}
+    // Get env var either by lowercase name (argument) or uppercase name
+    function GetEnvVarLoHiCase(const Name: string): string;
+    begin
+      Result := GetEnvironmentVariable(Name);
+      if Result = '' then
+        Result := GetEnvironmentVariable(UpperCase(Name));
+    end;
+
+    const
+      ProxyEnvVarNames: array[Boolean] of string =
+        ('http_proxy', 'https_proxy'); // key is "secure" flag
+      BypassEnvVarName = 'no_proxy';
+  {$ENDIF}
+
+var
+  sl: TStringList;
+  i: Integer;
+  prot: string;
+{$IFDEF MSWINDOWS}
+  Success: Boolean;
+  Len: DWORD;
+  Buffer: TBytes;
+  pProxyInfo: PInternetProxyInfo;
+{$ENDIF}
+{$IFDEF UNIX}
+  ignore: string;
+{$ENDIF}
+begin
+  Result := '';
+  SetLength(Bypass, 0);
+
+  // Extract proto from URL. Only 'http' and 'https' allowed here
+  prot := ExtractProtocol(URL);
+  if (prot <> HTTPProto) and (prot <> HTTPTLSProto) then Exit;
+
+  {$IFDEF MSWINDOWS}
+  // First get the length of required buffer by calling function with 0 length.
+  // Expect failure and ERROR_INSUFFICIENT_BUFFER, other results are weird - exiting
+  Len := 0;
+  Success := InternetQueryOption(nil, INTERNET_OPTION_PROXY, nil, Len);
+  if not (not Success and (GetLastError = ERROR_INSUFFICIENT_BUFFER)) then Exit;
+
+  // Now Len contains required buffer length
+  SetLength(Buffer, Len);
+  Success := InternetQueryOption(nil, INTERNET_OPTION_PROXY, Buffer, Len);
+  if not Success then Exit;
+
+  pProxyInfo := PInternetProxyInfo(Buffer);
+  if pProxyInfo^.dwAccessType <> INTERNET_OPEN_TYPE_PROXY then Exit; // no proxy defined
+
+  // lpszProxy:
+  //   "<proto1>=<addr1> <proto2>=<addr2>" if individual proxies for each protocol
+  //   "addr" if one proxy for all
+  //   nil if no proxy
+  // lpszProxyBypass:
+  //   space-separated list of addresses that ignore proxy, including the copy of
+  //   lpszProxy (WTF?)
+  if pProxyInfo^.lpszProxy = nil then Exit; // no proxy defined
+
+  sl := TStringList.Create;
+  try
+    sl.Delimiter := ' ';
+    sl.DelimitedText := string(AnsiString(pProxyInfo^.lpszProxy));
+    if sl.Count = 1 then // global proxy
+      Result := sl[0]
+    else // protocol-specific proxies
+    begin
+      // Search for "prot=addr" string where "prot" equals to URL's protocol
+      for i := 0 to sl.Count - 1 do
+        if sl.Names[i] = prot then
+        begin
+          Result := sl.ValueFromIndex[i];
+          Break;
+        end;
+    end;
+
+    if pProxyInfo.lpszProxyBypass = nil then
+    else
+    begin
+      sl.DelimitedText := string(AnsiString(pProxyInfo^.lpszProxyBypass));
+      SetLength(Bypass, sl.Count);
+      for i := 0 to sl.Count - 1 do
+        Bypass[i] := sl[i];
+    end;
+  finally
+    sl.Free;
+  end;
+  {$ENDIF}
+  {$IFDEF UNIX}
+  // If prot is HTTPS, try secure settings first
+  if prot = HTTPTLSProto then
+    Result := GetEnvVarLoHiCase(ProxyEnvVarNames[True]);
+  // Now try generic settings
+  if Result = '' then
+    Result := GetEnvVarLoHiCase(ProxyEnvVarNames[False]);
+  if Result = '' then Exit;
+
+  // Check bypass list
+  ignore := GetEnvVarLoHiCase(BypassEnvVarName);
+  if ignore = '' then Exit;
+
+  sl := TStringList.Create;
+  try
+    sl.Delimiter := ',';
+    sl.DelimitedText := ignore;
+    SetLength(Bypass, sl.Count);
+    for i := 0 to sl.Count - 1 do
+      Bypass[i] := sl[i];
+  finally
+    sl.Free;
+  end;
+  {$ENDIF}
+
+  // Add the protocol prefix
+  Result := HTTPProxyProto + Result;
+end;
+
+function GetSystemProxy(const URL: string): string;
+var arr: TArray<string>;
+begin
+  Result := GetSystemProxy(URL, arr);
 end;
 
 {~ THttpRequestProps }
@@ -306,7 +451,7 @@ begin
   FOwner := Owner;
   FRequestProc := RequestProc;
   FTilesProvider := TilesProvider;
-  FRequestProps := RequestProps.Clone;
+  FRequestProps := RequestProps;
 end;
 
 destructor TNetworkRequestThread.Destroy;
@@ -496,7 +641,7 @@ var thr: TNetworkRequestThread;
 begin
   Lock;
   try
-    thr := TNetworkRequestThread.Create(Self, FRequestProc, FTilesProvider.Clone, FRequestProps);
+    thr := TNetworkRequestThread.Create(Self, FRequestProc, FTilesProvider.Clone, FRequestProps.Clone);
     thr.OnRequestComplete := DoRequestComplete;
     thr.Start;
     FThreads.Add(thr);
