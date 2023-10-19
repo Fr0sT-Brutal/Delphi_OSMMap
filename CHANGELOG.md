@@ -1,3 +1,20 @@
+0.11.3
+======
+
+`Added`
+
+- OSM.TilesProvider.pas: TTilesProvider.Clone
+- OSM.NetworkRequest.pas: GetSystemProxy
+- OSM.NetworkRequest.RTL.pas: RTL network engine for FPC now is able to use system proxy
+- OSM.NetworkRequest.Synapse.pas: Synapse network engine now is able to use system proxy on Linux; retrieval of system proxy on Windows is improved
+- Demo: request user for API key when a provider that requires it (only HERE currently) is selected
+
+`Changed`
+
+- OSM.TilesProvider.pas: TTileProvider, interface redesign. MinZoomLevel, MaxZoomLevel are read-only properties now; TileURLPatt added to base class; added read-only property Features
+- OSM.NetworkRequest.pas: uses TTilesProvider.Clone so bg threads all use their own instances
+- Demo: uses TTilesProvider.Clone thus eliminating two calls to TTilesProvider.Create
+
 0.11.2
 ======
 
