@@ -24,8 +24,9 @@ uses
 const
   // Capabilities of Synapse engine
   EngineCapabilities = [htcProxy, htcDirect, htcProxyAuth, htcAuth, htcAuthURL,
-    htcHeaders, htcTimeout
-    {$IFDEF MSWINDOWS} , htcSystemProxy {$ENDIF}
+    htcHeaders, htcTimeout,
+    // System proxy implemented manually via GetSystemProxy call
+    htcSystemProxy
     {$IF DECLARED(TSSLOpenSSL)} , htcTLS {$IFEND} ];
 
 // Procedure executing a network request. See description of
@@ -44,10 +45,7 @@ procedure NetworkRequest(RequestProps: THttpRequestProps;
   ResponseStm: TStream; var Client: TNetworkClient);
 var
   httpCli: THTTPSend;
-  Prot, User, Pass, ProxyUser, ProxyPass, ProxyHost, ProxyPort, Dummy: string;
-  {$IFDEF MSWINDOWS}
-  ProxyProps: TProxySetting;
-  {$ENDIF}
+  Prot, User, Pass, ProxyURL, ProxyUser, ProxyPass, ProxyHost, ProxyPort, Dummy: string;
 begin
   if Client = nil then
   begin
@@ -72,17 +70,11 @@ begin
 
     if RequestProps.Proxy <> '' then
     begin
-      {$IFDEF MSWINDOWS}
       if RequestProps.Proxy = SystemProxy then
-      begin
-        ProxyProps := GetIEProxy(Prot);
-        // Bypass list is ignored
-        ProxyHost := ProxyProps.Host;
-        ProxyPort := ProxyProps.Port;
-      end
+        ProxyURL := GetSystemProxy(RequestProps.URL)
       else
-      {$ENDIF}
-      ParseURL(RequestProps.Proxy, Dummy, ProxyUser, ProxyPass, ProxyHost, ProxyPort, Dummy, Dummy);
+        ProxyURL := RequestProps.Proxy;
+      ParseURL(ProxyURL, Dummy, ProxyUser, ProxyPass, ProxyHost, ProxyPort, Dummy, Dummy);
       httpCli.ProxyHost := ProxyHost;
       httpCli.ProxyPort := ProxyPort;
       httpCli.ProxyUser := ProxyUser;
