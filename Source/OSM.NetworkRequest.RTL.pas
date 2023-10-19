@@ -29,7 +29,8 @@ const
   // Capabilities of RTL engine. Some other options vary for compiler and target OS
   EngineCapabilities = [htcProxy, htcProxyAuth, htcAuth, htcAuthURL, htcHeaders, htcTimeout]
   {$IFDEF FPC}
-  + [htcDirect]
+  // System proxy implemented manually via GetSystemProxy call
+  + [htcDirect, htcSystemProxy]
   {$ENDIF}
   {$IFDEF DCC}
   // Direct connection is only available on Windows
@@ -59,6 +60,7 @@ var
   uri: TURI;
   {$IFDEF FPC}
   httpCli: TFPHTTPClient;
+  ProxyURL: string;
   {$ENDIF}
   {$IFDEF DCC}
   httpCli: TNetHTTPClient;
@@ -94,11 +96,18 @@ begin
 
     if RequestProps.Proxy <> '' then
     begin
-      uri := ParseURI(RequestProps.Proxy);
-      httpCli.Proxy.Host := uri.Host;
-      httpCli.Proxy.Port := uri.Port;
-      httpCli.Proxy.UserName := uri.Username;
-      httpCli.Proxy.Password := uri.Password;
+      if RequestProps.Proxy = SystemProxy then
+        ProxyURL := GetSystemProxy(RequestProps.URL)
+      else
+        ProxyURL := RequestProps.Proxy;
+      if ProxyURL <> '' then
+      begin
+        uri := ParseURI(ProxyURL);
+        httpCli.Proxy.Host := uri.Host;
+        httpCli.Proxy.Port := uri.Port;
+        httpCli.Proxy.UserName := uri.Username;
+        httpCli.Proxy.Password := uri.Password;
+      end;
     end;
 
     if RequestProps.HeaderLines <> nil then
