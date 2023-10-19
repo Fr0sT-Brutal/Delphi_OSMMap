@@ -29,17 +29,13 @@ Abstract base class for tile image provider. Real implementations must inherit f
 <table class="summary wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code><strong><a href="OSM.TilesProvider.TTilesProvider.html#MinZoomLevel">MinZoomLevel</a></strong>: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>;</code></td>
-</tr>
-<tr class="list2">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code><strong><a href="OSM.TilesProvider.TTilesProvider.html#MaxZoomLevel">MaxZoomLevel</a></strong>: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>;</code></td>
-</tr>
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code><strong><a href="OSM.TilesProvider.TTilesProvider.html#TilesCopyright">TilesCopyright</a></strong>: string;</code></td>
 </tr>
 <tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="OSM.TilesProvider.TTilesProvider.html#TileURLPatt">TileURLPatt</a></strong>: string;</code></td>
+</tr>
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code><strong><a href="OSM.TilesProvider.TTilesProvider.html#APIKey">APIKey</a></strong>: string;</code></td>
 </tr>
@@ -58,10 +54,26 @@ Abstract base class for tile image provider. Real implementations must inherit f
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>function <strong><a href="OSM.TilesProvider.TTilesProvider.html#GetTileURL-TTile-">GetTileURL</a></strong>(const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>): string; virtual; abstract;</code></td>
 </tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>function <strong><a href="OSM.TilesProvider.TTilesProvider.html#Clone">Clone</a></strong>: <a href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a>; virtual;</code></td>
+</tr>
 </table>
 <span id="PasDoc-Properties"></span><h3 class="summary">Properties</h3>
 <table class="summary wide_list">
 <tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>property <strong><a href="OSM.TilesProvider.TTilesProvider.html#Features">Features</a></strong>: <a href="OSM.TilesProvider.html#TTileProviderFeatures">TTileProviderFeatures</a> read FFeatures;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>property <strong><a href="OSM.TilesProvider.TTilesProvider.html#MinZoomLevel">MinZoomLevel</a></strong>: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a> read FMinZoomLevel;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>property <strong><a href="OSM.TilesProvider.TTilesProvider.html#MaxZoomLevel">MaxZoomLevel</a></strong>: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a> read FMaxZoomLevel;</code></td>
+</tr>
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.TilesProvider.TTilesProvider.html#Properties">Properties</a></strong>[const Index: string]: string read GetProperty write SetProperty;</code></td>
 </tr>
@@ -71,31 +83,21 @@ Abstract base class for tile image provider. Real implementations must inherit f
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="MinZoomLevel"></span><code><strong>MinZoomLevel</strong>: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>;</code></td>
-</tr>
-<tr><td colspan="2">
-<p>
-Minimal zoom level. Usually <code>0</code></p>
-</td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="MaxZoomLevel"></span><code><strong>MaxZoomLevel</strong>: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a>;</code></td>
-</tr>
-<tr><td colspan="2">
-<p>
-Maximal zoom level</p>
-</td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><span id="TilesCopyright"></span><code><strong>TilesCopyright</strong>: string;</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
-[opt] Tile copyright that will be painted in the corner of the map</p>
+[opt] Tile copyright that will be painted in the corner of the map. Gets default value when instance is created.</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="TileURLPatt"></span><code><strong>TileURLPatt</strong>: string;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Pattern of tile URL. For format see <a class="normal" href="OSM.TilesProvider.html#FormatTileURL-string-TTile-TTilesProvider-">FormatTileURL</a>. Gets default value when instance is created, unlikely needed to modify</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -134,10 +136,50 @@ Function to return displayable provider name. Name could be used for selection i
 </tr>
 <tr><td colspan="2">
 <p>
-Method to get URL of specified tile</p>
+Method to get URL of specified tile. Uses <a class="normal" href="OSM.TilesProvider.TTilesProvider.html#TileURLPatt">TileURLPatt</a></p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Clone"></span><code>function <strong>Clone</strong>: <a href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a>; virtual;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Create clone of provider instance copying all data.</p>
 </td></tr>
 </table>
 <h3 class="detail">Properties</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Features"></span><code>property <strong>Features</strong>: <a href="OSM.TilesProvider.html#TTileProviderFeatures">TTileProviderFeatures</a> read FFeatures;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Provider <code>features</code> / capabilities / requirements</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="MinZoomLevel"></span><code>property <strong>MinZoomLevel</strong>: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a> read FMinZoomLevel;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Minimal zoom level. Usually <code>0</code></p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="MaxZoomLevel"></span><code>property <strong>MaxZoomLevel</strong>: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a> read FMaxZoomLevel;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Maximal zoom level</p>
+</td></tr>
+</table>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>

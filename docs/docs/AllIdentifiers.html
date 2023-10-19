@@ -138,19 +138,29 @@
 <td class="itemdesc"><p>Calculates parameters of map scalebar according to zoom level <code>Zoom</code></p></td>
 </tr>
 <tr class="list">
+<td class="itemname"><a class="bold" href="OSM.NetworkRequest.html#GetSystemProxy-string-">GetSystemProxy</a></td>
+<td class="itemunit"><a class="bold" href="OSM.NetworkRequest.html">OSM.NetworkRequest</a></td>
+<td class="itemdesc"><p>Overload when addresses to bypass proxy are not of interest</p></td>
+</tr>
+<tr class="list2">
+<td class="itemname"><a class="bold" href="OSM.NetworkRequest.html#GetSystemProxy-string-TArray-TArray-const-">GetSystemProxy</a></td>
+<td class="itemunit"><a class="bold" href="OSM.NetworkRequest.html">OSM.NetworkRequest</a></td>
+<td class="itemdesc"><p>Retrieve system proxy for given URL (http, https).</p></td>
+</tr>
+<tr class="list">
+<td class="itemname"><a class="bold" href="OSM.NetworkRequest.html#HTTPProto">HTTPProto</a></td>
+<td class="itemunit"><a class="bold" href="OSM.NetworkRequest.html">OSM.NetworkRequest</a></td>
+<td class="itemdesc"><p>&nbsp;</p></td>
+</tr>
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.NetworkRequest.html#HTTPProxyProto">HTTPProxyProto</a></td>
 <td class="itemunit"><a class="bold" href="OSM.NetworkRequest.html">OSM.NetworkRequest</a></td>
 <td class="itemdesc"><p>Prefix to add to proxy URLs if it only contains <code>host:port</code> - some URL parsers handle such inputs as <code>proto:path</code></p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.NetworkRequest.html#HTTPTLSProto">HTTPTLSProto</a></td>
 <td class="itemunit"><a class="bold" href="OSM.NetworkRequest.html">OSM.NetworkRequest</a></td>
 <td class="itemdesc"><p>&nbsp;</p></td>
-</tr>
-<tr class="list">
-<td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#InMap-TMapZoomLevel-TRect-">InMap</a></td>
-<td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
-<td class="itemdesc"><p>Checks if rect <code>Rc</code> is inside a map at zoom level <code>Zoom</code></p></td>
 </tr>
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#InMap-TMapZoomLevel-TPoint-">InMap</a></td>
@@ -158,103 +168,113 @@
 <td class="itemdesc"><p>Checks if point <code>Pt</code> is inside a map at zoom level <code>Zoom</code></p></td>
 </tr>
 <tr class="list">
+<td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#InMap-TMapZoomLevel-TRect-">InMap</a></td>
+<td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
+<td class="itemdesc"><p>Checks if rect <code>Rc</code> is inside a map at zoom level <code>Zoom</code></p></td>
+</tr>
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.NetworkRequest.html#IsHTTPError-Word-">IsHTTPError</a></td>
 <td class="itemunit"><a class="bold" href="OSM.NetworkRequest.html">OSM.NetworkRequest</a></td>
 <td class="itemdesc"><p>Return true if response code means HTTP error</p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#LatitudeToMapCoord-TMapZoomLevel-Double-">LatitudeToMapCoord</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Converts geo coord in degrees to map coord in pixels</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#LayersAll">LayersAll</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
 <td class="itemdesc"><p>Constant containing all numbers of layers</p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#LayersNone">LayersNone</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
 <td class="itemdesc"><p>Constant containing no layers</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#LongitudeToMapCoord-TMapZoomLevel-Double-">LongitudeToMapCoord</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Converts geo coord in degrees to map coord in pixels</p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MapCoordToLatitude-TMapZoomLevel-Cardinal-">MapCoordToLatitude</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Converts map coord in pixels to geo coord in degrees</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MapCoordToLongitude-TMapZoomLevel-Cardinal-">MapCoordToLongitude</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Converts map coord in pixels to geo coord in degrees</p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MapHeight-TMapZoomLevel-">MapHeight</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Returns height of map at zoom level <code>Zoom</code> in pixels</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MapToGeoCoords-TMapZoomLevel-TRect-">MapToGeoCoords</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Converts map rect in pixels to geo rect in degrees</p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MapToGeoCoords-TMapZoomLevel-TPoint-">MapToGeoCoords</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Converts map point in pixels to geo point in degrees</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MapWidth-TMapZoomLevel-">MapWidth</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>Returns width of map at zoom level <code>Zoom</code> in pixels</p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MaxLat">MaxLat</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>&nbsp;</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MaxLong">MaxLong</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>&nbsp;</p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MinLat">MinLat</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>&nbsp;</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.SlippyMapUtils.html#MinLong">MinLong</a></td>
 <td class="itemunit"><a class="bold" href="OSM.SlippyMapUtils.html">OSM.SlippyMapUtils</a></td>
 <td class="itemdesc"><p>&nbsp;</p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.NetworkRequest.RTL.html#NetworkRequest-THttpRequestProps-TStream-TNetworkClient-">NetworkRequest</a></td>
 <td class="itemunit"><a class="bold" href="OSM.NetworkRequest.RTL.html">OSM.NetworkRequest.RTL</a></td>
 <td class="itemdesc"><p>Procedure executing a network request.</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.NetworkRequest.Synapse.html#NetworkRequest-THttpRequestProps-TStream-TNetworkClient-">NetworkRequest</a></td>
 <td class="itemunit"><a class="bold" href="OSM.NetworkRequest.Synapse.html">OSM.NetworkRequest.Synapse</a></td>
-<td class="itemdesc"><p>Procedure executing a network request.</p></td>
+<td class="itemdesc"><p>System proxy implemented manually via <a class="normal" href="OSM.NetworkRequest.html#GetSystemProxy-string-">GetSystemProxy</a> call Procedure executing a network request.</p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.NetworkRequest.WinInet.html#NetworkRequest-THttpRequestProps-TStream-TNetworkClient-">NetworkRequest</a></td>
 <td class="itemunit"><a class="bold" href="OSM.NetworkRequest.WinInet.html">OSM.NetworkRequest.WinInet</a></td>
 <td class="itemdesc"><p>Procedure executing a network request.</p></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#PMapMarkCaptionStyle">PMapMarkCaptionStyle</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
 <td class="itemdesc"><p>&nbsp;</p></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#PMapMarkGlyphStyle">PMapMarkGlyphStyle</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
+<td class="itemdesc"><p>&nbsp;</p></td>
+</tr>
+<tr class="list2">
+<td class="itemname"><a class="bold" href="OSM.NetworkRequest.html#ProtoSep">ProtoSep</a></td>
+<td class="itemunit"><a class="bold" href="OSM.NetworkRequest.html">OSM.NetworkRequest</a></td>
 <td class="itemdesc"><p>&nbsp;</p></td>
 </tr>
 <tr class="list">
@@ -579,14 +599,14 @@ Level   Degree  Area            m / pixel       ~Scale          # Tiles
 <td class="itemdesc"><p>Callback to react on selection by mouse</p></td>
 </tr>
 <tr class="list2">
-<td class="itemname"><a class="bold" href="OSM.MapControl.html#ToOuterCoords-TPoint-TRect-">ToOuterCoords</a></td>
-<td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
-<td class="itemdesc"><p>Convert a rect inside a viewport having given top-left point to absolute map rect</p></td>
-</tr>
-<tr class="list">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#ToOuterCoords-TPoint-TPoint-">ToOuterCoords</a></td>
 <td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
 <td class="itemdesc"><p>Convert a point inside a viewport having given top-left point to absolute map coords</p></td>
+</tr>
+<tr class="list">
+<td class="itemname"><a class="bold" href="OSM.MapControl.html#ToOuterCoords-TPoint-TRect-">ToOuterCoords</a></td>
+<td class="itemunit"><a class="bold" href="OSM.MapControl.html">OSM.MapControl</a></td>
+<td class="itemdesc"><p>Convert a rect inside a viewport having given top-left point to absolute map rect</p></td>
 </tr>
 <tr class="list2">
 <td class="itemname"><a class="bold" href="OSM.MapControl.html#TOpacity">TOpacity</a></td>
@@ -642,6 +662,16 @@ Level   Degree  Area            m / pixel       ~Scale          # Tiles
 <td class="itemname"><a class="bold" href="OSM.TileStorage.TTileObjectCache.html">TTileObjectCache</a></td>
 <td class="itemunit"><a class="bold" href="OSM.TileStorage.html">OSM.TileStorage</a></td>
 <td class="itemdesc"><p>Abstract object cache class indexed by tiles with fixed capacity organised as queue.</p></td>
+</tr>
+<tr class="list">
+<td class="itemname"><a class="bold" href="OSM.TilesProvider.html#TTileProviderFeature">TTileProviderFeature</a></td>
+<td class="itemunit"><a class="bold" href="OSM.TilesProvider.html">OSM.TilesProvider</a></td>
+<td class="itemdesc"><p>&nbsp;</p></td>
+</tr>
+<tr class="list2">
+<td class="itemname"><a class="bold" href="OSM.TilesProvider.html#TTileProviderFeatures">TTileProviderFeatures</a></td>
+<td class="itemunit"><a class="bold" href="OSM.TilesProvider.html">OSM.TilesProvider</a></td>
+<td class="itemdesc"><p>&nbsp;</p></td>
 </tr>
 <tr class="list">
 <td class="itemname"><a class="bold" href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a></td>

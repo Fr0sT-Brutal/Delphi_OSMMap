@@ -50,6 +50,12 @@ Generic (no real network implementation) classes and declarations for requesting
 <tr class="list2">
 <td class="itemcode"><code>procedure <strong><a href="OSM.NetworkRequest.html#CheckHTTPError-Word-string-">CheckHTTPError</a></strong>(ResponseCode: Word; const ResponseText: string);</code></td>
 </tr>
+<tr class="list">
+<td class="itemcode"><code>function <strong><a href="OSM.NetworkRequest.html#GetSystemProxy-string-TArray-TArray-const-">GetSystemProxy</a></strong>(const URL: string; out Bypass: TArray&lt;string&gt;): string; overload;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>function <strong><a href="OSM.NetworkRequest.html#GetSystemProxy-string-">GetSystemProxy</a></strong>(const URL: string): string; overload;</code></td>
+</tr>
 </table>
 <span id="PasDoc-Types"></span><h3 class="summary">Types</h3>
 <table class="summary wide_list">
@@ -72,10 +78,16 @@ Generic (no real network implementation) classes and declarations for requesting
 <span id="PasDoc-Constants"></span><h3 class="summary">Constants</h3>
 <table class="summary wide_list">
 <tr class="list">
-<td class="itemcode"><code><strong><a href="OSM.NetworkRequest.html#HTTPProxyProto">HTTPProxyProto</a></strong> = 'http://';</code></td>
+<td class="itemcode"><code><strong><a href="OSM.NetworkRequest.html#HTTPProto">HTTPProto</a></strong> = 'http';</code></td>
 </tr>
 <tr class="list2">
 <td class="itemcode"><code><strong><a href="OSM.NetworkRequest.html#HTTPTLSProto">HTTPTLSProto</a></strong> = 'https';</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code><strong><a href="OSM.NetworkRequest.html#ProtoSep">ProtoSep</a></strong> = '://';</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a href="OSM.NetworkRequest.html#HTTPProxyProto">HTTPProxyProto</a></strong> = <a href="OSM.NetworkRequest.html#HTTPProto">HTTPProto</a> + <a href="OSM.NetworkRequest.html#ProtoSep">ProtoSep</a>;</code></td>
 </tr>
 <tr class="list">
 <td class="itemcode"><code><strong><a href="OSM.NetworkRequest.html#SystemProxy">SystemProxy</a></strong> = <a href="OSM.NetworkRequest.html#HTTPProxyProto">HTTPProxyProto</a> + 'SYSTEM';</code></td>
@@ -131,6 +143,24 @@ Return true if response code means HTTP error</p>
 <tr><td colspan="1">
 <p>
 Check if response code means HTTP error, raise exception then</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="GetSystemProxy-string-TArray-TArray-const-"></span><code>function <strong>GetSystemProxy</strong>(const URL: string; out Bypass: TArray&lt;string&gt;): string; overload;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Retrieve system proxy for given URL (http, https). Only returns HTTP proxies (not Socks). On Windows uses InternetQueryOption, on Linux takes env variables <code>HTTP(S)_PROXY</code>. Returns addresses for direct connection in Bypass array.</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="GetSystemProxy-string-"></span><code>function <strong>GetSystemProxy</strong>(const URL: string): string; overload;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Overload when addresses to bypass proxy are not of interest</p>
 </td></tr>
 </table>
 <h3 class="detail">Types</h3>
@@ -235,12 +265,10 @@ Generic type of method to call when request is completed <br> ! <strong>Called f
 <h3 class="detail">Constants</h3>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="HTTPProxyProto"></span><code><strong>HTTPProxyProto</strong> = 'http://';</code></td>
+<td class="itemcode"><span id="HTTPProto"></span><code><strong>HTTPProto</strong> = 'http';</code></td>
 </tr>
 <tr><td colspan="1">
-<p>
-Prefix to add to proxy URLs if it only contains <code>host:port</code> - some URL parsers handle such inputs as <code>proto:path</code></p>
-</td></tr>
+<p class="nodescription">This item has no description.</p></td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
@@ -248,6 +276,22 @@ Prefix to add to proxy URLs if it only contains <code>host:port</code> - some UR
 </tr>
 <tr><td colspan="1">
 <p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="ProtoSep"></span><code><strong>ProtoSep</strong> = '://';</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="HTTPProxyProto"></span><code><strong>HTTPProxyProto</strong> = <a href="OSM.NetworkRequest.html#HTTPProto">HTTPProto</a> + <a href="OSM.NetworkRequest.html#ProtoSep">ProtoSep</a>;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Prefix to add to proxy URLs if it only contains <code>host:port</code> - some URL parsers handle such inputs as <code>proto:path</code></p>
+</td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
