@@ -143,7 +143,7 @@ type
     procedure AddThread;
     procedure DoRequestComplete(Sender: TThread; const Tile: TTile; Ms: TMemoryStream; const Error: string);
   private // for access from TNetworkRequestThread
-    function PopTask(out pTile: PTile): Boolean;
+    function PopTask(out Tile: TTile): Boolean;
   public
     // Constructor
     //   @param MaxTasksPerThread - if number of tasks becomes more than            \
@@ -213,6 +213,7 @@ implementation
 resourcestring
   S_EMsg_UnsuppCap = 'Required capability "%s" is not supported by network engine';
   S_EMsg_HTTPErr = 'HTTP error: %d %s';
+  S_EMsg_ThreadWasNotFinished = 'Thread was not finished';
 
 type
   // Thread has completed a request.
@@ -464,9 +465,8 @@ end;
 // Extracts tiles to bу downloaded from the queue, finishes when there are no more tiles
 procedure TNetworkRequestThread.Execute;
 var
-  pT: PTile;
-  tile: TTile;
-  sErrMsg: string;
+  Tile: TTile;
+  ErrMsg: string;
   ms: TMemoryStream;
   cli: TNetworkClient;
 begin
@@ -478,29 +478,29 @@ begin
   while not Terminated do
   begin
     // Queue empty - finish thread
-    if not FOwner.PopTask(pT) then
+    if not FOwner.PopTask(Tile) then
       Break;
 
-    tile := pT^;
-    FRequestProps.URL := FTilesProvider.GetTileURL(tile);
+    FRequestProps.URL := FTilesProvider.GetTileURL(Tile);
     ms := TMemoryStream.Create;
+    ErrMsg := '';
 
     try
       FRequestProc(FRequestProps, ms, cli);
       ms.Position := 0;
     except on E: Exception do
       begin
-        sErrMsg := E.Message;
+        ErrMsg := E.Message;
         FreeAndNil(ms);
         FreeAndNil(cli);
       end;
     end;
 
     if Assigned(FOnRequestComplete) then
-      FOnRequestComplete(Self, tile, ms, sErrMsg)
+      FOnRequestComplete(Self, Tile, ms, ErrMsg)
     else // unlikely but possible
       FreeAndNil(ms)
-  end;
+  end; // while
 
   FreeAndNil(cli);
 end;
@@ -536,7 +536,7 @@ begin
       if TThread(FThreads[i]).Finished then
         TThread(FThreads[i]).Free
       else
-        raise Exception.Create('Thread was not finished');
+        raise Exception.Create(S_EMsg_ThreadWasNotFinished);
     FreeAndNil(FThreads);
   finally
     Unlock;
@@ -650,12 +650,12 @@ begin
   end;
 end;
 
-// Extract next item from queue along with request properties.
+// Extract next item from queue along with request properties, add item to list of current tasks
 // ! Executed from bg threads
-//   @param pTile - pointer to tile to request
+//   @param Tile - tile to be requested
 //   @param RequestProps - personal copy of request properties that a thread must dispose
 //   @returns @True if a task was returned, @False if queue is empty
-function TNetworkRequestQueue.PopTask(out pTile: PTile): Boolean;
+function TNetworkRequestQueue.PopTask(out Tile: TTile): Boolean;
 
   // Search for tiles in list and return the 1st one that falls into given rect of tile numbers
   // (!) Numbers, not coords (!)
@@ -676,12 +676,13 @@ function TNetworkRequestQueue.PopTask(out pTile: PTile): Boolean;
     Result := nil;
   end;
 
+var pT: PTile;
 begin
   // Fast check
   if not FNotEmpty then
     Exit(False);
 
-  pTile := nil;
+  pT := nil;
 
   Lock;
   try
@@ -690,15 +691,16 @@ begin
       // First try to extract tiles currenly in view if smart ordering is enabled
       // and current view is set
       if not FDumbQueueOrder and (FCurrTileNumbersRect.Right <> 0) and (FCurrTileNumbersRect.Bottom <> 0) then
-        pTile := ExtractTileInView(TQueueHack(FTaskQueue).List, FCurrTileNumbersRect);
+        pT := ExtractTileInView(TQueueHack(FTaskQueue).List, FCurrTileNumbersRect);
       // Not found yet - just extract head
-      if pTile = nil then
-        pTile := FTaskQueue.Pop;
+      if pT = nil then
+        pT := FTaskQueue.Pop;
     end;
-    Result := pTile <> nil;
+    Result := pT <> nil;
     if Result then
     begin
-      FCurrentTasks.Add(pTile);
+      FCurrentTasks.Add(pT);
+      Tile := pT^;
     end;
 
     FNotEmpty := (FTaskQueue.Count > 0);
