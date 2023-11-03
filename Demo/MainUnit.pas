@@ -527,7 +527,9 @@ var
 begin
   LGeoPoint.Long := StrToFloat(editLongitude.Text);
   LGeoPoint.Lat := StrToFloat(editLatitude.Text);
-  mMap.SetZoom(10);
+  // Don't set smaller zoom if current is large
+  if mMap.Zoom < 10 then
+    mMap.SetZoom(10);
   mMap.CenterPoint := LGeoPoint;
 end;
 
