@@ -294,6 +294,7 @@ type
     procedure DragOver(Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean); override;
     procedure DoEndDrag(Target: TObject; X, Y: Integer); override;
     procedure KeyDown(var Key: Word; Shift: TShiftState); override;
+    procedure Loaded; override;
   strict protected
     procedure WMHScroll(var Message: TWMHScroll); message WM_HSCROLL;
     procedure WMVScroll(var Message: TWMVScroll); message WM_VSCROLL;
@@ -1170,6 +1171,13 @@ begin
     if Key = VK_ESCAPE then
       MouseMode := mmNone;
   inherited;
+end;
+
+// Enable DoubleBuffering by default or the image will flicker
+procedure TMapControl.Loaded;
+begin
+  inherited;
+  Self.DoubleBuffered := True;
 end;
 
 // *** new methods ***
