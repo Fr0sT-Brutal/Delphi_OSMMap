@@ -3,6 +3,9 @@
   requesting OSM tile images from network.
   Real network function from any framework must be supplied to actually execute request.
 
+  DEFINES:
+    - OSM_Trace - print request trace messages to Windows debug log
+
   (c) Fr0sT-Brutal https://github.com/Fr0sT-Brutal/Delphi_OSMMap
 
   @author(Fr0sT-Brutal (https://github.com/Fr0sT-Brutal))
@@ -419,6 +422,13 @@ begin
   Result := GetSystemProxy(URL, arr);
 end;
 
+procedure DebugLog(const s: string);
+begin
+  {$IF DECLARED(OutputDebugString)}
+  OutputDebugString(PChar(DateTimeToStr(Now) + ' [NetReq] ' + s));
+  {$IFEND}
+end;
+
 {~ THttpRequestProps }
 
 destructor THttpRequestProps.Destroy;
@@ -485,6 +495,10 @@ begin
     ms := TMemoryStream.Create;
     ErrMsg := '';
 
+    {$IFDEF OSM_Trace}
+    DebugLog('Getting tile ' + TileToStr(Tile) + ' from ' + FRequestProps.URL);
+    {$ENDIF}
+
     try
       FRequestProc(FRequestProps, ms, cli);
       ms.Position := 0;
@@ -495,6 +509,13 @@ begin
         FreeAndNil(cli);
       end;
     end;
+
+    {$IFDEF OSM_Trace}
+    if ErrMsg = '' then
+      DebugLog('Tile ' + TileToStr(Tile) + ' OK')
+    else
+      DebugLog('Error getting tile ' + TileToStr(Tile) + ': ' + ErrMsg);
+    {$ENDIF}
 
     if Assigned(FOnRequestComplete) then
       FOnRequestComplete(Self, Tile, ms, ErrMsg)
@@ -630,6 +651,11 @@ begin
       FCurrTileNumbersRect.Right div TILE_IMAGE_WIDTH,
       FCurrTileNumbersRect.Bottom div TILE_IMAGE_HEIGHT
     );
+    {$IFDEF OSM_Trace}
+    DebugLog(Format('Set view rect to [%d : %d] - [%d : %d]',
+      [FCurrTileNumbersRect.Left, FCurrTileNumbersRect.Top,
+       FCurrTileNumbersRect.Right, FCurrTileNumbersRect.Bottom]));
+    {$ENDIF}
   finally
     Unlock;
   end;
@@ -666,7 +692,7 @@ function TNetworkRequestQueue.PopTask(out Tile: TTile): Boolean;
     // to keep order of queued items.
     for idx := List.Count - 1 downto 0 do
     begin
-      Result := OSM.SlippyMapUtils.PTile(List[idx]);
+      Result := PTile(List[idx]);
       if ViewTileNumbersRect.Contains(Point(Result.ParameterX, Result.ParameterY)) then
       begin
         List.Delete(idx);
