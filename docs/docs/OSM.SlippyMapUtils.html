@@ -15,7 +15,7 @@
 <div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div><div class="one_section"><a class="section" href="#PasDoc-Types">Types</a></div><div class="one_section"><a class="section" href="#PasDoc-Constants">Constants</a></div><div class="one_section">Variables</div></div>
 <span id="PasDoc-Description"></span><h2 class="description">Description</h2>
 <p>
-OSM map types &amp; functions. Ref.: <a href="https://wiki.openstreetmap.org/wiki/Slippy_Map">https://wiki.openstreetmap.org/wiki/Slippy_Map</a>
+OSM map types &amp; functions. Ref.: <a href="https://en.wikipedia.org/wiki/Tiled_web_map">https://en.wikipedia.org/wiki/Tiled_web_map</a>
 
 <p>based on unit by Simon Kroik, 06.2018, kroiksm@gmx.de which is based on unit openmap.pas <a href="https://github.com/norayr/meridian23/blob/master/openmap/openmap.pas">https://github.com/norayr/meridian23/blob/master/openmap/openmap.pas</a> New BSD License
 
@@ -167,16 +167,16 @@ OSM map types &amp; functions. Ref.: <a href="https://wiki.openstreetmap.org/wik
   );</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code><strong><a href="OSM.SlippyMapUtils.html#MinLong">MinLong</a></strong>: Double = -180;</code></td>
+<td class="itemcode"><code><strong><a href="OSM.SlippyMapUtils.html#MaxLong">MaxLong</a></strong> = 180.0;</code></td>
 </tr>
 <tr class="list">
-<td class="itemcode"><code><strong><a href="OSM.SlippyMapUtils.html#MaxLong">MaxLong</a></strong>: Double = 180;</code></td>
+<td class="itemcode"><code><strong><a href="OSM.SlippyMapUtils.html#MinLong">MinLong</a></strong> = -<a href="OSM.SlippyMapUtils.html#MaxLong">MaxLong</a>;</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code><strong><a href="OSM.SlippyMapUtils.html#MinLat">MinLat</a></strong>: Double = -85.1;</code></td>
+<td class="itemcode"><code><strong><a href="OSM.SlippyMapUtils.html#MaxLat">MaxLat</a></strong> = 85.0511;</code></td>
 </tr>
 <tr class="list">
-<td class="itemcode"><code><strong><a href="OSM.SlippyMapUtils.html#MaxLat">MaxLat</a></strong>: Double = 85.1;</code></td>
+<td class="itemcode"><code><strong><a href="OSM.SlippyMapUtils.html#MinLat">MinLat</a></strong> = -<a href="OSM.SlippyMapUtils.html#MaxLat">MaxLat</a>;</code></td>
 </tr>
 </table>
 <h2 class="description">Description</h2>
@@ -513,31 +513,39 @@ Level   Degree  Area            m / pixel       ~Scale          # Tiles
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="MinLong"></span><code><strong>MinLong</strong>: Double = -180;</code></td>
+<td class="itemcode"><span id="MaxLong"></span><code><strong>MaxLong</strong> = 180.0;</code></td>
 </tr>
 <tr><td colspan="1">
-<p class="nodescription">This item has no description.</p></td></tr>
+<p>
+Maximal possible longitude (inclusive)</p>
+</td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="MaxLong"></span><code><strong>MaxLong</strong>: Double = 180;</code></td>
+<td class="itemcode"><span id="MinLong"></span><code><strong>MinLong</strong> = -<a href="OSM.SlippyMapUtils.html#MaxLong">MaxLong</a>;</code></td>
 </tr>
 <tr><td colspan="1">
-<p class="nodescription">This item has no description.</p></td></tr>
+<p>
+Minimal possible longitude (inclusive)</p>
+</td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="MinLat"></span><code><strong>MinLat</strong>: Double = -85.1;</code></td>
+<td class="itemcode"><span id="MaxLat"></span><code><strong>MaxLat</strong> = 85.0511;</code></td>
 </tr>
 <tr><td colspan="1">
-<p class="nodescription">This item has no description.</p></td></tr>
+<p>
+Maximal possible latitude for used Web Mercator projection (inclusive)</p>
+</td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="MaxLat"></span><code><strong>MaxLat</strong>: Double = 85.1;</code></td>
+<td class="itemcode"><span id="MinLat"></span><code><strong>MinLat</strong> = -<a href="OSM.SlippyMapUtils.html#MaxLat">MaxLat</a>;</code></td>
 </tr>
 <tr><td colspan="1">
-<p class="nodescription">This item has no description.</p></td></tr>
+<p>
+Minimal possible latitude for used Web Mercator projection (inclusive)</p>
+</td></tr>
 </table>
 <h2 class="authors">Author</h2>
 <ul class="authors">

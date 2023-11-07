@@ -21,7 +21,7 @@
 <code>type TGeoPoint = record</code></p>
 <h2 class="description">Description</h2>
 <p>
-Point on a map defined by longitude and latitude. Intentionally not using <code>TPointF</code> and <code>TRectF</code> because they use other system of coordinates (vertical coord increase from top to down, while latitude changes from +85 to -85)</p>
+Point on a map defined by longitude and latitude. Intentionally not using <code>TPointF</code> and <code>TRectF</code> because they use other system of coordinates (vertical coord increases from top to down, while latitude changes from +85 to -85). When creating, adjusts valid latitude values that are not possible in Web Mercator projection (absolute value in range 85..90) to the possible range (85)</p>
 <h2 class="overview">Overview</h2>
 <span id="PasDoc-Fields"></span><h3 class="summary">Fields</h3>
 <table class="summary wide_list">
