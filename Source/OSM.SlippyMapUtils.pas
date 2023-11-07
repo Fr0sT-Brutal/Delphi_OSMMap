@@ -1,6 +1,6 @@
 {
   OSM map types & functions.
-  Ref.: https://wiki.openstreetmap.org/wiki/Slippy_Map
+  Ref.: https://en.wikipedia.org/wiki/Tiled_web_map
 
     based on unit by Simon Kroik, 06.2018, kroiksm@@gmx.de
     which is based on unit openmap.pas
@@ -36,8 +36,10 @@ type
 
   // Point on a map defined by longitude and latitude.
   // Intentionally not using `TPointF` and `TRectF` because they use other
-  // system of coordinates (vertical coord increase from top to down, while latitude changes
-  // from +85 to -85)
+  // system of coordinates (vertical coord increases from top to down, while latitude changes
+  // from +85 to -85).
+  // When creating, adjusts valid latitude values that are not possible in Web Mercator
+  // projection (absolute value in range 85..90) to the possible range (85)
   TGeoPoint = record
     Long: Double;
     Lat: Double;
@@ -108,10 +110,14 @@ const
     0.298,
     0.149
   );
-  MinLong: Double = -180;
-  MaxLong: Double = 180;
-  MinLat: Double = -85.1;
-  MaxLat: Double = 85.1;
+  // Maximal possible longitude (inclusive)
+  MaxLong = 180.0;
+  // Minimal possible longitude (inclusive)
+  MinLong = -MaxLong;
+  // Maximal possible latitude for used Web Mercator projection (inclusive)
+  MaxLat = 85.0511;
+  // Minimal possible latitude for used Web Mercator projection (inclusive)
+  MinLat = -MaxLat;
 
 // Construct `TRect` from two `TPoint`-s
 function RectFromPoints(const TopLeft, BottomRight: TPoint): TRect; inline;
@@ -180,6 +186,12 @@ implementation
 resourcestring
   S_Err_ValueIsNotInRangeF = 'Invalid value %f, must be in range [%f..%f]';
   S_Err_ValueIsNotInRangeI = 'Invalid value %d, must be in range [%d..%d]';
+
+const
+  // Maximal possible latitude (exclusive)
+  IntMaxLat = 90.0;
+  // Minimal possible latitude (exclusive)
+  IntMinLat = -IntMaxLat;
 
 function RectFromPoints(const TopLeft, BottomRight: TPoint): TRect;
 begin
@@ -293,16 +305,21 @@ end;
 
 //~ Coord checking, raise exception on invalid value
 
+const Epsilon = 1E-12; // Math: DoubleResolution = 1E-15 * FuzzFactor
+
 procedure CheckValidLong(Longitude: Double); inline;
 begin
-  if not InRange(Longitude, MinLong, MaxLong) then
+  if not InRange(Longitude, MinLong - Epsilon, MaxLong + Epsilon) then
     raise Exception.CreateFmt(S_Err_ValueIsNotInRangeF, [Longitude, MinLong, MaxLong]);
 end;
 
+// Checks for valid latitude in ranges -90..+90; values that fall between valid latitude
+// range and possible Web Mercator range (85..90) are OK but must be checked when using
+// on a map. F.ex., TGeoPoint.Create automatically moves such values to the possible border.
 procedure CheckValidLat(Latitude: Double); inline;
 begin
-  if not InRange(Latitude, MinLat, MaxLat) then
-    raise Exception.CreateFmt(S_Err_ValueIsNotInRangeF, [Latitude, MinLat, MaxLat]);
+  if not InRange(Latitude, IntMinLat - Epsilon, IntMaxLat + Epsilon) then
+    raise Exception.CreateFmt(S_Err_ValueIsNotInRangeF, [Latitude, IntMinLat, IntMaxLat]);
 end;
 
 procedure CheckValidMapX(Zoom: TMapZoomLevel; X: Cardinal); inline;
@@ -324,7 +341,7 @@ begin
   CheckValidLong(Long);
   CheckValidLat(Lat);
   Self.Long := Long;
-  Self.Lat := Lat;
+  Self.Lat := EnsureRange(Lat, MinLat, MaxLat); // Adjust value if in range 85..90
 end;
 
 function TGeoPoint.Same(const GeoPt: TGeoPoint; HorzArea: Double = 0; VertArea: Double = 0): Boolean;
