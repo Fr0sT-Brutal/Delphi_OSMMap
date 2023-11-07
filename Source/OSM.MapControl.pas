@@ -196,8 +196,10 @@ type
     Layer: TMapLayer;              // Number of layer the track belongs to
     Points: array of TGeoPoint;    // Geo points that form a track
     LineDrawProps: TLineDrawProps; // Drawing options
-
     constructor Create;
+    // Just a shorthand for adding a single point. Pre-allocating the array and
+    // assigning values to empty cells is always more efficient.
+    procedure AddPoint(const Point: TGeoPoint);
   end;
 
   // List of tracks.
@@ -872,7 +874,14 @@ end;
 
 constructor TTrack.Create;
 begin
+  inherited;
   Visible := True;
+end;
+
+procedure TTrack.AddPoint(const Point: TGeoPoint);
+begin
+  SetLength(Self.Points, Length(Self.Points) + 1);
+  Self.Points[High(Self.Points)] := Point;
 end;
 
 {~ TTrackList }
