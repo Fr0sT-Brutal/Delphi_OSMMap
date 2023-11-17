@@ -618,7 +618,7 @@ Map options</p>
 </tr>
 <tr><td colspan="2">
 <p>
-Point of center of current view area. Set this property to move view</p>
+Point of center of current view area. Set this property to move view. If map is smaller than view area and resulting point falls out of the map, the Eastmost-Southmost (Bottom-right) point is returned and any assigning to this property has no effect.</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -628,7 +628,7 @@ Point of center of current view area. Set this property to move view</p>
 </tr>
 <tr><td colspan="2">
 <p>
-Point of top-left corner of current view area. Set this property to move view</p>
+Point of top-left corner of current view area. Set this property to move view If map is smaller than view area any assigning to this property has no effect.</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -698,7 +698,7 @@ Size of margin for labels on map, in pixels</p>
 </tr>
 <tr><td colspan="2">
 <p>
-View area in map coords</p>
+View area in map coords. Could be larger than the map on low zoom levels</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
