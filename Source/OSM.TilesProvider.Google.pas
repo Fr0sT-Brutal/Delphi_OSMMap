@@ -20,15 +20,16 @@ uses
 type
   // Google tile image provider
   TGoogleTilesProvider = class(TTilesProvider)
-  const
+  private
+    const TPName = 'Google maps';
+  public
+    const
     //~ global defaults
     // Default copyright text
     DefTilesCopyright = '(c) Google';
     //~ TODO: "lyrs" parameter is the tile ID but none of other options work
     // Default pattern of tile URL
     DefTileURLPatt = 'http://mt{0-3}.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}';
-  private
-    const TPName = 'Google maps';
   public
     constructor Create; override;
     class function Name: string; override;

@@ -21,7 +21,8 @@ type
   THERETilesProvider = class(TTilesProvider)
   private
     const TPName = 'HERE map';
-  const
+  public
+    const
     //~ global defaults
     // Default copyright text
     DefTilesCopyright = '(c) HERE';

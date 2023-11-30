@@ -19,7 +19,8 @@ type
   TOSMTilesProvider = class(TTilesProvider)
   private
     const TPName = 'OpenStreetMap';
-  const
+  public
+    const
     //~ global defaults
     // Default copyright text
     DefTilesCopyright = '(c) OpenStreetMap contributors';

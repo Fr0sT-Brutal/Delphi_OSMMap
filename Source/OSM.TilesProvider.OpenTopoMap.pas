@@ -20,7 +20,8 @@ type
   TOpenTopoMapTilesProvider = class(TTilesProvider)
   private
     const TPName = 'OpenTopoMap';
-  const
+  public
+    const
     //~ global defaults
     // Default copyright text
     DefTilesCopyright = '(c) OpenStreetMap contributors, SRTM';
