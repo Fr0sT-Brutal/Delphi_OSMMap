@@ -1,3 +1,16 @@
+0.11.4
+======
+
+`Added`
+
+- OSM.TilesProvider.pas: Add required properties - those which are used for generation of tile URLs. Add TTilesProvider.RequiredProperties [pub], TTilesProvider.AddRequiredProperty [prot], TTilesProviderWithProps class. TTilesProvider.StorageID method for retrieving current provider ID for storage considering values of properties
+- OSM.TilesProvider.(Google,HERE,OSM,OpenTopoMap).pas: expose Def* constants as public
+- OSM.TilesProvider.TwoGIS.pas: Add 2GIS tile provider with required property 'lng'
+
+`Changed`
+
+- Demo: uses TileProvider.StorageID
+
 0.11.3
 ======
 
