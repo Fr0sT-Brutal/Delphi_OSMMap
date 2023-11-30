@@ -15,15 +15,26 @@ uses
 
 type
   // 2GIS tile image provider
-  T2GISTilesProvider = class(TTilesProvider)
+  T2GISTilesProvider = class(TTilesProviderWithProps)
   private
     const TPName = '2GIS maps';
-  const
+  public
+    const
     //~ global defaults
     // Default copyright text
     DefTilesCopyright = '(c) 2GIS';
     // Default pattern of tile URL
-    DefTileURLPatt = 'http://tile{0-4}.maps.2gis.com/tiles?x={x}&y={y}&z={z}&v=1&ts=online_sd_ar';
+    DefTileURLPatt = 'http://tile{0-4}.maps.2gis.com/tiles?x={x}&y={y}&z={z}&v=1&ts=online_sd{lng}';
+    // "lng" option of the URL
+    OptionLng: record
+      Name, Descr: string;
+      Values: array[0..1] of TPropertyValue;
+    end =
+    (
+      Name: 'lng';
+      Descr: 'Map language';
+      Values: ( (Value: '_ar'; Descr: 'English'), (Value: ''; Descr: 'Russian'))
+    );
   public
     constructor Create; override;
     class function Name: string; override;
@@ -38,6 +49,7 @@ begin
   FMaxZoomLevel := 18;
   TilesCopyright := DefTilesCopyright;
   TileURLPatt := DefTileURLPatt;
+  AddRequiredProperty(OptionLng.Name, OptionLng.Descr, OptionLng.Values);
 end;
 
 class function T2GISTilesProvider.Name: string;
