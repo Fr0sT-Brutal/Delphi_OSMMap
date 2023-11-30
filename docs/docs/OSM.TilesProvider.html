@@ -28,10 +28,22 @@ Generic (no real implementation) base class for tile image provider. Stores prop
 <th class="itemdesc">Description</th>
 </tr>
 <tr class="list">
+<td class="itemname">Record&nbsp;<a class="bold" href="OSM.TilesProvider.TPropertyValue.html"><code>TPropertyValue</code></a></td>
+<td class="itemdesc"><a class="normal" href="OSM.TilesProvider.TPropertyValue.html#Value">Value</a> and description of one option of a required property that is used to generate tile URL</td>
+</tr>
+<tr class="list2">
+<td class="itemname">Record&nbsp;<a class="bold" href="OSM.TilesProvider.TRequiredProperty.html"><code>TRequiredProperty</code></a></td>
+<td class="itemdesc">Value and description of a required property that is used to generate tile URL.</td>
+</tr>
+<tr class="list">
 <td class="itemname">Class&nbsp;<a class="bold" href="OSM.TilesProvider.TTilesProvider.html"><code>TTilesProvider</code></a></td>
 <td class="itemdesc">Abstract base class for tile image provider.</td>
 </tr>
 <tr class="list2">
+<td class="itemname">Class&nbsp;<a class="bold" href="OSM.TilesProvider.TTilesProviderWithProps.html"><code>TTilesProviderWithProps</code></a></td>
+<td class="itemdesc">Tiles provider that implements storing of properties</td>
+</tr>
+<tr class="list">
 <td class="itemname">Class&nbsp;<a class="bold" href="OSM.TilesProvider.TDummyTilesProvider.html"><code>TDummyTilesProvider</code></a></td>
 <td class="itemdesc">Dummy tile provider class, used as a stub in map control if no real provider is assigned.</td>
 </tr>
@@ -54,6 +66,9 @@ Generic (no real implementation) base class for tile image provider. Stores prop
 <td class="itemcode"><code><strong><a href="OSM.TilesProvider.html#TTileProviderFeatures">TTileProviderFeatures</a></strong> = set of <a href="OSM.TilesProvider.html#TTileProviderFeature">TTileProviderFeature</a>;</code></td>
 </tr>
 <tr class="list">
+<td class="itemcode"><code><strong><a href="OSM.TilesProvider.html#TRequiredProperties">TRequiredProperties</a></strong> = array of <a href="OSM.TilesProvider.TRequiredProperty.html">TRequiredProperty</a>;</code></td>
+</tr>
+<tr class="list2">
 <td class="itemcode"><code><strong><a href="OSM.TilesProvider.html#TTilesProviderClass">TTilesProviderClass</a></strong> = class of <a href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a>;</code></td>
 </tr>
 </table>
@@ -101,7 +116,9 @@ Format URL for a given tile using OpenLayers-compatible URL template. Template c
 <td class="itemcode"><span id="TTileProviderFeature"></span><code><strong>TTileProviderFeature</strong> = (...);</code></td>
 </tr>
 <tr><td colspan="1">
-<p class="nodescription">This item has no description.</p><h6 class="description_section">Values</h6>
+<p>
+Specific feature of a tile provider</p>
+<h6 class="description_section">Values</h6>
 <ul>
 <li>
 <span id="tpfRequiresAPIKey">tpfRequiresAPIKey</span></li>
@@ -111,6 +128,13 @@ Format URL for a given tile using OpenLayers-compatible URL template. Template c
 <table class="detail wide_list">
 <tr class="list">
 <td class="itemcode"><span id="TTileProviderFeatures"></span><code><strong>TTileProviderFeatures</strong> = set of <a href="OSM.TilesProvider.html#TTileProviderFeature">TTileProviderFeature</a>;</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TRequiredProperties"></span><code><strong>TRequiredProperties</strong> = array of <a href="OSM.TilesProvider.TRequiredProperty.html">TRequiredProperty</a>;</code></td>
 </tr>
 <tr><td colspan="1">
 <p class="nodescription">This item has no description.</p></td></tr>

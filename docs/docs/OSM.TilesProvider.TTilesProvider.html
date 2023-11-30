@@ -52,9 +52,13 @@ Abstract base class for tile image provider. Real implementations must inherit f
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>function <strong><a href="OSM.TilesProvider.TTilesProvider.html#GetTileURL-TTile-">GetTileURL</a></strong>(const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>): string; virtual; abstract;</code></td>
+<td class="itemcode"><code>function <strong><a href="OSM.TilesProvider.TTilesProvider.html#StorageID">StorageID</a></strong>: string; virtual;</code></td>
 </tr>
 <tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>function <strong><a href="OSM.TilesProvider.TTilesProvider.html#GetTileURL-TTile-">GetTileURL</a></strong>(const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>): string; virtual; abstract;</code></td>
+</tr>
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>function <strong><a href="OSM.TilesProvider.TTilesProvider.html#Clone">Clone</a></strong>: <a href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a>; virtual;</code></td>
 </tr>
@@ -74,6 +78,10 @@ Abstract base class for tile image provider. Real implementations must inherit f
 <td class="itemcode"><code>property <strong><a href="OSM.TilesProvider.TTilesProvider.html#MaxZoomLevel">MaxZoomLevel</a></strong>: <a href="OSM.SlippyMapUtils.html#TMapZoomLevel">TMapZoomLevel</a> read FMaxZoomLevel;</code></td>
 </tr>
 <tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>property <strong><a href="OSM.TilesProvider.TTilesProvider.html#RequiredProperties">RequiredProperties</a></strong>: <a href="OSM.TilesProvider.html#TRequiredProperties">TRequiredProperties</a> read FRequiredProperties;</code></td>
+</tr>
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>property <strong><a href="OSM.TilesProvider.TTilesProvider.html#Properties">Properties</a></strong>[const Index: string]: string read GetProperty write SetProperty;</code></td>
 </tr>
@@ -126,7 +134,17 @@ Pattern of tile URL. For format see <a class="normal" href="OSM.TilesProvider.ht
 </tr>
 <tr><td colspan="2">
 <p>
-Function to return displayable provider name. Name could be used for selection in UI, file paths etc. There's no special limitations on the format of this string so when using it for something other than simple display, the value must be validated/preprocessed. The only recommendation is to keep the name short.</p>
+Function to return displayable provider name. Name could be used for selection in UI, file paths etc. There's no special limitations on the format of this string so when using it for something other than simple display, the value probably must be validated/preprocessed. The only recommendation is to keep the name short.</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="StorageID"></span><code>function <strong>StorageID</strong>: string; virtual;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Function to return current provider's ID for storage. It could depend on current values of properties (f.ex., streets/satellite). There's no special limitations on the format of this string so when using it for storage, the value probably must be validated/preprocessed. The only recommendation is to keep the name short. By default returns result of Name method.</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -178,6 +196,16 @@ Minimal zoom level. Usually <code>0</code></p>
 <tr><td colspan="2">
 <p>
 Maximal zoom level</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="RequiredProperties"></span><code>property <strong>RequiredProperties</strong>: <a href="OSM.TilesProvider.html#TRequiredProperties">TRequiredProperties</a> read FRequiredProperties;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Set of available required properties. Provided for end user to choose. App is responsible for assigning chosen values to Properties.</p>
 </td></tr>
 </table>
 <table class="detail wide_list">

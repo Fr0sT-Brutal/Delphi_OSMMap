@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>OSM Map control: OSM.TilesProvider.Google: Class TGoogleTilesProvider</title>
+<title>OSM Map control: OSM.TilesProvider.TwoGIS: Class T2GISTilesProvider</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="generator" content="PasDoc 0.16.0">
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -10,46 +10,63 @@
 <body>
 <div class="container"><div class="navigation">
 <h2><a href="index.html">OSM Map control</a></h2><ul><li><a href="AllUnits.html">Units</a></li><li><a href="ClassHierarchy.html">Class Hierarchy</a></li><li><a href="AllClasses.html">Classes, Interfaces, Objects and Records</a></li><li><a href="AllTypes.html">Types</a></li><li><a href="AllVariables.html">Variables</a></li><li><a href="AllConstants.html">Constants</a></li><li><a href="AllFunctions.html">Functions and Procedures</a></li><li><a href="AllIdentifiers.html">Identifiers</a></li></ul></div><div class="content">
-<span id="TGoogleTilesProvider"></span><h1 class="cio">Class TGoogleTilesProvider</h1>
+<span id="T2GISTilesProvider"></span><h1 class="cio">Class T2GISTilesProvider</h1>
 <div class="sections">
 <div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section"><a class="section" href="#PasDoc-Hierarchy">Hierarchy</a></div><div class="one_section"><a class="section" href="#PasDoc-Fields">Fields</a></div><div class="one_section"><a class="section" href="#PasDoc-Methods">Methods</a></div><div class="one_section">Properties</div></div>
 <span id="PasDoc-Description"></span><h2 class="unit">Unit</h2>
 <p class="unitlink">
-<a href="OSM.TilesProvider.Google.html">OSM.TilesProvider.Google</a></p>
+<a href="OSM.TilesProvider.TwoGIS.html">OSM.TilesProvider.TwoGIS</a></p>
 <h2 class="declaration">Declaration</h2>
 <p class="declaration">
-<code>type TGoogleTilesProvider = class(<a class="normal" href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a>)</code></p>
+<code>type T2GISTilesProvider = class(<a class="normal" href="OSM.TilesProvider.TTilesProviderWithProps.html">TTilesProviderWithProps</a>)</code></p>
 <h2 class="description">Description</h2>
 <p>
-Google tile image provider</p>
+2GIS tile image provider</p>
 <span id="PasDoc-Hierarchy"></span><h2 class="hierarchy">Hierarchy</h2>
 <ul class="hierarchy"><li class="ancestor">TObject</li>
 <li class="ancestor"><a class="normal" href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a></li>
-<li class="thisitem">TGoogleTilesProvider</li></ul><h2 class="overview">Overview</h2>
+<li class="ancestor"><a class="normal" href="OSM.TilesProvider.TTilesProviderWithProps.html">TTilesProviderWithProps</a></li>
+<li class="thisitem">T2GISTilesProvider</li></ul><h2 class="overview">Overview</h2>
 <span id="PasDoc-Fields"></span><h3 class="summary">Fields</h3>
 <table class="summary wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>nested const <strong><a href="OSM.TilesProvider.Google.TGoogleTilesProvider.html#DefTilesCopyright">DefTilesCopyright</a></strong> = '(c) Google';</code></td>
+<td class="itemcode"><code>nested const <strong><a href="OSM.TilesProvider.TwoGIS.T2GISTilesProvider.html#DefTilesCopyright">DefTilesCopyright</a></strong> = '(c) 2GIS';</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>nested const <strong><a href="OSM.TilesProvider.Google.TGoogleTilesProvider.html#DefTileURLPatt">DefTileURLPatt</a></strong> = 'http://mt{0-3}.google.com/vt/lyrs=m&amp;hl=en&amp;x={x}&amp;y={y}&amp;z={z}';</code></td>
+<td class="itemcode"><code>nested const <strong><a href="OSM.TilesProvider.TwoGIS.T2GISTilesProvider.html#DefTileURLPatt">DefTileURLPatt</a></strong> = 'http://tile{0-4}.maps.2gis.com/tiles?x={x}&amp;y={y}&amp;z={z}&amp;v=1&amp;ts=online_sd{lng}';</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>nested const <strong><a href="OSM.TilesProvider.TwoGIS.T2GISTilesProvider.html#OptionLng">OptionLng</a></strong>: record
+      Name, Descr: string;
+      Values: array[0..1] of <a href="OSM.TilesProvider.TPropertyValue.html">TPropertyValue</a>;
+    end =
+    (
+      Name: 'lng';
+      Descr: 'Map language';
+      Values: ( (Value: '_ar'; Descr: 'English'), (Value: ''; Descr: 'Russian'))
+    );</code></td>
 </tr>
 </table>
 <span id="PasDoc-Methods"></span><h3 class="summary">Methods</h3>
 <table class="summary wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>constructor <strong><a href="OSM.TilesProvider.Google.TGoogleTilesProvider.html#Create">Create</a></strong>; override;</code></td>
+<td class="itemcode"><code>constructor <strong><a href="OSM.TilesProvider.TwoGIS.T2GISTilesProvider.html#Create">Create</a></strong>; override;</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>class function <strong><a href="OSM.TilesProvider.Google.TGoogleTilesProvider.html#Name">Name</a></strong>: string; override;</code></td>
+<td class="itemcode"><code>class function <strong><a href="OSM.TilesProvider.TwoGIS.T2GISTilesProvider.html#Name">Name</a></strong>: string; override;</code></td>
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><code>function <strong><a href="OSM.TilesProvider.Google.TGoogleTilesProvider.html#GetTileURL-TTile-">GetTileURL</a></strong>(const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>): string; override;</code></td>
+<td class="itemcode"><code>function <strong><a href="OSM.TilesProvider.TwoGIS.T2GISTilesProvider.html#GetTileURL-TTile-">GetTileURL</a></strong>(const Tile: <a href="OSM.SlippyMapUtils.TTile.html">TTile</a>): string; override;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>function <strong><a href="OSM.TilesProvider.TwoGIS.T2GISTilesProvider.html#StorageID">StorageID</a></strong>: string; override;</code></td>
 </tr>
 </table>
 <h2 class="description">Description</h2>
@@ -57,7 +74,7 @@ Google tile image provider</p>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="DefTilesCopyright"></span><code>nested const <strong>DefTilesCopyright</strong> = '(c) Google';</code></td>
+<td class="itemcode"><span id="DefTilesCopyright"></span><code>nested const <strong>DefTilesCopyright</strong> = '(c) 2GIS';</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
@@ -67,11 +84,29 @@ Default copyright text</p>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
-<td class="itemcode"><span id="DefTileURLPatt"></span><code>nested const <strong>DefTileURLPatt</strong> = 'http://mt{0-3}.google.com/vt/lyrs=m&amp;hl=en&amp;x={x}&amp;y={y}&amp;z={z}';</code></td>
+<td class="itemcode"><span id="DefTileURLPatt"></span><code>nested const <strong>DefTileURLPatt</strong> = 'http://tile{0-4}.maps.2gis.com/tiles?x={x}&amp;y={y}&amp;z={z}&amp;v=1&amp;ts=online_sd{lng}';</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
 Default pattern of tile URL</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="OptionLng"></span><code>nested const <strong>OptionLng</strong>: record
+      Name, Descr: string;
+      Values: array[0..1] of <a href="OSM.TilesProvider.TPropertyValue.html">TPropertyValue</a>;
+    end =
+    (
+      Name: 'lng';
+      Descr: 'Map language';
+      Values: ( (Value: '_ar'; Descr: 'English'), (Value: ''; Descr: 'Russian'))
+    );</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+&quot;lng&quot; option of the URL</p>
 </td></tr>
 </table>
 <h3 class="detail">Methods</h3>
@@ -101,6 +136,16 @@ Function to return displayable provider name. Name could be used for selection i
 <tr><td colspan="2">
 <p class="inheritdescription">This item has no description. Showing description inherited from <a class="normal" href="OSM.TilesProvider.TTilesProvider.html#GetTileURL-TTile-">TTilesProvider.GetTileURL</a>.</p><p>
 Method to get URL of specified tile. Uses <a class="normal" href="OSM.TilesProvider.TTilesProvider.html#TileURLPatt">TileURLPatt</a></p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="StorageID"></span><code>function <strong>StorageID</strong>: string; override;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="inheritdescription">This item has no description. Showing description inherited from <a class="normal" href="OSM.TilesProvider.TTilesProvider.html#StorageID">TTilesProvider.StorageID</a>.</p><p>
+Function to return current provider's ID for storage. It could depend on current values of properties (f.ex., streets/satellite). There's no special limitations on the format of this string so when using it for storage, the value probably must be validated/preprocessed. The only recommendation is to keep the name short. By default returns result of Name method.</p>
 </td></tr>
 </table>
 <hr><span class="appinfo"><em>Generated by <a href="https://pasdoc.github.io/">PasDoc 0.16.0</a>. </em>

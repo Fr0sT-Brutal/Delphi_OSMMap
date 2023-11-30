@@ -12,7 +12,7 @@
 <h2><a href="index.html">OSM Map control</a></h2><ul><li><a href="AllUnits.html">Units</a></li><li><a href="ClassHierarchy.html">Class Hierarchy</a></li><li><a href="AllClasses.html">Classes, Interfaces, Objects and Records</a></li><li><a href="AllTypes.html">Types</a></li><li><a href="AllVariables.html">Variables</a></li><li><a href="AllConstants.html">Constants</a></li><li><a href="AllFunctions.html">Functions and Procedures</a></li><li><a href="AllIdentifiers.html">Identifiers</a></li></ul></div><div class="content">
 <span id="TOSMTilesProvider"></span><h1 class="cio">Class TOSMTilesProvider</h1>
 <div class="sections">
-<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section"><a class="section" href="#PasDoc-Hierarchy">Hierarchy</a></div><div class="one_section">Fields</div><div class="one_section"><a class="section" href="#PasDoc-Methods">Methods</a></div><div class="one_section">Properties</div></div>
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section"><a class="section" href="#PasDoc-Hierarchy">Hierarchy</a></div><div class="one_section"><a class="section" href="#PasDoc-Fields">Fields</a></div><div class="one_section"><a class="section" href="#PasDoc-Methods">Methods</a></div><div class="one_section">Properties</div></div>
 <span id="PasDoc-Description"></span><h2 class="unit">Unit</h2>
 <p class="unitlink">
 <a href="OSM.TilesProvider.OSM.html">OSM.TilesProvider.OSM</a></p>
@@ -26,6 +26,17 @@ OpenStreetMap tile image provider</p>
 <ul class="hierarchy"><li class="ancestor">TObject</li>
 <li class="ancestor"><a class="normal" href="OSM.TilesProvider.TTilesProvider.html">TTilesProvider</a></li>
 <li class="thisitem">TOSMTilesProvider</li></ul><h2 class="overview">Overview</h2>
+<span id="PasDoc-Fields"></span><h3 class="summary">Fields</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>nested const <strong><a href="OSM.TilesProvider.OSM.TOSMTilesProvider.html#DefTilesCopyright">DefTilesCopyright</a></strong> = '(c) OpenStreetMap contributors';</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>nested const <strong><a href="OSM.TilesProvider.OSM.TOSMTilesProvider.html#DefTileURLPatt">DefTileURLPatt</a></strong> = 'http://tile.openstreetmap.org/{z}/{x}/{y}.png';</code></td>
+</tr>
+</table>
 <span id="PasDoc-Methods"></span><h3 class="summary">Methods</h3>
 <table class="summary wide_list">
 <tr class="list">
@@ -42,6 +53,27 @@ OpenStreetMap tile image provider</p>
 </tr>
 </table>
 <h2 class="description">Description</h2>
+<h3 class="detail">Fields</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="DefTilesCopyright"></span><code>nested const <strong>DefTilesCopyright</strong> = '(c) OpenStreetMap contributors';</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Default copyright text</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="DefTileURLPatt"></span><code>nested const <strong>DefTileURLPatt</strong> = 'http://tile.openstreetmap.org/{z}/{x}/{y}.png';</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Default pattern of tile URL</p>
+</td></tr>
+</table>
 <h3 class="detail">Methods</h3>
 <table class="detail wide_list">
 <tr class="list">
@@ -58,7 +90,7 @@ OpenStreetMap tile image provider</p>
 </tr>
 <tr><td colspan="2">
 <p class="inheritdescription">This item has no description. Showing description inherited from <a class="normal" href="OSM.TilesProvider.TTilesProvider.html#Name">TTilesProvider.Name</a>.</p><p>
-Function to return displayable provider name. Name could be used for selection in UI, file paths etc. There's no special limitations on the format of this string so when using it for something other than simple display, the value must be validated/preprocessed. The only recommendation is to keep the name short.</p>
+Function to return displayable provider name. Name could be used for selection in UI, file paths etc. There's no special limitations on the format of this string so when using it for something other than simple display, the value probably must be validated/preprocessed. The only recommendation is to keep the name short.</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
