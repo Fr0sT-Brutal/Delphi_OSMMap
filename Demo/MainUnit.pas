@@ -342,8 +342,10 @@ begin
     end;
   end;
 
+  // TODO: let user choose required properties
+
   TileStorage.FileCacheBaseDir := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) +
-    'Map' + PathDelim + TilesProviderClass.Name;
+    'Map' + PathDelim + provider.StorageID;
   // Queuer of tile image network requests
   // You won't need it if you have another source (f.e. database)
   FreeAndNil(NetRequest);
