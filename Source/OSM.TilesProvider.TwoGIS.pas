@@ -39,6 +39,7 @@ type
     constructor Create; override;
     class function Name: string; override;
     function GetTileURL(const Tile: TTile): string; override;
+    function StorageID: string; override;
   end;
 
 implementation
@@ -60,6 +61,11 @@ end;
 function T2GISTilesProvider.GetTileURL(const Tile: TTile): string;
 begin
   Result := FormatTileURL(TileURLPatt, Tile, Self);
+end;
+
+function T2GISTilesProvider.StorageID: string;
+begin
+  Result := TPName + Properties['lng'];
 end;
 
 initialization
