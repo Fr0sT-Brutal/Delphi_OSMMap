@@ -22,11 +22,29 @@ uses
   OSM.SlippyMapUtils;
 
 type
+  // Specific feature of a tile provider
   TTileProviderFeature = (
     tpfRequiresAPIKey
   );
 
   TTileProviderFeatures = set of TTileProviderFeature;
+
+  // Value and description of one option of a required property that is used
+  // to generate tile URL
+  TPropertyValue = record
+    Value: string; // Fragment used in URL
+    Descr: string; // Description for humans
+  end;
+
+  // Value and description of a required property that is used to generate tile URL.
+  // Value is the fragment used in URL and Descr is description for humans
+  TRequiredProperty = record
+    Name: string;  // Property name that is used in URL pattern as `{propame}`
+    Descr: string; // Description for humans
+    Values: array of TPropertyValue; // All available values of the property
+  end;
+
+  TRequiredProperties = array of TRequiredProperty;
 
   // Abstract base class for tile image provider. Real implementations must
   // inherit from it, assign properties and override methods. @br
@@ -40,9 +58,11 @@ type
     FFeatures: TTileProviderFeatures;
     FMinZoomLevel: TMapZoomLevel;
     FMaxZoomLevel: TMapZoomLevel;
+    FRequiredProperties: TRequiredProperties;
 
     function GetProperty(const Index: string): string; virtual;
     procedure SetProperty(const Index, Value: string); virtual;
+    procedure AddRequiredProperty(const Name, Descr: string; const Values: array of TPropertyValue);
   public
 {}//~    TileFormat: TTileImage;
     //~ Provider variables - could change any time
@@ -76,10 +96,27 @@ type
     property MinZoomLevel: TMapZoomLevel read FMinZoomLevel;
     // Maximal zoom level
     property MaxZoomLevel: TMapZoomLevel read FMaxZoomLevel;
+    // Set of available required properties. Provided for end user to choose.
+    // App is responsible for assigning chosen values to Properties.
+    property RequiredProperties: TRequiredProperties read FRequiredProperties;
 
     // Generic storage for provider-specific properties. Raises exception in
     // base class, should be implemented in descendants
     property Properties[const Index: string]: string read GetProperty write SetProperty;
+  end;
+
+  // Tiles provider that implements storing of properties
+  TTilesProviderWithProps = class(TTilesProvider)
+  private
+    type
+      TNameVal = record
+        Name, Value: string;
+      end;
+    var
+      FProperties: TArray<TNameVal>;
+  protected
+    function GetProperty(const Index: string): string; override;
+    procedure SetProperty(const Index, Value: string); override;
   end;
 
   // Dummy tile provider class, used as a stub in map control if no real provider
@@ -87,7 +124,8 @@ type
   TDummyTilesProvider = class(TTilesProvider)
   private
     const TPName = 'Dummy';
-  const
+  public
+    const
     //~ global defaults
     // Default copyright text
     DefTilesCopyright = '(c) Tile provider (loaded from offline)';
@@ -133,6 +171,47 @@ end;
 procedure TTilesProvider.SetProperty(const Index, Value: string);
 begin
   raise Exception.Create('Setter for Properties not implemented');
+end;
+
+// Adds a required property to list and sets Properties[Name] to the first element in Values
+// (assigns default value).
+procedure TTilesProvider.AddRequiredProperty(const Name, Descr: string; const Values: array of TPropertyValue);
+var
+  ReqProp: TRequiredProperty;
+  i: Integer;
+begin
+  ReqProp.Name := Name;
+  ReqProp.Descr := Descr;
+  SetLength(ReqProp.Values, Length(Values));
+  for i := Low(Values) to High(Values) do
+    ReqProp.Values[i] := Values[i];
+  SetLength(FRequiredProperties, Length(FRequiredProperties) + 1);
+  FRequiredProperties[High(FRequiredProperties)] := ReqProp;
+  Properties[Name] := Values[0].Value;
+end;
+
+{ TTilesProviderWithProps }
+
+function TTilesProviderWithProps.GetProperty(const Index: string): string;
+var i: Integer;
+begin
+  for i := Low(FProperties) to High(FProperties) do
+    if FProperties[i].Name = Index then
+      Exit(FProperties[i].Value);
+end;
+
+procedure TTilesProviderWithProps.SetProperty(const Index, Value: string);
+var i: Integer;
+begin
+  for i := Low(FProperties) to High(FProperties) do
+    if FProperties[i].Name = Index then
+    begin
+      FProperties[i].Value := Value;
+      Exit;
+    end;
+  SetLength(FProperties, Length(FProperties) + 1);
+  FProperties[High(FProperties)].Name := Index;
+  FProperties[High(FProperties)].Value := Value;
 end;
 
 {~ TDummyTilesProvider }
