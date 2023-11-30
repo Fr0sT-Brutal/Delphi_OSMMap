@@ -80,9 +80,17 @@ type
     // Function to return displayable provider name.
     // Name could be used for selection in UI, file paths etc.
     // There's no special limitations on the format of this string so when using it for
-    // something other than simple display, the value must be validated/preprocessed.
+    // something other than simple display, the value probably must be validated/preprocessed.
     // The only recommendation is to keep the name short.
     class function Name: string; virtual; abstract;
+
+    // Function to return current provider's ID for storage.
+    // It could depend on current values of properties (f.ex., streets/satellite).
+    // There's no special limitations on the format of this string so when using it
+    // for storage, the value probably must be validated/preprocessed.
+    // The only recommendation is to keep the name short.
+    // By default returns result of Name method.
+    function StorageID: string; virtual;
 
     // Method to get URL of specified tile. Uses TileURLPatt
     function GetTileURL(const Tile: TTile): string; virtual; abstract;
@@ -152,6 +160,11 @@ function FormatTileURL(const Template: string; const Tile: TTile; Provider: TTil
 implementation
 
 {~ TTilesProvider }
+
+function TTilesProvider.StorageID: string;
+begin
+  Result := Name;
+end;
 
 function TTilesProvider.Clone: TTilesProvider;
 begin
